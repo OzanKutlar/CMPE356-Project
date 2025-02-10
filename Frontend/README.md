@@ -1,4 +1,4 @@
-# CMPE356 Project - Root Folder
+# CMPE356 Project - Frontend
 
 ## Documentation
 
