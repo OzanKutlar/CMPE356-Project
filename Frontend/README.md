@@ -2,7 +2,7 @@
 
 ## Documentation
 
-- [Backend README](Backend/)
+- [Backend README](/Backend/)
 - [Root README](/)
 
 ## TODO
@@ -25,4 +25,4 @@
 - **Driver Dashboard UI**  
   - [ ] **Orders Screen:** List all assigned deliveries **(Unassigned)**  
   - [ ] **Order Management:** Confirm delivery or cancel order with a reason **(Unassigned)**  
-  - [ ] **Navigation:** Show delivery locations **(Unassigned)**  
+  - [ ] **Navigation:** Maybe Google Maps integration to show location O_O **(Unassigned)**  
