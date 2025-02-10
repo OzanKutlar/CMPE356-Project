@@ -2,5 +2,5 @@
 
 ## Documentation
 
-- [Backend README](Backend/README.md)
-- [Frontend README](Frontend/README.md)
+- [Backend README](Backend/)
+- [Frontend README](Frontend/)
