@@ -1,8 +1,28 @@
-# React + Vite
+# CMPE356 Project - Root Folder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Documentation
 
-Currently, two official plugins are available:
+- [Backend README](Backend/)
+- [Root README](/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## TODO
+
+- **Asset Collection**  
+  - [ ] Gather meat images, icons, and branding materials **(Unassigned)**  
+  - [ ] Design logo and color scheme **(Unassigned)**  
+
+- **User Interface (Customers)**  
+  - [ ] **Homepage UI:** Display available meat products, search bar, and categories **(Unassigned)**  
+  - [ ] **Product Page UI:** Show product details, pricing, and "Add to Cart" button **(Unassigned)**  
+  - [ ] **Cart Screen UI:** Show selected items, modify quantity, and proceed to checkout **(Unassigned)**  
+  - [ ] **Order Tracking UI:** Allow customers to track their order status **(Unassigned)**  
+
+- **Admin Panel UI**  
+  - [ ] Add, update, and remove meat varieties **(Unassigned)**  
+  - [ ] View and manage customer orders **(Unassigned)**  
+  - [ ] Dashboard to monitor sales and stock levels **(Unassigned)**  
+
+- **Driver Dashboard UI**  
+  - [ ] **Orders Screen:** List all assigned deliveries **(Unassigned)**  
+  - [ ] **Order Management:** Confirm delivery or cancel order with a reason **(Unassigned)**  
+  - [ ] **Navigation:** Show delivery locations **(Unassigned)**  
