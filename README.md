@@ -8,5 +8,5 @@
 ## TODO
 
 - [ ] **Make a Backend TODO** (Unfinished)  
-- ~~[x] **Make a Frontend TODO** (Finished By Ozan Kutlar)~~  
+- ~~**Make a Frontend TODO**~~ (Finished By Ozan Kutlar)
 
