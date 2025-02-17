@@ -1,40 +1,41 @@
-/* Overlay to darken the background */
-.popup-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Popup box */
+/* Popup box positioned at bottom right */
 .popup-box {
+  position: fixed;
+  bottom: -100px;
+  right: 20px;
   background: white;
-  width: 400px;
-  height: 300px;
-  max-width: 600px;
-  max-height: 800px;
-  padding: 20px;
+  width: 350px;
+  padding: 15px;
   border-radius: 12px;
   text-align: center;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  position: relative;
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
 }
 
-/* Close button - Circular & Colorful */
+/* Sliding animations */
+.slide-up {
+  transform: translateY(-120px);
+  opacity: 1;
+}
+
+.slide-down {
+  transform: translateY(100px);
+  opacity: 0;
+}
+
+/* Close button */
 .close-btn {
   position: absolute;
-  top: -15px;
-  right: -15px;
-  width: 30px;
-  height: 30px;
-  background-color: #ff4d4d; /* Red, like meat theme */
+  top: -10px;
+  right: -10px;
+  width: 25px;
+  height: 25px;
+  background-color: #ff4d4d;
   color: white;
   border: none;
-  border-radius: 50%; /* Makes it circular */
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -43,12 +44,12 @@
 }
 
 .close-btn:hover {
-  background-color: #cc0000; /* Darker red on hover */
+  background-color: #cc0000;
 }
 
 /* Input field */
 input {
-  width: 80%;
+  width: 90%;
   padding: 8px;
   margin-top: 10px;
   border: 1px solid #ccc;
@@ -65,7 +66,7 @@ button {
   border-radius: 5px;
   cursor: pointer;
   margin-top: 10px;
-  width: 50%;
+  width: 80%;
 }
 
 button:hover {
@@ -78,3 +79,9 @@ button:hover {
   font-size: 20px;
 }
 
+/* Subtext */
+.subtext {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 10px;
+}

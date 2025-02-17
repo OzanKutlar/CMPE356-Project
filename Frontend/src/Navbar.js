@@ -15,26 +15,26 @@ export default function MeatStore() {
         <button onClick={() => setIsOpen(!isOpen)} className="p-2">
           <Menu size={24} />
         </button>
-        {isOpen && (
-          <nav className="mt-4">
-            <ul className="space-y-2">
-              {[
-                "Weekly Discounted Offer",
-                "Chicken",
-                "Beef",
-                "Mutton",
-                "Sea-food",
-                "Order",
-                "Contact Us",
-                "Logout",
-              ].map((item) => (
-                <li key={item} className="p-2 hover:bg-red-600 cursor-pointer">
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </nav>
-        )}
+		<div className={`sliding-bar ${isOpen ? 'open' : ''}`}>
+		  <nav className="mt-4">
+			<ul className="space-y-2">
+			  {[
+				"Weekly Discounted Offer",
+				"Chicken",
+				"Beef",
+				"Mutton",
+				"Sea-food",
+				"Order",
+				"Contact Us",
+				"Logout",
+			  ].map((item) => (
+				<li key={item} className="p-2 hover:bg-red-600 cursor-pointer">
+				  {item}
+				</li>
+			  ))}
+			</ul>
+		  </nav>
+		</div>
       </div>
       
       {/* Main Content */}
