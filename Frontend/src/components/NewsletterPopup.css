@@ -23,6 +23,17 @@
   opacity: 0;
 }
 
+/* Slide-in from the bottom when content changes to Thank You */
+.fade-in {
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
 /* Close button */
 .close-btn {
   position: absolute;

@@ -7,6 +7,7 @@ export default function NewsletterPopup() {
   const [closing, setClosing] = useState(false);
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
@@ -27,7 +28,9 @@ export default function NewsletterPopup() {
     e.preventDefault();
     if (email.trim()) {
       setSubmitted(true);
-      setTimeout(handleClose, 1500);
+      setFadeOut(true); // Initiate fade out for the form
+      setTimeout(() => setFadeOut(false), 500); // Reset fade out after transition
+      setTimeout(handleClose, 2000); // Close after some delay
     }
   };
 
@@ -51,7 +54,9 @@ export default function NewsletterPopup() {
             </form>
           </>
         ) : (
-          <h2 className="thank-you">Thank You!</h2>
+          <div className={`thank-you ${fadeOut ? "fade-out" : "fade-in"}`}>
+            <h2 className="thank-you">Thank You!</h2>
+          </div>
         )}
       </div>
     )
