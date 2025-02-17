@@ -2,7 +2,7 @@
 .popup-box {
   position: fixed;
   bottom: -100px;
-  right: 20px;
+  left: 40%;
   background: white;
   width: 350px;
   padding: 15px;
