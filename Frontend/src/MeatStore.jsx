@@ -1,30 +1,20 @@
 import { useState } from "react";
-import "./MeatStore.css"; // Ensure styles are applied
+import "./meatStore.css";
 
 export default function MeatStore() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-white text-black">
       {/* Sidebar */}
-      <div
-        className={`navbar transition-all duration-300 ${
-          isOpen ? "w-64" : "w-16"
-        }`}
-      >
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="p-2 text-white bg-red-600 rounded-md"
-        >
+      <div className={`navbar transition-all duration-300 ${isOpen ? "w-64" : "w-16"}`}>
+        <button onClick={() => setIsOpen(!isOpen)} className="p-2 bg-red-600 text-white rounded-md">
           ☰
         </button>
 
         {/* Sliding Sidebar */}
-        <div className={`sliding-bar ${isOpen ? "open" : ""}`}>
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-2 bg-red-600 text-white rounded-md"
-          >
+        <div className={`slidingBar ${isOpen ? "open" : ""}`}>
+          <button onClick={() => setIsOpen(!isOpen)} className="p-2 bg-red-600 text-white rounded-md">
             ☰
           </button>
           <nav className="mt-4">
@@ -39,10 +29,7 @@ export default function MeatStore() {
                 "Contact Us",
                 "Logout",
               ].map((item) => (
-                <li
-                  key={item}
-                  className="p-2 bg-gray-800 text-white rounded-md hover:bg-red-600 cursor-pointer"
-                >
+                <li key={item} className="p-2 bg-gray-800 text-white rounded-md hover:bg-red-600 cursor-pointer">
                   {item}
                 </li>
               ))}

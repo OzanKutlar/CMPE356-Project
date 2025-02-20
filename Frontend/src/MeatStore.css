@@ -2,13 +2,14 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f8f8f8;
+    background-color: white;
+    color: black;
 }
 
 .navbar {
     width: 200px;
-    background-color: #222; /* Dark background for visibility */
-    color: white; /* Ensure text is readable */
+    background-color: #222;
+    color: white;
     padding: 20px;
     position: fixed;
     height: 100%;
@@ -26,21 +27,23 @@ body {
 
 .navbar ul li a {
     text-decoration: none;
-    color: white; /* Ensure links are readable */
+    color: white;
 }
 
 .content {
     margin-left: 220px;
     padding: 20px;
+    background-color: white;
+    color: black;
 }
 
-.sliding-bar {
+.slidingBar {
   position: fixed;
   top: 0;
   left: 0;
   width: 300px;
   height: 100%;
-  background-color: #222; /* Ensure contrast */
+  background-color: #222;
   color: white;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.6);
   transform: translateX(-100%);
@@ -48,16 +51,16 @@ body {
   padding: 20px;
 }
 
-.sliding-bar.open {
-  transform: translateX(0); /* Slide the bar in */
+.slidingBar.open {
+  transform: translateX(0);
 }
 
-.sliding-bar ul li {
+.slidingBar ul li {
     background-color: #333;
     padding: 10px;
     border-radius: 5px;
 }
 
-.sliding-bar ul li:hover {
+.slidingBar ul li:hover {
     background-color: #ff4d4d;
 }
