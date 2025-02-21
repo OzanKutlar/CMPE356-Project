@@ -11,7 +11,7 @@ const Header = () => {
     <>
       <header className="header">
         {/* Navigation Button */}
-        <button className="nav-btn" onClick={() => setShowNavbar(!showNavbar)}>
+        <button className="nav-btnHeader" onClick={() => setShowNavbar(!showNavbar)}>
           ☰
         </button>
 
@@ -19,7 +19,7 @@ const Header = () => {
         <h1 className="title">E-Kasap</h1>
 
         {/* Login Button */}
-        <button className="login-btn" onClick={() => setShowLogin(true)}>
+        <button className="login-btnHeader" onClick={() => setShowLogin(true)}>
           Login
         </button>
       </header>

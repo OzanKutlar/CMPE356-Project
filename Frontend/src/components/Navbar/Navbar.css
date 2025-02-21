@@ -12,6 +12,7 @@
   transform: translateX(-100%); /* Start off-screen to the left */
   transition: transform 0.3s ease-in-out; /* Smooth transition */
   padding: 20px;
+  user-select: none;
 }
 
 .slidingBar.open {
