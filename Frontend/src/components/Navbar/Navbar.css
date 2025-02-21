@@ -1,0 +1,44 @@
+/* Sliding navbar that slides from the right */
+/* Sliding navbar that slides from the left */
+.slidingBar {
+  position: fixed;
+  top: 0;
+  left: 0; /* Align to the left */
+  width: 300px;
+  height: 100%;
+  background-color: #222;
+  color: white;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.6);
+  transform: translateX(-100%); /* Start off-screen to the left */
+  transition: transform 0.3s ease-in-out; /* Smooth transition */
+  padding: 20px;
+}
+
+.slidingBar.open {
+  transform: translateX(0); /* Slide in from the left when 'open' class is added */
+}
+
+
+.slidingBar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.slidingBar ul li {
+  background-color: #333;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.slidingBar ul li:hover {
+  background-color: #ff4d4d;
+}
+
+/* Close button styles */
+.close-btnNav {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}

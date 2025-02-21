@@ -1,13 +1,12 @@
 import React from "react";
-import NewsletterPopup from "./components/NewsletterPopup"; // Import the NewsletterPopup component
+import Email from "./components/EmailPopup/Email";
+import Header from "./components/Header/Header";
 
 export default function App() {
   return (
     <div>
-      {/* Render the Newsletter Popup */}
-      <NewsletterPopup />
-      
-      {/* Render the MeatStore component (your existing content) */}
+      <Email />
+      <Header />
     </div>
   );
 }

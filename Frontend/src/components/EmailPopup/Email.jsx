@@ -1,7 +1,7 @@
-import "./NewsletterPopup.css";
+import "./Email.css";
 import { useState, useEffect } from "react";
 
-export default function NewsletterPopup() {
+export default function Email() {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [closing, setClosing] = useState(false);
