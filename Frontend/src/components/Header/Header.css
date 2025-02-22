@@ -9,11 +9,11 @@
 }
 
 .title {
-  font-size: 36px; /* Larger font size for the title */
+  font-size: 36px;
   font-weight: bold;
   color: black;
-  text-align: center; /* Center the title */
-  flex-grow: 1; /* Allow the title to take up remaining space */
+  text-align: center;
+  flex-grow: 1;
 }
 
 .nav-btnHeader, .login-btnHeader {
@@ -30,9 +30,9 @@
   background: none;
   font-size: 24px;
   display: flex;
-  justify-content: center; /* Center the text horizontally */
-  align-items: center; /* Center the text vertically */
-  border-radius: 10px;  /* Optional: Make the corners rounded */
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
 }
 
 .login-btnHeader {
@@ -46,11 +46,10 @@
   color: white;
 }
 
-/* Adjusting the button positioning to work with flexbox */
 .nav-btnHeader {
-  margin-left: 20px; /* Adjust spacing from the left */
+  margin-left: 20px;
 }
 
 .login-btnHeader {
-  margin-right: 20px; /* Adjust spacing from the right */
+  margin-right: 20px;
 }

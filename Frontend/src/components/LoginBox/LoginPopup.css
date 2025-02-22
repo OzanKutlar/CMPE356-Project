@@ -45,17 +45,19 @@ input {
   overflow: hidden;
   transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
   visibility: hidden;
+  opacity: 0;
 }
 
 .password-field.active {
   max-height: 50px; /* Adjust based on your field size */
   visibility: visible;
+  opacity: 1;
 }
 
 .confirm-password-field {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  transition: max-height 0.35s ease-in-out, opacity 0.3s ease-in-out;
   opacity: 0;
 }
 

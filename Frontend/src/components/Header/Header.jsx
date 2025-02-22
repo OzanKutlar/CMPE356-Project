@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./Header.css"; 
 import Navbar from "../Navbar/Navbar";
-import LoginPopup from "../LoginBox/LoginPopup"; // Assuming you have a Login component
+import LoginPopup from "../LoginBox/LoginPopup";
 
 const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
