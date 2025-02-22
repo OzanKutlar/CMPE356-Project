@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./Header.css"; 
 import Navbar from "../Navbar/Navbar";
-//import Login from "./Login"; // Assuming you have a Login component
+import LoginPopup from "../LoginBox/LoginPopup"; // Assuming you have a Login component
 
 const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -26,6 +26,7 @@ const Header = () => {
 
       {/* Always render Navbar, but control its visibility */}
       <Navbar showNavbar={showNavbar} setShowNavbar={setShowNavbar} />
+      {showLogin && <LoginPopup />}
     </>
   );
 };

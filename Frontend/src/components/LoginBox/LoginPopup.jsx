@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './LoginPopup.css'; // for styles
+import Util from '../../Util.js'
 
 const LoginPopup = () => {
   const [username, setUsername] = useState('');
@@ -24,11 +25,14 @@ const LoginPopup = () => {
   }, [username]);
 
   // Simulate the backend request to check if the user exists
-  const checkUserExistence = async (username) => {
+  const checkUserExistence = async (usernameString) => {
+  	console.log("Trying to send backendrequest with user : " + usernameString)
     try {
       // Make the backend call here
-      const response = await fetch(`/api/check-user?username=${username}`);
-      const data = await response.json();
+      console.log("One");
+      const data = await Util.callBackend(`check-user`, {username: usernameString});
+      console.log("Two");
+      console.log("Recieved that the user " + data.exists);
 
       // Based on the response, show/hide password fields
       if (data.exists) {
@@ -43,15 +47,25 @@ const LoginPopup = () => {
     }
   };
 
+  // Submit login form (you can modify this to your needs)
+  const handleLoginClick = () => {
+    console.log('Login clicked');
+    checkUserExistence(username);
+    // Add your login logic here
+  };
+
   return (
     <div className={`popup ${fadeIn ? 'fade-in' : ''}`}>
       <div className="login-container">
+        <h2>Login</h2> {/* Heading for login */}
+        
         <input
           type="text"
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
+
         {showPasswordField && (
           <input
             type="password"
@@ -59,6 +73,7 @@ const LoginPopup = () => {
             className="password-field"
           />
         )}
+
         {showConfirmPasswordField && (
           <input
             type="password"
@@ -66,6 +81,11 @@ const LoginPopup = () => {
             className="password-field confirm-password-field"
           />
         )}
+
+        {/* Login button */}
+        <button className="login-button" onClick={handleLoginClick}>
+          Login
+        </button>
       </div>
     </div>
   );
