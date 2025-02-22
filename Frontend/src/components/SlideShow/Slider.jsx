@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Slider.css"; // Import styles
 
 const images = [
@@ -25,6 +25,13 @@ const Slider = () => {
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
+
+  // Auto change the image every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(nextSlide, 1500); // Change slide every 5 seconds
+
+    return () => clearInterval(interval); // Clean up the interval on component unmount
+  }, []);
 
   return (
     <div className="sld-slider">
