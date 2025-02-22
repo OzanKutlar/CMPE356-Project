@@ -44,12 +44,12 @@ input {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
-  opacity: 0;
+  visibility: hidden;
 }
 
 .password-field.active {
   max-height: 50px; /* Adjust based on your field size */
-  opacity: 1;
+  visibility: visible;
 }
 
 .confirm-password-field {
@@ -64,6 +64,7 @@ input {
   opacity: 1;
 }
 
+
 /* Styling for the login button */
 .login-button {
   padding: 10px 20px;
@@ -74,9 +75,10 @@ input {
   font-size: 16px;
   cursor: pointer;
   margin-top: 15px;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .login-button:hover {
   background-color: #0056b3;
 }
+
