@@ -4,7 +4,7 @@ import "./Navbar.css";
 const Navbar = ({ showNavbar, setShowNavbar }) => {
   return (
     <div className={`slidingBar ${showNavbar ? "open" : ""}`}>
-      <button className="nav-btn" onClick={() => setShowNavbar(!showNavbar)}>
+      <button className="nav-btnNav" onClick={() => setShowNavbar(!showNavbar)}>
           ☰
         </button>
       <nav className="mt-4">
