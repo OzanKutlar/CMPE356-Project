@@ -28,7 +28,7 @@ const Slider = () => {
 
   // Auto change the image every 5 seconds
   useEffect(() => {
-    const interval = setInterval(nextSlide, 1500); // Change slide every 5 seconds
+    const interval = setInterval(nextSlide, 3000); // Change slide every 5 seconds
 
     return () => clearInterval(interval); // Clean up the interval on component unmount
   }, []);
