@@ -8,7 +8,6 @@ import "./App.css"; // Import styles
 export default function App() {
   return (
     <div>
-      <Email />
       <Header />
       <Slider />
     </div>

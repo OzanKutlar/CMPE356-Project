@@ -1,12 +1,18 @@
 import React from "react";
-import "./Navbar.css";
 
 const Navbar = ({ showNavbar, setShowNavbar }) => {
   return (
-    <div className={`slidingBar ${showNavbar ? "open" : ""}`}>
-      <button className="nav-btnNav" onClick={() => setShowNavbar(!showNavbar)}>
-          ☰
-        </button>
+    <div
+      className={`fixed top-0 left-0 w-72 h-full bg-gray-800 text-white shadow-xl transform transition-transform duration-300 ease-in-out p-5 z-50 ${
+        showNavbar ? "translate-x-0" : "-translate-x-full"
+      }`}
+    >
+      <button
+        className="bg-red-500 text-white rounded-lg px-4 py-2 cursor-pointer"
+        onClick={() => setShowNavbar(!showNavbar)}
+      >
+        ☰
+      </button>
       <nav className="mt-4">
         <ul className="space-y-2">
           {[
@@ -21,7 +27,7 @@ const Navbar = ({ showNavbar, setShowNavbar }) => {
           ].map((item) => (
             <li
               key={item}
-              className="p-2 bg-gray-800 text-white rounded-md hover:bg-red-600 cursor-pointer"
+              className="bg-gray-700 p-2 rounded-md hover:bg-red-600 cursor-pointer"
             >
               {item}
             </li>
