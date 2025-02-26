@@ -4,7 +4,22 @@ class Util {
   static fakeData = {
     'check-user': { exists: true },
     'endpoint2': { data: 'Fake Data for Endpoint 2' },
-    "items": [{ItemName:"Test1", ItemPrice:12, ItemPhotoLink: "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg"}, {ItemName:"Test2", ItemPrice:12, ItemPhotoLink: "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg"}, {ItemName:"Test3", ItemPrice:12, ItemPhotoLink: "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg"}],
+    "items": [
+                {ItemName:"Minced Meat",
+                 ItemPrice:12, 
+                 ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg"},
+                {ItemName:"Cubed Meat", 
+                ItemPrice:12, 
+                ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg"},
+                {ItemName:"Entrecôte", 
+                ItemPrice:12, 
+                ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg"},
+                {ItemName:"Steak", 
+                ItemPrice:12, 
+                ItemPhotoLink: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg"},
+                {ItemName:"Chopped Meat", 
+                ItemPrice:12, 
+                ItemPhotoLink: "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500"}],
     "purchase": "success",
     "cart": [
                 {
@@ -32,7 +47,12 @@ class Util {
                   "ItemPrice": 24.99
                 }
               ],
-    "submitOrder": "success"
+    "submitOrder": "success",
+    "getRecipes": [{
+        "name": "Recipe1",   // This could be a string like 'Spaghetti carbonara' that represents the name of this recipe. It doesn’t necessarily have to match actual names because it just demonstrates how you might structure your response data in JavaScript, or if there is any other specific requirements on what should go here
+        "photo": "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg", // This could be a URL pointing towards the photo of this recipe. It doesn’t necessarily have to match actual image paths because it just demonstrates how you might structure your response data in JavaScript, or if there is any other specific requirements on what should go here
+        "data": "This is some very long and detailed description about Recipe1." // This could be a string that contains the full text of this recipe. It doesn’t necessarily have to match actual descriptions because it just demonstrates how you might structure your response data in JavaScript, or if there is any other specific requirements on what should go here
+    }]
   };
 
   // Navigation system

@@ -18,7 +18,7 @@ const Header = () => {
         </button>
         {/* Title */}
         <h1 className="text-3xl font-bold text-black text-center flex-grow">
-          E-Kasap
+          E-Butcher
         </h1>
         {/* Login Button */}
         <button

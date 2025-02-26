@@ -7,6 +7,7 @@ const LoginPopup = () => {
   const [showConfirmPasswordField, setShowConfirmPasswordField] = useState(false);
   const [fadeIn, setFadeIn] = useState(false);
   const [buttonText, setButtonText] = useState('Login');
+  const [buttonDest, setButtonDest] = useState('home');
   const [buttonColor, setButtonColor] = useState('#007bff');
   const [isHovered, setIsHovered] = useState(false);
 
@@ -39,6 +40,7 @@ const LoginPopup = () => {
         setShowConfirmPasswordField(false);
         setButtonText('Login');
         setButtonColor('#007bff');
+        setButtonDest(data.role);
       } else {
         setShowPasswordField(true);
         setShowConfirmPasswordField(true);
