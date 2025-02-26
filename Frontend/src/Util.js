@@ -5,7 +5,33 @@ class Util {
     'check-user': { exists: true },
     'endpoint2': { data: 'Fake Data for Endpoint 2' },
     "items": [{ItemName:"Test1", ItemPrice:12, ItemPhotoLink: "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg"}, {ItemName:"Test2", ItemPrice:12, ItemPhotoLink: "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg"}, {ItemName:"Test3", ItemPrice:12, ItemPhotoLink: "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg"}],
-    "purchase": "success"
+    "purchase": "success",
+    "cart": [
+                {
+                  "ItemCount": 2,
+                  "ItemName": "Grilled Chicken Breast",
+                  "ItemPhotoLink": "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg",
+                  "ItemPrice": 12.99
+                },
+                {
+                  "ItemCount": 1,
+                  "ItemName": "Premium Beef Burger",
+                  "ItemPhotoLink": "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg",
+                  "ItemPrice": 15.50
+                },
+                {
+                  "ItemCount": 3,
+                  "ItemName": "Fish Fillet",
+                  "ItemPhotoLink": "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg",
+                  "ItemPrice": 9.99
+                },
+                {
+                  "ItemCount": 1,
+                  "ItemName": "Lamb Chops",
+                  "ItemPhotoLink": "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg",
+                  "ItemPrice": 24.99
+                }
+              ]
   };
 
   // Navigation system

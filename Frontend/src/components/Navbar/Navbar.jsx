@@ -1,39 +1,129 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import Util from '../../Util.js';
 
 const Navbar = ({ showNavbar, setShowNavbar }) => {
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    if (showNavbar) {
+      fetchCartItems();
+    }
+  }, [showNavbar]);
+  
+  const fetchCartItems = async () => {
+    setLoading(true);
+    try {
+      const items = await Util.callBackend("cart");
+      setCartItems(items);
+    } catch (error) {
+      console.error("Error fetching cart items:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const updateItemCount = (index, increment) => {
+    const updatedItems = [...cartItems];
+    updatedItems[index].ItemCount = Math.max(0, updatedItems[index].ItemCount + increment);
+    setCartItems(updatedItems);
+  };
+  
+  const calculateTotalPrice = () => {
+    return cartItems.reduce((total, item) => {
+      return total + (item.ItemCount * item.ItemPrice);
+    }, 0).toFixed(2);
+  };
+  
+  const handleSubmitOrder = () => {
+    // Here you would add the logic to submit the order to the backend
+    console.log("Submitting order:", cartItems);
+    alert("Order submitted successfully!");
+    setShowNavbar(false);
+  };
+  
   return (
     <div
       className={`fixed top-0 left-0 w-72 h-full bg-gray-800 text-white shadow-xl transform transition-transform duration-300 ease-in-out p-5 z-50 ${
         showNavbar ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      <button
-        className="bg-red-500 text-white rounded-lg px-4 py-2 cursor-pointer"
-        onClick={() => setShowNavbar(!showNavbar)}
-      >
-        ☰
-      </button>
-      <nav className="mt-4">
-        <ul className="space-y-2">
-          {[
-            "Weekly Discounted Offer",
-            "Chicken",
-            "Beef",
-            "Mutton",
-            "Sea-food",
-            "Order",
-            "Contact Us",
-            "Logout",
-          ].map((item) => (
-            <li
-              key={item}
-              className="bg-gray-700 p-2 rounded-md hover:bg-red-600 cursor-pointer"
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-bold">Your Cart</h2>
+        <button
+          className="bg-red-500 text-white rounded-lg px-4 py-2 cursor-pointer"
+          onClick={() => setShowNavbar(!showNavbar)}
+        >
+          ☰
+        </button>
+      </div>
+      
+      <div className="mt-4 h-4/5 overflow-y-auto">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center h-full">
+            <div className="w-12 h-12 border-4 border-t-red-500 border-gray-200 rounded-full animate-spin"></div>
+            <p className="mt-2">Loading your cart...</p>
+          </div>
+        ) : cartItems.length === 0 ? (
+          <div className="text-center py-10">
+            <p>Your cart is empty</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {cartItems.map((item, index) => (
+              <div 
+                key={index} 
+                className="bg-gray-700 p-3 rounded-md hover:bg-gray-600 cursor-pointer"
+              >
+                <div className="flex flex-col items-center">
+                  <img 
+                    src={item.ItemPhotoLink} 
+                    alt={item.ItemName} 
+                    className="w-full h-24 object-cover rounded-md mb-2"
+                  />
+                  <h3 className="font-medium">{item.ItemName}</h3>
+                  <p className="text-sm text-gray-300">${item.ItemPrice.toFixed(2)} each</p>
+                  
+                  <div className="flex items-center mt-2 space-x-2">
+                    <button 
+                      className="bg-red-500 text-white px-3 py-1 rounded-md"
+                      onClick={() => updateItemCount(index, -1)}
+                    >
+                      -
+                    </button>
+                    <span className="mx-2">{item.ItemCount}</span>
+                    <button 
+                      className="bg-red-500 text-white px-3 py-1 rounded-md"
+                      onClick={() => updateItemCount(index, 1)}
+                    >
+                      +
+                    </button>
+                  </div>
+                  
+                  <p className="text-sm mt-2">
+                    Subtotal: ${(item.ItemCount * item.ItemPrice).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      
+      {!loading && cartItems.length > 0 && (
+        <div className="pt-4 mt-4 border-t border-gray-600">
+          <div className="flex justify-between mb-4">
+            <span className="font-bold">Total:</span>
+            <span className="font-bold">${calculateTotalPrice()}</span>
+          </div>
+          <button 
+            className="bg-red-500 text-white w-full rounded-lg py-3 font-bold hover:bg-red-600"
+            onClick={handleSubmitOrder}
+          >
+            Submit Order
+          </button>
+        </div>
+      )}
     </div>
   );
 };
