@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import Email from "./components/EmailPopup/Email";
-import Header from "./components/Header/Header";
-import Slider from "./components/SlideShow/Slider";
-import ItemPicker from "./components/ItemPicker/ItemPicker";
+import Email from "./components/HomePage/EmailPopup/Email";
+import Header from "./components/HomePage/Header/Header";
+import Slider from "./components/HomePage/SlideShow/Slider";
+import ItemPicker from "./components/HomePage/ItemPicker/ItemPicker";
 import Util from './Util';
 import "./App.css"; // Import styles
 

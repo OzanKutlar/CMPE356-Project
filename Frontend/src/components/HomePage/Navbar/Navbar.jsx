@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Util from '../../Util.js';
+import Util from '../../../Util.js';
 
 const Navbar = ({ showNavbar, setShowNavbar }) => {
   const [cartItems, setCartItems] = useState([]);
@@ -123,7 +123,7 @@ const Navbar = ({ showNavbar, setShowNavbar }) => {
       </div>
       
       {!loading && cartItems.length > 0 && (
-        <div className="pt-4 mt-4 border-t border-gray-600">
+        <div className="pt-4 mt-0 border-t border-gray-600">
           <div className="flex justify-between mb-4">
             <span className="font-bold">Total:</span>
             <span className="font-bold">${calculateTotalPrice()}</span>

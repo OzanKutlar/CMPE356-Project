@@ -75,7 +75,7 @@ class Util {
         }
         console.log(`Simulated response: ${JSON.stringify(Util.fakeData[endpoint])}`);
         return new Promise((resolve) => {
-          setTimeout(() => resolve(Util.fakeData[endpoint]), 1000); 
+          setTimeout(() => resolve(Util.fakeData[endpoint]), 100); 
         });
       } else {
         return Promise.reject({ error: 'Fake endpoint not found' });
