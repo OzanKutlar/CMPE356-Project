@@ -8,6 +8,24 @@ class Util {
     "purchase": "success"
   };
 
+  // Navigation system
+  static currentPage = 'home';
+  static pageChangeListeners = [];
+
+  static navigateTo(page) {
+    this.currentPage = page;
+    // Notify all listeners
+    this.pageChangeListeners.forEach(listener => listener(page));
+  }
+
+  static addPageChangeListener(callback) {
+    this.pageChangeListeners.push(callback);
+    return () => {
+      // Return function to remove listener
+      this.pageChangeListeners = this.pageChangeListeners.filter(cb => cb !== callback);
+    };
+  }
+
   static checkUser(username){
     if(username == "admin"){
       return {exists: true, role: "admin"};
@@ -20,8 +38,7 @@ class Util {
     }
     return {exists: false}
   }
-
-
+  
   static async callBackend(endpoint, headers = {}) {
     console.log(`Calling backend endpoint: ${endpoint}`);
     if (Util.fakeIt) {
@@ -37,7 +54,6 @@ class Util {
         return Promise.reject({ error: 'Fake endpoint not found' });
       }
     }
-
     const url = `${Util.backendIp}${endpoint}`;
     try {
       const response = await fetch(url, {
@@ -55,7 +71,6 @@ class Util {
       return { error: error.message };
     }
   }
-
 }
 
 export default Util;

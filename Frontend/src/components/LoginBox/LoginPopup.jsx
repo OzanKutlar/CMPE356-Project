@@ -52,8 +52,7 @@ const LoginPopup = () => {
 
   const handleLoginClick = () => {
     console.log(`${buttonText} clicked`);
-    checkUserExistence(username);
-    // Add your login or registration logic here
+    Util.navigateTo("admin");
   };
 
   return (
