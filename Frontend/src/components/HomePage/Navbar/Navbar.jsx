@@ -4,6 +4,7 @@ import Util from '../../Util.js';
 const Navbar = ({ showNavbar, setShowNavbar }) => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   
   useEffect(() => {
     if (showNavbar) {
@@ -35,11 +36,22 @@ const Navbar = ({ showNavbar, setShowNavbar }) => {
     }, 0).toFixed(2);
   };
   
-  const handleSubmitOrder = () => {
-    // Here you would add the logic to submit the order to the backend
-    console.log("Submitting order:", cartItems);
-    alert("Order submitted successfully!");
-    setShowNavbar(false);
+  const handleSubmitOrder = async () => {
+    setSubmitting(true);
+    try {
+      const response = await Util.callBackend("submitOrder", { items: cartItems });
+      if (response === 'success') {
+        setShowNavbar(false);
+        Util.navigateTo("cart");
+      } else {
+        alert("There was an issue with your order. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting order:", error);
+      alert("Failed to submit order. Please try again later.");
+    } finally {
+      setSubmitting(false);
+    }
   };
   
   return (
@@ -117,10 +129,13 @@ const Navbar = ({ showNavbar, setShowNavbar }) => {
             <span className="font-bold">${calculateTotalPrice()}</span>
           </div>
           <button 
-            className="bg-red-500 text-white w-full rounded-lg py-3 font-bold hover:bg-red-600"
+            className={`${
+              submitting ? 'bg-gray-500 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'
+            } text-white w-4/5 mx-auto rounded-lg py-2 font-bold block text-sm`}
             onClick={handleSubmitOrder}
+            disabled={submitting}
           >
-            Submit Order
+            {submitting ? 'Processing...' : 'Submit Order'}
           </button>
         </div>
       )}

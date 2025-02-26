@@ -38,7 +38,13 @@ export default function App() {
           </div>
         );
       default:
-        return <div>Page not found</div>;
+        return (
+          <div>
+          <h1>Page {currentPage} not found</h1>
+          <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+          </div>
+
+          );
     }
   };
   

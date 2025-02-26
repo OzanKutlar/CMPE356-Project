@@ -55,12 +55,12 @@ const ItemPicker = () => {
       await Util.callBackend("purchase", headers);
       setPurchaseMessage({
         type: "success",
-        text: `Successfully purchased ${quantity} ${quantity === 1 ? 'unit' : 'units'} of ${selectedItem.ItemName}`
+        text: `Added ${quantity} ${quantity === 1 ? 'kg' : 'kgs'} of ${selectedItem.ItemName} to cart.`
       });
     } catch (err) {
       setPurchaseMessage({
         type: "error",
-        text: "Failed to complete purchase. Please try again."
+        text: "Failed to add your items. Please try again."
       });
     } finally {
       setPurchasing(false);
@@ -173,7 +173,7 @@ const ItemPicker = () => {
                     purchasing ? "opacity-70 cursor-not-allowed" : ""
                   }`}
                 >
-                  {purchasing ? "Processing..." : "Purchase Now"}
+                  {purchasing ? "Processing..." : "Add to cart"}
                 </button>
               </div>
             </div>

@@ -31,7 +31,8 @@ class Util {
                   "ItemPhotoLink": "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg",
                   "ItemPrice": 24.99
                 }
-              ]
+              ],
+    "submitOrder": "success"
   };
 
   // Navigation system
