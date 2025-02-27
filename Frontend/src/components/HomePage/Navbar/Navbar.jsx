@@ -39,7 +39,7 @@ const Navbar = ({ showNavbar, setShowNavbar }) => {
   const handleSubmitOrder = async () => {
     setSubmitting(true);
     try {
-      const response = await Util.callBackend("submitOrder", { items: cartItems });
+      const response = await Util.callBackend("saveCart", { items: cartItems });
       if (response === 'success') {
         setShowNavbar(false);
         Util.navigateTo("cart");

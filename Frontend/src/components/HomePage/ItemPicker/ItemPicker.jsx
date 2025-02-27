@@ -52,7 +52,7 @@ const ItemPicker = () => {
         amount: quantity
       };
       
-      await Util.callBackend("purchase", headers);
+      await Util.callBackend("addToCart", headers);
       setPurchaseMessage({
         type: "success",
         text: `Added ${quantity} ${quantity === 1 ? 'kg' : 'kgs'} of ${selectedItem.ItemName} to cart.`

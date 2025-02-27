@@ -20,7 +20,6 @@ class Util {
                 {ItemName:"Chopped Meat", 
                 ItemPrice:12, 
                 ItemPhotoLink: "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500"}],
-    "purchase": "success",
     "cart": [
                 {
                   "ItemCount": 2,
@@ -48,6 +47,8 @@ class Util {
                 }
               ],
     "submitOrder": "success",
+      "addToCart": "success",
+      "saveCart": "success",
     "getRecipes": [{
         "name": "Recipe1",   // This could be a string like 'Spaghetti carbonara' that represents the name of this recipe. It doesn’t necessarily have to match actual names because it just demonstrates how you might structure your response data in JavaScript, or if there is any other specific requirements on what should go here
         "photo": "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg", // This could be a URL pointing towards the photo of this recipe. It doesn’t necessarily have to match actual image paths because it just demonstrates how you might structure your response data in JavaScript, or if there is any other specific requirements on what should go here
