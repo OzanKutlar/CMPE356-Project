@@ -217,7 +217,7 @@ const CartItemsLarge = () => {
                     {submitting ? 'Processing...' : 'Place Order'}
                   </button>
                   <button
-                      onClick={() => Util.navigateTo("items")}
+                      onClick={() => Util.navigateTo("home")}
                       className="w-full mt-4 bg-gray-200 text-gray-800 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors"
                   >
                     Continue Shopping

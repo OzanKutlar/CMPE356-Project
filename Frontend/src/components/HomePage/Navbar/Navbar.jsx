@@ -11,6 +11,9 @@ const Navbar = ({ showNavbar, setShowNavbar }) => {
       fetchCartItems();
     }
   }, [showNavbar]);
+
+  const countToKG = 50;
+  const multiplier = 1000 / countToKG;
   
   const fetchCartItems = async () => {
     setLoading(true);
@@ -69,56 +72,60 @@ const Navbar = ({ showNavbar, setShowNavbar }) => {
           ☰
         </button>
       </div>
-      
+
       <div className="mt-4 h-4/5 overflow-y-auto">
         {loading ? (
-          <div className="flex flex-col items-center justify-center h-full">
-            <div className="w-12 h-12 border-4 border-t-red-500 border-gray-200 rounded-full animate-spin"></div>
-            <p className="mt-2">Loading your cart...</p>
-          </div>
+            <div className="flex flex-col items-center justify-center h-full">
+              <div className="w-12 h-12 border-4 border-t-red-500 border-gray-200 rounded-full animate-spin"></div>
+              <p className="mt-2">Loading your cart...</p>
+            </div>
         ) : cartItems.length === 0 ? (
-          <div className="text-center py-10">
-            <p>Your cart is empty</p>
-          </div>
+            <div className="text-center py-10">
+              <p>Your cart is empty</p>
+            </div>
         ) : (
-          <div className="space-y-4">
-            {cartItems.map((item, index) => (
-              <div 
-                key={index} 
-                className="bg-gray-700 p-3 rounded-md hover:bg-gray-600 cursor-pointer"
-              >
-                <div className="flex flex-col items-center">
-                  <img 
-                    src={item.ItemPhotoLink} 
-                    alt={item.ItemName} 
-                    className="w-full h-24 object-cover rounded-md mb-2"
-                  />
-                  <h3 className="font-medium">{item.ItemName}</h3>
-                  <p className="text-sm text-gray-300">${item.ItemPrice.toFixed(2)} each</p>
-                  
-                  <div className="flex items-center mt-2 space-x-2">
-                    <button 
-                      className="bg-red-500 text-white px-3 py-1 rounded-md"
-                      onClick={() => updateItemCount(index, -1)}
-                    >
-                      -
-                    </button>
-                    <span className="mx-2">{item.ItemCount}</span>
-                    <button 
-                      className="bg-red-500 text-white px-3 py-1 rounded-md"
-                      onClick={() => updateItemCount(index, 1)}
-                    >
-                      +
-                    </button>
+            <div className="space-y-4">
+              {cartItems.map((item, index) => (
+                  <div
+                      key={index}
+                      className="bg-gray-700 p-3 rounded-md hover:bg-gray-600 cursor-pointer"
+                  >
+                    <div className="flex flex-col items-center">
+                      <img
+                          src={item.ItemPhotoLink}
+                          alt={item.ItemName}
+                          className="w-full h-24 object-cover rounded-md mb-2"
+                      />
+                      <h3 className="font-medium">{item.ItemName}</h3>
+                      <p className="text-sm text-gray-300">${item.ItemPrice.toFixed(2)} per kg</p>
+
+                      <div className="flex items-center mt-2 space-x-2">
+                        <button
+                            className="bg-red-500 text-white px-3 py-1 rounded-md"
+                            onClick={() => updateItemCount(index, -1)}
+                        >
+                          -
+                        </button>
+                        <span className="mx-2">
+                      {item.ItemCount * countToKG < 1000
+                          ? `${item.ItemCount * countToKG}g`
+                          : `${(item.ItemCount * countToKG / 1000).toFixed(2)}kg`}
+                    </span>
+                        <button
+                            className="bg-red-500 text-white px-3 py-1 rounded-md"
+                            onClick={() => updateItemCount(index, 1)}
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      <p className="text-sm mt-2">
+                        Subtotal: ${((item.ItemCount / multiplier) * item.ItemPrice).toFixed(2)}
+                      </p>
+                    </div>
                   </div>
-                  
-                  <p className="text-sm mt-2">
-                    Subtotal: ${(item.ItemCount * item.ItemPrice).toFixed(2)}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
         )}
       </div>
       

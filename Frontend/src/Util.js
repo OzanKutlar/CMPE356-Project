@@ -75,13 +75,13 @@ class Util {
   }
 
   static checkUser(username){
-    if(username == "admin"){
+    if(username === "admin"){
       return {exists: true, role: "admin"};
     }
-    if(username == "clerk"){
+    if(username === "clerk"){
       return {exists: true, role: "clerk"};
     }
-    if(username == "delivery"){
+    if(username === "delivery"){
       return {exists: true, role: "delivery"};
     }
     return {exists: false}
@@ -91,7 +91,7 @@ class Util {
     console.log(`Calling backend endpoint: ${endpoint}`);
     if (Util.fakeIt) {
       if (Util.fakeData[endpoint]) {
-        if(endpoint == "check-user"){
+        if(endpoint === "check-user"){
             Util.fakeData[endpoint] = Util.checkUser(headers.username);
         }
         console.log(`Simulated response: ${JSON.stringify(Util.fakeData[endpoint])}`);
