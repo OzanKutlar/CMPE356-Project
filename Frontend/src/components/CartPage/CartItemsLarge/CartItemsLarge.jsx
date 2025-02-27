@@ -170,42 +170,44 @@ const CartItemsLarge = () => {
                                   <h3 className="text-xl font-semibold">{item.ItemName}</h3>
                                   <p className="text-gray-600">${item.ItemPrice.toFixed(2)} per 1kg</p>
 
-                                  <div className="flex items-center mt-4 space-x-4">
+                                  <div className="flex flex-col sm:flex-row justify-between items-center mt-4 space-y-4 sm:space-y-0">
                                       <button
-                                          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
+                                          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors w-full sm:w-auto"
                                           onClick={() => updateItemCount(index, -20)}
                                       >
                                           -1kg
                                       </button>
                                       <button
-                                          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
+                                          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors w-full sm:w-auto"
                                           onClick={() => updateItemCount(index, -2)}
                                       >
                                           -100g
                                       </button>
                                       <button
-                                          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
+                                          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors w-full sm:w-auto"
                                           onClick={() => updateItemCount(index, -1)}
                                       >
                                           -50g
                                       </button>
-                                      <span className="text-xl font-medium">{item.ItemCount * countToKG < 1000
-                                          ? `${item.ItemCount * countToKG}g`
-                                          : `${(item.ItemCount * countToKG / 1000).toFixed(2)}kg`}</span>
+                                      <span className="text-xl font-medium w-full sm:w-auto text-center">
+                                            {item.ItemCount * countToKG < 1000
+                                                ? `${item.ItemCount * countToKG}g`
+                                                : `${(item.ItemCount * countToKG / 1000).toFixed(2)}kg`}
+                                        </span>
                                       <button
-                                          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
+                                          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors w-full sm:w-auto"
                                           onClick={() => updateItemCount(index, 1)}
                                       >
                                           +50g
                                       </button>
                                       <button
-                                          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
+                                          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors w-full sm:w-auto"
                                           onClick={() => updateItemCount(index, 2)}
                                       >
                                           +100g
                                       </button>
                                       <button
-                                          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
+                                          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors w-full sm:w-auto"
                                           onClick={() => updateItemCount(index, 20)}
                                       >
                                           +1kg

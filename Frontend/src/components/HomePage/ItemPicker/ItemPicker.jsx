@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Util from '../../../Util.js';
+import useMobileDetection from "../../../mobileDetection.js";
 
 const ItemPicker = () => {
+  const isMobile = useMobileDetection();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -138,43 +140,43 @@ const ItemPicker = () => {
 
                   {/* Quantity selector */}
                   <div className="mb-6 text-center">
-                    <div className="flex items-center justify-center">
+                    <div className={`flex ${isMobile ? "flex-col" : "flex-row"} items-center justify-center`}>
                       <button
                           onClick={() => setQuantity((prev) => Math.max(1, prev - multiplier))}
-                          className="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors"
+                          className="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                       >
                         -1kg
                       </button>
                       <button
                           onClick={() => setQuantity((prev) => Math.max(1, prev - (multiplier / 10)))}
-                          className="ml-2 px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors"
+                          className="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                       >
                         -100g
                       </button>
                       <button
                           onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                          className="ml-2 px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors"
+                          className="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                       >
                         -{countToKG}g
                       </button>
-                      <span className="mx-4 text-lg font-medium">{quantity * countToKG < 1000
+                      <span className="mx-4 text-lg font-medium mb-2">{quantity * countToKG < 1000
                           ? `${quantity * countToKG}g`
                           : `${(quantity * countToKG / 1000).toFixed(2)}kg`}</span>
                       <button
                           onClick={() => setQuantity((prev) => prev + 1)}
-                          className="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors"
+                          className="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                       >
                         +{countToKG}g
                       </button>
                       <button
                           onClick={() => setQuantity((prev) => prev + (multiplier / 10))}
-                          className="ml-2 px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors"
+                          className="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                       >
                         +100g
                       </button>
                       <button
                           onClick={() => setQuantity((prev) => prev + (multiplier))}
-                          className="ml-2 px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors"
+                          className="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors"
                       >
                         +1kg
                       </button>
