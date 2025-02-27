@@ -26,7 +26,7 @@ const OrderForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg">
+        <form className="p-0">
             <div className="mb-4">
                 <label htmlFor="cardNumber" className="block text-gray-700 font-medium mb-2">
                     Card Number:
@@ -38,7 +38,7 @@ const OrderForm = () => {
                     value={formData.cardNumber}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-red-300"
+                    className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
                 />
             </div>
             <div className="mb-4">
@@ -52,7 +52,7 @@ const OrderForm = () => {
                     value={formData.expiryDate}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-red-300"
+                    className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
                 />
             </div>
             <div className="mb-4">
@@ -66,7 +66,7 @@ const OrderForm = () => {
                     value={formData.cvv}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-red-300"
+                    className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
                 />
             </div>
             <div className="mb-4">
@@ -79,15 +79,9 @@ const OrderForm = () => {
                     value={formData.address}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-red-300"
+                    className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
                 ></textarea>
             </div>
-            <button
-                type="submit"
-                className="w-full px-4 py-2 bg-red-600 text-pink-100 font-semibold rounded-lg hover:bg-red-700 focus:outline-none focus:ring focus:ring-red-300"
-            >
-                Submit Order
-            </button>
         </form>
     );
 };
