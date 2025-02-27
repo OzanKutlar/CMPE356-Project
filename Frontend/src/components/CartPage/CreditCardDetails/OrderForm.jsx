@@ -1,17 +1,12 @@
-import React, {useState} from 'react';
+import React from 'react';
 
-const OrderForm = () => {
-    const [formData, setFormData] = useState({
-        cardNumber: '',
-        expiryDate: '',
-        cvv: '',
-        address: ''
-    });
-
+const OrderForm = ({ formData, onFormDataChange }) => {
     const handleChange = (e) => {
         const {name, value} = e.target;
-        setFormData((prevState) => ({...prevState, [name]: value}));
+        const updatedFormData = {...formData, [name]: value};
+        onFormDataChange(updatedFormData);
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();

@@ -8,7 +8,20 @@ const CartItemsLarge = () => {
     const [submitting, setSubmitting] = useState(false);
     const [message, setMessage] = useState(null);
 
-    useEffect(() => {
+  const [formData, setFormData] = useState({
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+    address: ''
+  });
+
+  // Add this function to handle form data updates
+  const handleFormDataChange = (newFormData) => {
+    setFormData(newFormData);
+  };
+
+
+  useEffect(() => {
         fetchCartItems();
     }, []);
 
@@ -46,42 +59,63 @@ const CartItemsLarge = () => {
         }, 0).toFixed(2);
     };
 
-    const handleSubmitOrder = async () => {
-        if (cartItems.length === 0) {
-            setMessage({
-                type: "error",
-                text: "Your cart is empty"
-            });
-            return;
-        }
+  const handleSubmitOrder = async () => {
+    if (cartItems.length === 0) {
+      setMessage({
+        type: "error",
+        text: "Your cart is empty"
+      });
+      return;
+    }
 
-        setSubmitting(true);
-        try {
-            const response = await Util.callBackend("submitOrder", {items: cartItems});
-            if (response === 'success') {
-                setMessage({
-                    type: "success",
-                    text: "Order submitted successfully!"
-                });
-                setCartItems([]);
-            } else {
-                setMessage({
-                    type: "error",
-                    text: "There was an issue with your order. Please try again."
-                });
-            }
-        } catch (error) {
-            console.error("Error submitting order:", error);
-            setMessage({
-                type: "error",
-                text: "Failed to submit order. Please try again later."
-            });
-        } finally {
-            setSubmitting(false);
-        }
-    };
+    // Validate form data
+    if (!formData.cardNumber || !formData.expiryDate || !formData.cvv || !formData.address) {
+      setMessage({
+        type: "error",
+        text: "Please fill in all payment details"
+      });
+      return;
+    }
 
-    if (loading) {
+    setSubmitting(true);
+    try {
+      const response = await Util.callBackend("submitOrder", {
+        items: cartItems,
+        paymentDetails: formData
+      });
+
+      if (response === 'success') {
+        setMessage({
+          type: "success",
+          text: "Order submitted successfully!"
+        });
+        setCartItems([]);
+        // Reset form data
+        setFormData({
+          cardNumber: '',
+          expiryDate: '',
+          cvv: '',
+          address: ''
+        });
+      } else {
+        setMessage({
+          type: "error",
+          text: "There was an issue with your order. Please try again."
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting order:", error);
+      setMessage({
+        type: "error",
+        text: "Failed to submit order. Please try again later."
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+
+  if (loading) {
         return (
             <div className="flex items-center justify-center h-screen">
                 <div className="w-16 h-16 border-4 border-t-red-500 border-gray-200 rounded-full animate-spin"></div>
@@ -158,7 +192,10 @@ const CartItemsLarge = () => {
 
               <div>
                 <div className="bg-white rounded-lg shadow-md p-6 h-fit">
-                  <OrderForm/>
+                  <OrderForm
+                      formData={formData}
+                      onFormDataChange={handleFormDataChange}
+                  />
                   <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
                   <div className="space-y-2 mb-4">
                     <div className="flex justify-between text-lg">
