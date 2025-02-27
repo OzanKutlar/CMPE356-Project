@@ -92,7 +92,7 @@ const ButcherItemSelector = () => {
                             <p className="text-green-800">
                                 <span className="text-green-500">$</span>{item.pricePerKg}
                             </p>
-                            <p className="text-gray-800">{item.stock}</p>
+                            <p className="text-gray-800">{item.stock + ' left stock'}</p>
                         </div>
                     </div>
                 ))}

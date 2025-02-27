@@ -57,6 +57,42 @@ class Util {
           }
       ],
     "submitOrder": "success",
+      "getStock": [
+          {
+              ItemName: "Minced Meat",
+              ItemPrice: 59.99,
+              ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
+              currentStock: 12,
+              startStock: 30
+          },
+          {
+              ItemName: "Cubed Meat",
+              ItemPrice: 69.99,
+              ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
+              currentStock: 10,
+              startStock: 24
+          },
+          {
+              ItemName: "Entrecôte",
+              ItemPrice: 120,
+              ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
+              currentStock: 0,
+              startStock: 60
+          },
+          {
+              ItemName: "Steak",
+              ItemPrice: 99.99,
+              ItemPhotoLink: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
+              currentStock: 30,
+              startStock: 30
+          },
+          {
+              ItemName: "Chopped Meat",
+              ItemPrice: 66.99,
+              ItemPhotoLink: "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
+              currentStock: 25,
+              startStock: 50
+          }],
       "addToCart": "success",
       "saveCart": "success",
       "getRecipes": [

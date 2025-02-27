@@ -3,10 +3,10 @@ import Util from '../../Util.js';
 
 const NavbarButcher = ({ currentPage }) => {
     const navigationItems = [
-        { name: 'Home', path: 'home' },
-        { name: 'Shop', path: 'shop' },
-        { name: 'Cart', path: 'cart' },
-        { name: 'Account', path: 'account' }
+        { name: 'Home', path: 'butcher' },
+        { name: 'Add Items', path: 'butcher/add' },
+        { name: 'Sales', path: 'butcher/sales' },
+        { name: 'Reviews', path: 'butcher/reviews' }
     ];
 
     const handleNavigation = (path) => {
@@ -29,10 +29,8 @@ const NavbarButcher = ({ currentPage }) => {
                                 key={item.path}
                                 onClick={() => handleNavigation(item.path)}
                                 className={`px-3 py-2 rounded-md text-sm font-medium
-                  ${currentPage === item.path
-                                    ? 'bg-gray-900 text-white'
-                                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                                } transition-colors duration-200`}
+                                ${currentPage === item.path ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'} 
+                                transition-colors duration-200`}
                             >
                                 {item.name}
                             </button>

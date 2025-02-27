@@ -9,7 +9,8 @@ import Util from './Util';
 import "./App.css";
 import CartItemsLarge from "./components/CartPage/CartItemsLarge/CartItemsLarge.jsx";
 import ButcherItemSelector from "./components/ButcherPage/ButcherItem.jsx";
-import NavbarButcher from "./components/ButcherPage/NavbarButcher.jsx"; // Import styles
+import NavbarButcher from "./components/ButcherPage/NavbarButcher.jsx";
+import ButcherItemPicker from "./components/ButcherPage/ButcherItemPicker.jsx"; // Import styles
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState(Util.currentPage);
@@ -37,7 +38,7 @@ export default function App() {
   
   const renderPage = () => {
     switch (currentPage) {
-      case "home":
+      case "home": // Home Page
         return (
           <div>
             <Header />
@@ -46,17 +47,26 @@ export default function App() {
             <button onClick={() => Util.navigateTo("admin")}>Go to Admin Panel</button>
           </div>
         );
-      case "admin":
+      case "admin": // Admin Page
         return (
           <div>
             <h1>Admin Page</h1>
             <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
           </div>
         );
-        case "butcher":
+        case "butcher": // Butcher Main page
             return (
                 <div>
                     <h1>Butcher Page</h1>
+                    <NavbarButcher />
+                    <ButcherItemPicker />
+                    <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+                </div>
+            );
+        case "butcher/add": // Butcher Add Page
+            return (
+                <div>
+                    <h1>Butcher Add Page</h1>
                     <NavbarButcher />
                     <ButcherItemSelector />
                     <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
