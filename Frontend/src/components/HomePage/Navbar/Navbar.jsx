@@ -14,6 +14,7 @@ const Navbar = ({ showNavbar, setShowNavbar }) => {
 
   const countToKG = 50;
   const multiplier = 1000 / countToKG;
+  const buttonAdd = (100 / countToKG);
   
   const fetchCartItems = async () => {
     setLoading(true);
@@ -102,7 +103,7 @@ const Navbar = ({ showNavbar, setShowNavbar }) => {
                       <div className="flex items-center mt-2 space-x-2">
                         <button
                             className="bg-red-500 text-white px-3 py-1 rounded-md"
-                            onClick={() => updateItemCount(index, -1)}
+                            onClick={() => updateItemCount(index, -buttonAdd)}
                         >
                           -
                         </button>
@@ -113,7 +114,7 @@ const Navbar = ({ showNavbar, setShowNavbar }) => {
                     </span>
                         <button
                             className="bg-red-500 text-white px-3 py-1 rounded-md"
-                            onClick={() => updateItemCount(index, 1)}
+                            onClick={() => updateItemCount(index, buttonAdd)}
                         >
                           +
                         </button>
