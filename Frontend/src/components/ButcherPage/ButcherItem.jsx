@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import Util from '../../../Util.js';
+import React, {useState} from 'react';
+import Util from "../../Util.js";
 
 const ButcherItemSelector = () => {
     const [items, setItems] = useState([]);
-    const [formData, setFormData] = useState({ name: '', photoLink: '', pricePerKg: '', budget: '' });
+    const [formData, setFormData] = useState({name: '', photoLink: '', pricePerKg: '', stock: ''});
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevState) => ({ ...prevState, [name]: value }));
+        const {name, value} = e.target;
+        setFormData((prevState) => ({...prevState, [name]: value}));
     };
 
     const addItem = () => {
-        if (!formData.name || !formData.photoLink || !formData.pricePerKg || !formData.budget) return;
+        if (!formData.name || !formData.photoLink || !formData.pricePerKg || !formData.stock) return;
         setItems((prevItems) => [...prevItems, formData]);
-        setFormData({ name: '', photoLink: '', pricePerKg: '', budget: '' });
+        setFormData({name: '', photoLink: '', pricePerKg: '', stock: ''});
     };
 
     const handleSubmit = async () => {
@@ -27,10 +27,9 @@ const ButcherItemSelector = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8 flex">
-            <div className="w-1/2 pr-4">
-                <h1 className="text-2xl font-bold mb-6 text-center">Add Your Items</h1>
-
+        <div className="container mx-auto px-6 py-10 flex flex-col md:flex-row-reverse gap-8">
+            <div className="w-full md:w-1/3">
+                <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">Add Item</h1>
                 <div className="mb-4">
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name:</label>
                     <input
@@ -39,10 +38,9 @@ const ButcherItemSelector = () => {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="mt-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
                     />
                 </div>
-
                 <div className="mb-4">
                     <label htmlFor="photoLink" className="block text-sm font-medium text-gray-700">Photo Link:</label>
                     <input
@@ -51,54 +49,55 @@ const ButcherItemSelector = () => {
                         name="photoLink"
                         value={formData.photoLink}
                         onChange={handleChange}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="mt-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
                     />
                 </div>
-
                 <div className="mb-4">
-                    <label htmlFor="pricePerKg" className="block text-sm font-medium text-gray-700">Price per Kg:</label>
+                    <label htmlFor="pricePerKg" className="block text-sm font-medium text-gray-700">Price per
+                        Kg:</label>
                     <input
                         type="text"
                         id="pricePerKg"
                         name="pricePerKg"
                         value={formData.pricePerKg}
                         onChange={handleChange}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="mt-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
                     />
                 </div>
-
                 <div className="mb-4">
-                    <label htmlFor="budget" className="block text-sm font-medium text-gray-700">Budget:</label>
+                    <label htmlFor="stock" className="block text-sm font-medium text-gray-700">stock:</label>
                     <input
                         type="text"
-                        id="budget"
-                        name="budget"
-                        value={formData.budget}
+                        id="stock"
+                        name="stock"
+                        value={formData.stock}
                         onChange={handleChange}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="mt-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
                     />
                 </div>
-
-                <button onClick={addItem} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <button onClick={addItem}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Add Item
                 </button>
             </div>
 
-            <div className="w-1/2 pl-4 border-l-2 border-gray-300">
-                <h2 className="text-xl font-bold mb-6 text-center">Added Items</h2>
-
+            <div className="w-full md:w-2/3">
+                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Added Items</h2>
                 {items.map((item, index) => (
-                    <div key={index} className="border p-4 mb-4 shadow-sm rounded bg-gray-100 flex items-center justify-between">
-                        <div>
-                            <p><strong>Name:</strong> {item.name}</p>
-                            <img src={item.photoLink} alt={item.name} className="mt-2 w-32 h-auto" />
-                            <p><strong>Price per Kg:</strong> ${item.pricePerKg}</p>
-                            <p><strong>Budget:</strong> ${item.budget}</p>
+                    <div key={index}
+                         className="border border-gray-300 p-4 mb-4 shadow-md rounded bg-white flex flex-col items-center">
+                        <img src={item.photoLink} alt={item.name} className="w-48 h-auto rounded-md mb-4"/>
+                        <div className="text-center">
+                            <p className="text-gray-800 font-bold text-lg">{item.name}</p>
+                            <p className="text-green-800">
+                                <span className="text-green-500">$</span>{item.pricePerKg}
+                            </p>
+                            <p className="text-gray-800">{item.stock}</p>
                         </div>
                     </div>
                 ))}
-
-                <button onClick={handleSubmit} className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full">
+                <button onClick={handleSubmit}
+                        className="mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full">
                     Submit
                 </button>
             </div>
