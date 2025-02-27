@@ -54,7 +54,7 @@ const LoginPopup = () => {
 
   const handleLoginClick = () => {
     console.log(`${buttonText} clicked`);
-    Util.navigateTo("admin");
+    Util.navigateTo(buttonDest);
   };
 
   return (
