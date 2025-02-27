@@ -5,8 +5,11 @@ import Header from "./components/HomePage/Header/Header";
 import Slider from "./components/HomePage/SlideShow/Slider";
 import ItemPicker from "./components/HomePage/ItemPicker/ItemPicker";
 import Recipelist from "./components/RecipePage/Recipelist/Recipelist";
+import Credit from "./components/CartPage/CreditCardDetails/OrderForm.jsx"
+import Cart from "./components/CartPage/CartItemsLarge/CartItemsLarge.jsx"
 import Util from './Util';
-import "./App.css"; // Import styles
+import "./App.css";
+import CartItemsLarge from "./components/CartPage/CartItemsLarge/CartItemsLarge.jsx"; // Import styles
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState(Util.currentPage);
@@ -45,15 +48,23 @@ export default function App() {
         );
       case "admin":
         return (
-          <div className="second-page">
+          <div>
             <h1>Admin Page</h1>
             <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
           </div>
         );
       case "recipe":
           return (
-              <div className="second-page">
+              <div>
                   <Recipelist />
+                  <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+              </div>
+          );
+      case "cart":
+          return (
+              <div>
+                  <CartItemsLarge />
+                  <Credit />
                   <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
               </div>
           );
