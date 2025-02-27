@@ -126,8 +126,8 @@ const ItemPicker = () => {
         {/* Modal for selected item */}
         {selectedItem && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-              <div className="bg-white rounded-lg max-w-lg w-full overflow-hidden">
-                <div className="h-64 overflow-hidden">
+              <div className={`bg-white rounded-lg w-full overflow-hidden ${isMobile ? "max-w-xs" : "max-w-lg"}`}>
+                <div className={`overflow-hidden ${isMobile ? "h-40" : "h-64"}`}>
                   <img
                       src={selectedItem.ItemPhotoLink || "/api/placeholder/400/300"}
                       alt={selectedItem.ItemName}
@@ -135,27 +135,29 @@ const ItemPicker = () => {
                   />
                 </div>
                 <div className="p-6">
-                  <h2 className="text-2xl font-bold mb-2 text-center">{selectedItem.ItemName}</h2>
-                  <p className="text-green-700 text-xl font-semibold mb-4 text-center">${selectedItem.ItemPrice.toFixed(2)} per kg</p>
+                  <h2 className={`text-center ${isMobile ? "text-xl mb-2" : "text-2xl font-bold mb-2"}`}>{selectedItem.ItemName}</h2>
+                  <p className={`text-center ${isMobile ? "text-green-700 font-medium text-lg mb-3" : "text-green-700 text-xl font-semibold mb-4"}`}>${selectedItem.ItemPrice.toFixed(2)} per
+                    kg</p>
 
                   {/* Quantity selector */}
                   <div className="mb-6 text-center">
                     <div className={`flex ${isMobile ? "flex-col" : "flex-row"} items-center justify-center`}>
+                      {/* Buttons with adjustments for spacing */}
                       <button
                           onClick={() => setQuantity((prev) => Math.max(1, prev - multiplier))}
-                          className="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
+                          className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                       >
                         -1kg
                       </button>
                       <button
                           onClick={() => setQuantity((prev) => Math.max(1, prev - (multiplier / 10)))}
-                          className="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
+                          className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                       >
                         -100g
                       </button>
                       <button
                           onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                          className="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
+                          className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                       >
                         -{countToKG}g
                       </button>
@@ -164,19 +166,19 @@ const ItemPicker = () => {
                           : `${(quantity * countToKG / 1000).toFixed(2)}kg`}</span>
                       <button
                           onClick={() => setQuantity((prev) => prev + 1)}
-                          className="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
+                          className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                       >
                         +{countToKG}g
                       </button>
                       <button
                           onClick={() => setQuantity((prev) => prev + (multiplier / 10))}
-                          className="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
+                          className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                       >
                         +100g
                       </button>
                       <button
                           onClick={() => setQuantity((prev) => prev + (multiplier))}
-                          className="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors"
+                          className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                       >
                         +1kg
                       </button>

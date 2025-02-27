@@ -107,16 +107,11 @@ class Util {
   }
 
     static checkUser(username) {
-        if (username === "admin") {
-            return {exists: true, role: "admin"};
+        const users = ["admin", "clerk", "delivery", "butcher"];
+        if (users.includes(username)) {
+            return {exists: true, role: username};
         }
-        if (username === "clerk") {
-            return {exists: true, role: "clerk"};
-        }
-        if (username === "delivery") {
-            return {exists: true, role: "delivery"};
-        }
-        return {exists: false}
+        return {exists: false};
     }
 
     static async callBackend(endpoint, headers = {}) {

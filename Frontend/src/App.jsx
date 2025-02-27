@@ -51,6 +51,13 @@ export default function App() {
             <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
           </div>
         );
+        case "butcher":
+            return (
+                <div>
+                    <h1>Butcher Page</h1>
+                    <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+                </div>
+            );
       case "recipe":
           return (
               <div>
