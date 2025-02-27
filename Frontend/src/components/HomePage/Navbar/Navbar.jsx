@@ -36,7 +36,7 @@ const Navbar = ({ showNavbar, setShowNavbar }) => {
   
   const calculateTotalPrice = () => {
     return cartItems.reduce((total, item) => {
-      return total + (item.ItemCount * item.ItemPrice);
+      return total + (item.ItemCount / multiplier * item.ItemPrice);
     }, 0).toFixed(2);
   };
   

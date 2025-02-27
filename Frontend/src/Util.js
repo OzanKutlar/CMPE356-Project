@@ -4,56 +4,88 @@ class Util {
   static fakeData = {
     'check-user': { exists: true },
     'endpoint2': { data: 'Fake Data for Endpoint 2' },
-    "items": [
-                {ItemName:"Minced Meat",
-                 ItemPrice:12, 
-                 ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg"},
-                {ItemName:"Cubed Meat", 
-                ItemPrice:12, 
-                ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg"},
-                {ItemName:"Entrecôte", 
-                ItemPrice:12, 
-                ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg"},
-                {ItemName:"Steak", 
-                ItemPrice:12, 
-                ItemPhotoLink: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg"},
-                {ItemName:"Chopped Meat", 
-                ItemPrice:12, 
-                ItemPhotoLink: "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500"}],
-    "cart": [
-                {
-                  "ItemCount": 2,
-                  "ItemName": "Grilled Chicken Breast",
-                  "ItemPhotoLink": "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg",
-                  "ItemPrice": 12.99
-                },
-                {
-                  "ItemCount": 1,
-                  "ItemName": "Premium Beef Burger",
-                  "ItemPhotoLink": "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg",
-                  "ItemPrice": 15.50
-                },
-                {
-                  "ItemCount": 3,
-                  "ItemName": "Fish Fillet",
-                  "ItemPhotoLink": "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg",
-                  "ItemPrice": 9.99
-                },
-                {
-                  "ItemCount": 1,
-                  "ItemName": "Lamb Chops",
-                  "ItemPhotoLink": "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg",
-                  "ItemPrice": 24.99
-                }
-              ],
+      "items": [
+          {
+              ItemName: "Minced Meat",
+              ItemPrice: 59.99,
+              ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg"
+          },
+          {
+              ItemName: "Cubed Meat",
+              ItemPrice: 69.99,
+              ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg"
+          },
+          {
+              ItemName: "Entrecôte",
+              ItemPrice: 120,
+              ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg"
+          },
+          {
+              ItemName: "Steak",
+              ItemPrice: 99.99,
+              ItemPhotoLink: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg"
+          },
+          {
+              ItemName: "Chopped Meat",
+              ItemPrice: 66.99,
+              ItemPhotoLink: "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500"
+          }],
+      "cart": [
+          {
+              "ItemCount": 2,
+              "ItemName": "Minced Meat",
+              "ItemPhotoLink": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
+              "ItemPrice": 59.99
+          },
+          {
+              "ItemCount": 1,
+              "ItemName": "Cubed Meat",
+              "ItemPhotoLink": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
+              "ItemPrice": 69.99
+          },
+          {
+              "ItemCount": 3,
+              "ItemName": "Entrecôte",
+              "ItemPhotoLink": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
+              "ItemPrice": 120
+          },
+          {
+              "ItemCount": 1,
+              "ItemName": "Steak",
+              "ItemPhotoLink": "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
+              "ItemPrice": 99.99
+          }
+      ],
     "submitOrder": "success",
       "addToCart": "success",
       "saveCart": "success",
-    "getRecipes": [{
-        "name": "Recipe1",   // This could be a string like 'Spaghetti carbonara' that represents the name of this recipe. It doesn’t necessarily have to match actual names because it just demonstrates how you might structure your response data in JavaScript, or if there is any other specific requirements on what should go here
-        "photo": "https://t4.ftcdn.net/jpg/03/59/86/55/360_F_359865519_H5OPBm9bqpu8UWvr2OGf6afr1O8TB0nJ.jpg", // This could be a URL pointing towards the photo of this recipe. It doesn’t necessarily have to match actual image paths because it just demonstrates how you might structure your response data in JavaScript, or if there is any other specific requirements on what should go here
-        "data": "This is some very long and detailed description about Recipe1." // This could be a string that contains the full text of this recipe. It doesn’t necessarily have to match actual descriptions because it just demonstrates how you might structure your response data in JavaScript, or if there is any other specific requirements on what should go here
-    }]
+      "getRecipes": [
+          {
+              "name": "Grilled Steak with Garlic Butter",
+              "photo": "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
+              "data": "Season the steak with salt and pepper. Grill on high heat for 3-4 minutes per side. Melt butter with minced garlic and pour over the steak before serving."
+          },
+          {
+              "name": "Beef Entrecôte with Herb Sauce",
+              "photo": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
+              "data": "Season entrecôte with salt and sear on high heat for 3 minutes per side. Make a sauce with olive oil, parsley, garlic, and lemon juice. Drizzle over the meat."
+          },
+          {
+              "name": "Minced Meat Tacos",
+              "photo": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
+              "data": "Cook minced meat with taco seasoning. Serve in taco shells with chopped lettuce, tomatoes, shredded cheese, and sour cream."
+          },
+          {
+              "name": "Cubed Meat Stew",
+              "photo": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
+              "data": "Brown the cubed meat in a pot. Add onions, carrots, potatoes, and beef stock. Simmer for 2 hours until tender."
+          },
+          {
+              "name": "Chopped Meat Stir-Fry",
+              "photo": "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
+              "data": "Heat oil in a pan. Add chopped meat, bell peppers, onions, and soy sauce. Stir-fry on high heat until cooked through. Serve with rice."
+          }
+      ]
   };
 
   // Navigation system
