@@ -7,7 +7,8 @@ import ItemPicker from "./components/HomePage/ItemPicker/ItemPicker";
 import Recipelist from "./components/RecipePage/Recipelist/Recipelist";
 import Util from './Util';
 import "./App.css";
-import CartItemsLarge from "./components/CartPage/CartItemsLarge/CartItemsLarge.jsx"; // Import styles
+import CartItemsLarge from "./components/CartPage/CartItemsLarge/CartItemsLarge.jsx";
+import ButcherItemSelector from "./components/ButcherPage/ButcherItem.jsx"; // Import styles
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState(Util.currentPage);
@@ -55,6 +56,7 @@ export default function App() {
             return (
                 <div>
                     <h1>Butcher Page</h1>
+                    <ButcherItemSelector />
                     <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
                 </div>
             );
