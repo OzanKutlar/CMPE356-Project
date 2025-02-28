@@ -4,17 +4,16 @@ import Email from "./components/HomePage/EmailPopup/Email";
 import Header from "./components/HomePage/Header/Header";
 import Slider from "./components/HomePage/SlideShow/Slider";
 import ItemPicker from "./components/HomePage/ItemPicker/ItemPicker";
-import Recipelist from "./components/RecipePage/Recipelist/Recipelist";
+import Recipelist from "./components/RecipePage/RecipeList/RecipeList";
 import Util from './Util';
 import "./App.css";
 import CartItemsLarge from "./components/CartPage/CartItemsLarge/CartItemsLarge.jsx";
 import ButcherItemSelector from "./components/ButcherPage/ButcherItem.jsx";
 import NavbarButcher from "./components/ButcherPage/NavbarButcher.jsx"; // Import styles
+import NavbarDelivery from "./components/DeliveryPage/NavbarDelivery.jsx";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState(Util.currentPage);
-  
-  
 
   useEffect(() => {
     // Register listener for page changes
@@ -53,30 +52,37 @@ export default function App() {
             <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
           </div>
         );
-        case "butcher":
-            return (
-                <div>
-                    <h1>Butcher Page</h1>
-                    <NavbarButcher />
-                    <ButcherItemSelector />
-                    <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
-                </div>
-            );
+      case "butcher":
+        return (
+          <div>
+            <h1>Butcher Page</h1>
+            <NavbarButcher />
+            <ButcherItemSelector />
+            <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+          </div>
+        );
       case "recipe":
-          return (
-              <div>
-                  <Recipelist />
-                  <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
-              </div>
-          );
+        return (
+          <div>
+            <Recipelist />
+            <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+          </div>
+        );
       case "cart":
-          return (
-              <div>
-                  <CartItemsLarge />
-                  <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
-              </div>
-          );
-        
+        return (
+          <div>
+            <CartItemsLarge />
+            <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+          </div>
+        );
+      case "delivery":
+        return (
+          <div>
+            <NavbarDelivery />
+            <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+          </div>
+        )
+
       default:
         return (
           <div>
@@ -84,7 +90,7 @@ export default function App() {
           <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
           </div>
 
-          );
+        );
     }
   };
   
