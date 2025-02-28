@@ -21,7 +21,7 @@ export default function App() {
     // Register listener for page changes
     const removeListener = Util.addPageChangeListener((newPage) => {
       setCurrentPage(newPage);
-      window.history.pushState({}, '', newPage);
+      // window.history.pushState({}, '', newPage);
     });
     
     // Clean up listener when component unmounts

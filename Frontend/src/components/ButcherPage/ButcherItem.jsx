@@ -18,6 +18,7 @@ const ButcherItemSelector = () => {
 
     const handleSubmit = async () => {
         try {
+
             await Util.callBackend("saveButcher", items);
             alert("Items saved successfully!");
         } catch (error) {
