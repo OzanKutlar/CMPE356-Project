@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Navbar from "../Navbar/Navbar";
+import CartBar from "../CartBar/CartBar.jsx";
 import LoginPopup from "../LoginBox/LoginPopup";
 
 const Header = () => {
@@ -28,8 +28,8 @@ const Header = () => {
           Login
         </button>
       </header>
-      {/* Always render Navbar, but control its visibility */}
-      <Navbar showNavbar={showNavbar} setShowNavbar={setShowNavbar} />
+      {/* Always render CartBar, but control its visibility */}
+      <CartBar showNavbar={showNavbar} setShowNavbar={setShowNavbar} />
       
       {/* Login Popup */}
       {showLogin && <LoginPopup setShowLogin={setShowLogin} />}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Util from '../../../Util.js';
 
-const Navbar = ({ showNavbar, setShowNavbar }) => {
+const CartBar = ({ showNavbar, setShowNavbar }) => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -151,4 +151,4 @@ const Navbar = ({ showNavbar, setShowNavbar }) => {
   );
 };
 
-export default Navbar;
+export default CartBar;

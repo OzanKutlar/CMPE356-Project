@@ -26,6 +26,11 @@ class Util {
               ItemPhotoLink: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg"
           },
           {
+              ItemName: "Steak",
+              ItemPrice: 99.99,
+              ItemPhotoLink: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg"
+          },
+          {
               ItemName: "Chopped Meat",
               ItemPrice: 66.99,
               ItemPhotoLink: "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500"
@@ -95,6 +100,7 @@ class Util {
           }],
       "addToCart": "success",
       "saveCart": "success",
+      "saveButcher": "success",
       "getRecipes": [
           {
               "name": "Grilled Steak with Garlic Butter",
