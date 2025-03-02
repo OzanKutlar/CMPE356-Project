@@ -10,6 +10,7 @@ const Header = () => {
 
   return (
       <>
+          // Make it so that the cartbar only shows up when savedUser.role is user or empty AI!
         <header className="bg-red-300 flex justify-between items-center p-2 relative">
           {/* Navigation Button */}
           <button
