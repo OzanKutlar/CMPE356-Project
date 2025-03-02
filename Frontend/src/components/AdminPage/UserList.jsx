@@ -91,7 +91,12 @@ const UserList = () => {
             </div>
             <div className="w-2/3 bg-white border border-gray-300 shadow-md rounded-lg ml-4 p-6">
                 {selectedUser ? (
-                    <div>
+                    <div className="text-center">
+                        <img
+                            src={selectedUser.profilePictureLink}
+                            alt={selectedUser.Username}
+                            className="w-24 h-24 rounded-full mx-auto mb-4"
+                        />
                         <h2 className="text-2xl font-bold mb-4 text-gray-800">
                             {selectedUser.Username}
                         </h2>
@@ -139,16 +144,16 @@ const UserList = () => {
                         </div>
                     </div>
                 ) : (
-                    <p className="text-gray-700">Select a user to view details</p>
+                    <p className="text-gray-700 text-center">Select a user to view details</p>
                 )}
             </div>
             {notification.message || notification.isLoading ? (
-                <div className={`fixed right-4 bottom-4 p-4 rounded shadow-lg transition-all ${
-                    notification.isError ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}>
+                <div className={`fixed right-4 bottom-4 p-4 rounded shadow-2xl transition-all ${
+                    notification.isError ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
                     {notification.isLoading ? (
                         <div className="flex items-center">
-                            <div className="loader border-t-2 border-white w-5 h-5 rounded-full mr-2"></div>
-                            <span>Loading...</span>
+                            <div
+                                className="loader border-t-4 border-b-4 border-gray-800 w-6 h-6 rounded-full animate-spin mr-2"></div>
                         </div>
                     ) : (
                         notification.message

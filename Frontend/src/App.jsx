@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, {useState, useEffect} from "react";
 import Email from "./components/HomePage/EmailPopup/Email";
-import Header from "./components/HomePage/Header/Header";
+import Header from "./components/Global/Header.jsx";
 import Slider from "./components/HomePage/SlideShow/Slider";
 import ItemPicker from "./components/HomePage/ItemPicker/ItemPicker";
 import Recipelist from "./components/RecipePage/Recipelist/Recipelist";

@@ -200,22 +200,25 @@ class Util {
     }
 
     static async callBackend(endpoint, headers = {}) {
+        const fakeDataDelay = 1000; // Define the timeout delay
         console.log(`Calling backend endpoint: ${endpoint}`);
         if (Util.fakeIt) {
             if (endpoint === "check-user") {
                 const userData = Util.checkUser(headers.username);
                 console.log(`Simulated response: ${JSON.stringify(userData)}`);
                 return new Promise((resolve) => {
-                    setTimeout(() => resolve(userData), 100);
+                    setTimeout(() => resolve(userData), fakeDataDelay);
                 });
             }
             if (Util.fakeData[endpoint]) {
                 console.log(`Simulated response: ${JSON.stringify(Util.fakeData[endpoint])}`);
                 return new Promise((resolve) => {
-                    setTimeout(() => resolve(Util.fakeData[endpoint]), 100);
+                    setTimeout(() => resolve(Util.fakeData[endpoint]), fakeDataDelay);
                 });
             } else {
-                return Promise.reject({error: 'Fake endpoint not found'});
+                return new Promise((_, reject) => {
+                    setTimeout(() => reject({error: 'Fake endpoint not found'}), fakeDataDelay);
+                });
             }
         }
         const url = `${Util.backendIp}${endpoint}`;
