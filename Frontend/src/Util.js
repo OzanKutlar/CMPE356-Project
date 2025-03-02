@@ -99,6 +99,7 @@ class Util {
               startStock: 50
           }],
       "addToCart": "success",
+      "changeUserRole": "success",
       "saveCart": "success",
       "getUsers": [
           {

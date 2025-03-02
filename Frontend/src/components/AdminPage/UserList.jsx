@@ -5,6 +5,14 @@ const UserList = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [roleEdit, setRoleEdit] = useState({isEditing: false, userId: null, newRole: ''});
+    const [notification, setNotification] = useState({message: '', isLoading: false, isError: false});
+
+    const showNotification = (message, isError = false) => {
+        setNotification({message, isLoading: false, isError});
+        setTimeout(() => setNotification({message: '', isLoading: false, isError: false}), 3000);
+    };
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -20,24 +28,35 @@ const UserList = () => {
     };
 
     const deleteUser = async (userId) => {
+        setNotification({message: '', isLoading: true, isError: false});
         try {
-            await Utils.callBackend(`deleteUser`, {ID:userId});
+            await Utils.callBackend(`deleteUser`, {ID: userId});
             setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+            if (selectedUser && selectedUser.id === userId) {
+                setSelectedUser(null);
+            }
+            showNotification('User deleted successfully');
         } catch (err) {
-            alert('Failed to delete user');
+            showNotification('Failed to delete user', true);
         }
     };
 
     const changeUserRole = async (userId, newRole) => {
+        setNotification({message: '', isLoading: true, isError: false});
         try {
-            await Utils.callBackend(`changeUserRole`, {ID:userId, role:newRole}); // Replace changeUserRole endpoint as needed
+            await Utils.callBackend(`changeUserRole`, {ID: userId, role: newRole});
             setUsers((prevUsers) =>
                 prevUsers.map((user) =>
                     user.id === userId ? {...user, role: newRole} : user
                 )
             );
+            if (selectedUser && selectedUser.id === userId) {
+                setSelectedUser((prev) => ({...prev, role: newRole}));
+            }
+            setRoleEdit({isEditing: false, userId: null, newRole: ''});
+            showNotification('User role changed successfully');
         } catch (err) {
-            alert('Failed to change user role');
+            showNotification('Failed to change user role', true);
         }
     };
 
@@ -46,48 +65,96 @@ const UserList = () => {
     }, []);
 
     return (
-        <div>
-            <h1>User Management</h1>
-            {loading && <p>Loading...</p>}
-            {error && <p style={{color: 'red'}}>{error}</p>}
-            <table>
-                <thead>
-                <tr>
-                    <th>Profile Picture</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Role</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                {users.map((user) => (
-                    <tr key={user.id}>
-                        <td>
-                            <img src={user.profilePictureLink} alt={user.Username} width="50"/>
-                        </td>
-                        <td>{user.Username}</td>
-                        <td>{user.email}</td>
-                        <td>{user.phone}</td>
-                        <td>{user.role}</td>
-                        <td>
-                            <button onClick={() => deleteUser(user.id)}>Delete</button>
+        <div className="flex p-6 bg-gray-100 min-h-screen">
+            <div className="w-1/3 bg-white border border-gray-300 shadow-md rounded-lg">
+                <h1 className="text-xl font-bold mb-4 p-4 text-gray-800">User List</h1>
+                {loading && <p className="text-blue-500 px-4">Loading...</p>}
+                {error && <p className="text-red-500 px-4">{error}</p>}
+                <ul>
+                    {users.map((user) => (
+                        <li
+                            key={user.id}
+                            className={`p-4 flex items-center hover:bg-gray-100 cursor-pointer ${
+                                selectedUser && selectedUser.id === user.id ? 'bg-gray-200' : ''
+                            }`}
+                            onClick={() => setSelectedUser(user)}
+                        >
+                            <img
+                                src={user.profilePictureLink}
+                                alt={user.Username}
+                                className="w-12 h-12 rounded-full mr-4"
+                            />
+                            <span className="text-gray-700 font-semibold">{user.Username}</span>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            <div className="w-2/3 bg-white border border-gray-300 shadow-md rounded-lg ml-4 p-6">
+                {selectedUser ? (
+                    <div>
+                        <h2 className="text-2xl font-bold mb-4 text-gray-800">
+                            {selectedUser.Username}
+                        </h2>
+                        <p className="text-gray-700 mb-2"><strong>Email: </strong>{selectedUser.email}</p>
+                        <p className="text-gray-700 mb-2"><strong>Phone: </strong>{selectedUser.phone}</p>
+                        <p className="text-gray-700 mb-4"><strong>Role: </strong>{selectedUser.role}</p>
+                        <div>
                             <button
-                                onClick={() => {
-                                    const newRole = prompt('Enter new role:', user.role);
-                                    if (newRole) {
-                                        changeUserRole(user.id, newRole);
-                                    }
-                                }}
+                                onClick={() => deleteUser(selectedUser.id)}
+                                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 mr-2"
                             >
-                                Change Role
+                                Delete
                             </button>
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+                            {roleEdit.isEditing && roleEdit.userId === selectedUser.id ? (
+                                <>
+                                    <select
+                                        value={roleEdit.newRole}
+                                        onChange={(e) => setRoleEdit(prev => ({...prev, newRole: e.target.value}))}
+                                        className="bg-gray-200 border rounded px-3 py-1 mr-4"
+                                    >
+                                        <option value="user">User</option>
+                                        <option value="delivery driver">Delivery Driver</option>
+                                        <option value="butcher">Butcher</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                    <button
+                                        onClick={() => changeUserRole(selectedUser.id, roleEdit.newRole)}
+                                        className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                                    >
+                                        Confirm
+                                    </button>
+                                </>
+                            ) : (
+                                <button
+                                    onClick={() => setRoleEdit({
+                                        isEditing: true,
+                                        userId: selectedUser.id,
+                                        newRole: selectedUser.role
+                                    })}
+                                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                                >
+                                    Change Role
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                ) : (
+                    <p className="text-gray-700">Select a user to view details</p>
+                )}
+            </div>
+            {notification.message || notification.isLoading ? (
+                <div className={`fixed right-4 bottom-4 p-4 rounded shadow-lg transition-all ${
+                    notification.isError ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}>
+                    {notification.isLoading ? (
+                        <div className="flex items-center">
+                            <div className="loader border-t-2 border-white w-5 h-5 rounded-full mr-2"></div>
+                            <span>Loading...</span>
+                        </div>
+                    ) : (
+                        notification.message
+                    )}
+                </div>
+            ) : null}
         </div>
     );
 };
