@@ -100,6 +100,48 @@ class Util {
           }],
       "addToCart": "success",
       "saveCart": "success",
+      "getUsers": [
+          {
+              id: 1,
+              profilePictureLink: "/src/assets/face1.jpg",
+              Username: "john_doe",
+              email: "john.doe@example.com",
+              phone: "+1 (555) 123-4567",
+              role: "user"
+          },
+          {
+              id: 2,
+              profilePictureLink: "/src/assets/face2.jpg",
+              Username: "jane_smith",
+              email: "jane.smith@example.com",
+              phone: "+1 (555) 234-5678",
+              role: "admin"
+          },
+          {
+              id: 3,
+              profilePictureLink: "/src/assets/face3.jpg",
+              Username: "bob_wilson",
+              email: "bob.wilson@example.com",
+              phone: "+1 (555) 345-6789",
+              role: "user"
+          },
+          {
+              id: 4,
+              profilePictureLink: "/src/assets/face4.jpg",
+              Username: "alice_brown",
+              email: "alice.brown@example.com",
+              phone: "+1 (555) 456-7890",
+              role: "user"
+          },
+          {
+              id: 5,
+              profilePictureLink: "/src/assets/face5.jpg",
+              Username: "tom_harris",
+              email: "tom.harris@example.com",
+              phone: "+1 (555) 567-8901",
+              role: "admin"
+          }
+      ],
       "saveButcher": "success",
       "getRecipes": [
           {
