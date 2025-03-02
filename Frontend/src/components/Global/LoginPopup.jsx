@@ -1,7 +1,7 @@
 // LoginPopup.js
 import React, { useState, useEffect } from 'react';
-import Util from '../../../Util.js';
-import useMobileDetection from "../../../mobileDetection.js";
+import Util from '../../Util.js';
+import useMobileDetection from "../../mobileDetection.js";
 
 const LoginPopup = () => {
   const isMobile = useMobileDetection();

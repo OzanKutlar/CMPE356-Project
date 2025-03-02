@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import CartBar from "../HomePage/CartBar/CartBar.jsx";
-import LoginPopup from "../HomePage/LoginBox/LoginPopup.jsx";
+import LoginPopup from "./LoginPopup.jsx";
 
 const Header = () => {
   const [showLogin, setShowLogin] = useState(false);

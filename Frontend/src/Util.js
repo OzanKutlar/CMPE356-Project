@@ -176,6 +176,15 @@ class Util {
   // Navigation system
   static currentPage = 'home';
   static pageChangeListeners = [];
+  static savedUser = {
+      id: '',
+      username: '',
+      profilePictureLink: '',
+      role: '',
+      email: '',
+      phone: '',
+      address: ''
+  };
 
   static navigateTo(page) {
     this.currentPage = page;
