@@ -3,7 +3,6 @@ class Util {
   static fakeIt = true;
   static fakeDataDelay = 200; // Define the timeout delay
   static fakeData = {
-    'check-user': { exists: true },
     'endpoint2': { data: 'Fake Data for Endpoint 2' },
       "items": [
           {
@@ -212,9 +211,9 @@ class Util {
   }
 
     static checkUser(username) {
-        const users = ["admin", "clerk", "delivery", "butcher", "alice_brown"];
-        if (users.includes(username)) {
-            return {exists: true, role: username};
+        const user = Util.fakeData["getUsers"].find(user => user.Username === username);
+        if (user) {
+            return {exists: true};
         }
         return {exists: false};
     }
@@ -223,7 +222,7 @@ class Util {
         console.log(`Calling backend endpoint: ${endpoint}`);
         if (Util.fakeIt) {
             if (endpoint === "check-user") {
-                const userData = Util.checkUser(headers.username);
+                const userData = this.checkUser(headers.username);
                 console.log(`Simulated response: ${JSON.stringify(userData)}`);
                 return new Promise((resolve) => {
                     setTimeout(() => resolve(userData), this.fakeDataDelay);
