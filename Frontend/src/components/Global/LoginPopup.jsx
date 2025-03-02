@@ -54,9 +54,31 @@ const LoginPopup = () => {
     }
   };
 
-  const handleLoginClick = () => {
+  const handleLoginClick = async () => {
     console.log(`${buttonText} clicked`);
-    Util.navigateTo(buttonDest);
+
+    const headers = {
+      username: username,
+      password: document.querySelector('input[placeholder="Password"]').value,
+    };
+
+    if (buttonText === 'Register') {
+      headers.register = document.querySelector('input[placeholder="Confirm Password"]').value;
+    }
+
+    try {
+      const endpoint = buttonText === 'Register' ? "register" : "login";
+      const s = await Util.callBackend(endpoint, headers);
+
+      if (s.message === "Success") {
+        Util.savedUser = s.user;
+        Util.navigateTo("home");
+      } else {
+        console.error(`Error: ${s.message}`);
+      }
+    } catch (error) {
+      console.error('Error during login/register:', error);
+    }
   };
 
   return (

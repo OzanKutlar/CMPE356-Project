@@ -6,7 +6,7 @@ export default function UserProfile() {
 
     // Assuming Util.savedUser contains user data
     const savedUser = Util.savedUser;
-    const profilePictureURL = savedUser.profilePictureURL || '/default-profile.png'; // Fallback to a default image
+    const profilePictureURL = savedUser.profilePictureLink || '/default-profile.png'; // Fallback to a default image
     const isAdmin = savedUser.role === 'admin';
 
     const toggleMenu = () => {
@@ -25,7 +25,7 @@ export default function UserProfile() {
 
     const handleSwitchToAdminPanel = () => {
         console.log('Switch to Admin Panel clicked');
-        // Add logic for switching to admin panel here
+        Util.navigateTo("admin");
     };
 
     return (

@@ -1,6 +1,7 @@
 class Util {
   static backendIp = 'http://127.0.0.1:3199/';
   static fakeIt = true;
+  static fakeDataDelay = 200; // Define the timeout delay
   static fakeData = {
     'check-user': { exists: true },
     'endpoint2': { data: 'Fake Data for Endpoint 2' },
@@ -132,7 +133,7 @@ class Util {
               Username: "alice_brown",
               email: "alice.brown@example.com",
               phone: "+1 (555) 456-7890",
-              role: "user"
+              role: "admin"
           },
           {
               id: 5,
@@ -186,6 +187,16 @@ class Util {
       address: ''
   };
 
+  static fakeLogin(username){
+        const user = Util.fakeData["getUsers"].find(user => user.Username === username);
+        if (user) {
+            return user;
+        } else {
+            console.error("User not found");
+            return null; // or throw an error, depending on your use case
+        }
+  }
+
   static navigateTo(page) {
     this.currentPage = page;
     // Notify all listeners
@@ -201,7 +212,7 @@ class Util {
   }
 
     static checkUser(username) {
-        const users = ["admin", "clerk", "delivery", "butcher"];
+        const users = ["admin", "clerk", "delivery", "butcher", "alice_brown"];
         if (users.includes(username)) {
             return {exists: true, role: username};
         }
@@ -209,24 +220,28 @@ class Util {
     }
 
     static async callBackend(endpoint, headers = {}) {
-        const fakeDataDelay = 1000; // Define the timeout delay
         console.log(`Calling backend endpoint: ${endpoint}`);
         if (Util.fakeIt) {
             if (endpoint === "check-user") {
                 const userData = Util.checkUser(headers.username);
                 console.log(`Simulated response: ${JSON.stringify(userData)}`);
                 return new Promise((resolve) => {
-                    setTimeout(() => resolve(userData), fakeDataDelay);
+                    setTimeout(() => resolve(userData), this.fakeDataDelay);
+                });
+            }
+            if(endpoint === "login"){
+                return new Promise((resolve) => {
+                    setTimeout(() => resolve({message:"Success", user:this.fakeLogin(headers.username)}), this.fakeDataDelay);
                 });
             }
             if (Util.fakeData[endpoint]) {
                 console.log(`Simulated response: ${JSON.stringify(Util.fakeData[endpoint])}`);
                 return new Promise((resolve) => {
-                    setTimeout(() => resolve(Util.fakeData[endpoint]), fakeDataDelay);
+                    setTimeout(() => resolve(Util.fakeData[endpoint]), this.fakeDataDelay);
                 });
             } else {
                 return new Promise((_, reject) => {
-                    setTimeout(() => reject({error: 'Fake endpoint not found'}), fakeDataDelay);
+                    setTimeout(() => reject({error: 'Fake endpoint not found'}), this.fakeDataDelay);
                 });
             }
         }
