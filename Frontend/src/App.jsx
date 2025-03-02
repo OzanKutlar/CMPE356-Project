@@ -20,23 +20,32 @@ export default function App() {
     useEffect(() => {
         // Register listener for page changes
         const removeListener = Util.addPageChangeListener((newPage) => {
-            setAnimationClass("opacity-0"); // Start fade-out
+            setAnimationClass("opacity-0");
             setTimeout(() => {
-                setCurrentPage(newPage); // Change page after fade-out
+                setCurrentPage(newPage);
                 setAnimationClass("opacity-100"); // Fade-in new page
-                window.history.pushState({}, '', newPage);
-            }, 300); // Match animation duration
+                window.history.pushState({}, '', `/${newPage}`);
+            }, 300);
         });
 
-        // Clean up listener when component unmounts
-        return removeListener;
+    const handlePopState = () => {
+            const path = window.location.pathname.split('/')[1];
+            Util.navigateTo(path || "home");
+        };
+        window.addEventListener("popstate", handlePopState);
+
+        // Clean up listeners when component unmounts
+        return () => {
+            removeListener();
+            window.removeEventListener("popstate", handlePopState);
+        };
     }, []);
 
     useEffect(() => {
         const path = window.location.pathname;
         const value = path.split('/')[1];
         if (value) {
-            Util.navigateTo(value)
+            Util.navigateTo(value);
         }
     }, []);
 
