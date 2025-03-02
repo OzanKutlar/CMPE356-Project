@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import Email from "./components/HomePage/EmailPopup/Email";
 import Header from "./components/HomePage/Header/Header";
 import Slider from "./components/HomePage/SlideShow/Slider";
@@ -14,101 +14,104 @@ import ButcherItemPicker from "./components/ButcherPage/ButcherItemPicker.jsx"; 
 import NavbarDelivery from "./components/DeliveryPage/NavbarDelivery.jsx";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState(Util.currentPage);
-  
-  
+    const [currentPage, setCurrentPage] = useState(Util.currentPage);
+    const [animationClass, setAnimationClass] = useState("opacity-100");
 
-  useEffect(() => {
-    // Register listener for page changes
-    const removeListener = Util.addPageChangeListener((newPage) => {
-      setCurrentPage(newPage);
-      window.history.pushState({}, '', newPage);
-    });
-    
-    // Clean up listener when component unmounts
-    return removeListener;
-  }, []);
+    useEffect(() => {
+        // Register listener for page changes
+        const removeListener = Util.addPageChangeListener((newPage) => {
+            setAnimationClass("opacity-0"); // Start fade-out
+            setTimeout(() => {
+                setCurrentPage(newPage); // Change page after fade-out
+                setAnimationClass("opacity-100"); // Fade-in new page
+                window.history.pushState({}, '', newPage);
+            }, 300); // Match animation duration
+        });
 
-   useEffect(() => {
-    const path = window.location.pathname; 
-    const value = path.split('/')[1]; 
-    if (value) {
-      Util.navigateTo(value)
-    }
-  }, []);
-  
-  const renderPage = () => {
-    switch (currentPage) {
-      case "home":
-        return (
-          <div>
-            <Header />
-            <Slider />
-            <ItemPicker />
-            <button onClick={() => Util.navigateTo("admin")}>Go to Admin Panel</button>
-          </div>
-        );
-      case "admin":
-        return (
-          <div>
-            <h1>Admin Page</h1>
-            <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
-          </div>
-        );
-        case "butcher": // Butcher Main page
-            return (
-                <div>
-                    <h1>Butcher Page</h1>
-                    <NavbarButcher />
-                    <ButcherItemPicker />
-                    <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
-                </div>
-            );
-        case "butcher/add": // Butcher Add Page
-            return (
-                <div>
-                    <h1>Butcher Add Page</h1>
-                    <NavbarButcher />
-                    <ButcherItemSelector />
-                    <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
-                </div>
-            );
-      case "recipe":
-        return (
-          <div>
-            <Recipelist />
-            <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
-          </div>
-        );
-      case "cart":
-        return (
-          <div>
-            <CartItemsLarge />
-            <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
-          </div>
-        );
-      case "delivery":
-        return (
-          <div>
-            <NavbarDelivery />
-            <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
-          </div>
-        )
+        // Clean up listener when component unmounts
+        return removeListener;
+    }, []);
 
-      default:
-        return (
-          <div>
-          <h1>Page {currentPage} not found</h1>
-          <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
-          </div>
+    useEffect(() => {
+        const path = window.location.pathname;
+        const value = path.split('/')[1];
+        if (value) {
+            Util.navigateTo(value)
+        }
+    }, []);
 
-        );
-    }
-  };
-  
-  return (
-    <div className="app-container">
-      {renderPage()}
-    </div>
-  );
+    const renderPage = () => {
+        switch (currentPage) {
+            case "home":
+                return (
+                    <div>
+                        <Header/>
+                        <Slider/>
+                        <ItemPicker/>
+                        <button onClick={() => Util.navigateTo("admin")}>Go to Admin Panel</button>
+                    </div>
+                );
+            case "admin":
+                return (
+                    <div>
+                        <h1>Admin Page</h1>
+                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+                    </div>
+                );
+            case "butcher": // Butcher Main page
+                return (
+                    <div>
+                        <h1>Butcher Page</h1>
+                        <NavbarButcher/>
+                        <ButcherItemPicker/>
+                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+                    </div>
+                );
+            case "butcher/add": // Butcher Add Page
+                return (
+                    <div>
+                        <h1>Butcher Add Page</h1>
+                        <NavbarButcher/>
+                        <ButcherItemSelector/>
+                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+                    </div>
+                );
+            case "recipe":
+                return (
+                    <div>
+                        <Recipelist/>
+                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+                    </div>
+                );
+            case "cart":
+                return (
+                    <div>
+                        <CartItemsLarge/>
+                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+                    </div>
+                );
+            case "delivery":
+                return (
+                    <div>
+                        <NavbarDelivery/>
+                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+                    </div>
+                )
+
+            default:
+                return (
+                    <div>
+                        <h1>Page {currentPage} not found</h1>
+                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+                    </div>
+
+                );
+        }
+    };
+
+    return (
+        <div className={`app-container transition-opacity duration-300 ${animationClass}`}>
+            {renderPage()}
+        </div>
+    );
 }
