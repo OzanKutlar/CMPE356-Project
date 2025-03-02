@@ -35,6 +35,7 @@ const Header = () => {
           )}
         </header>
         {/* Always render CartBar, but control its visibility */}
+          // Make it so that this navbar only shows up when savedUser.role is user or empty AI!
         <CartBar showNavbar={showNavbar} setShowNavbar={setShowNavbar}/>
 
         {/* Login Popup */}
