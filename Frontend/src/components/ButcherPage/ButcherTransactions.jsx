@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Util from "../../Util.js";
+import "./ButcherTransactions.css"
 
 const FullscreenSales = () => {
     const [sales, setSales] = useState([]);
@@ -84,63 +85,57 @@ const FullscreenSales = () => {
                                         <span className="text-gray-500 text-xs">{sale.paymentID}</span>
                                     </td>
                                     <td className="p-3">
-                                      <span
-                                          className={`px-2 py-1 text-xs font-medium rounded-md ${
-                                              sale.status === "Success"
-                                                  ? "bg-green-100 text-green-600"
-                                                  : sale.status === "Canceled"
-                                                      ? "bg-red-100 text-red-600"
-                                                      : "bg-yellow-100 text-yellow-600"
-                                          }`}
-                                      >
-                                        {sale.status}
-                                      </span>
+                                        <span
+                                            className={`px-2 py-1 text-xs font-medium rounded-md ${
+                                                sale.status === "Success"
+                                                    ? "bg-green-100 text-green-600"
+                                                    : sale.status === "Canceled"
+                                                        ? "bg-red-100 text-red-600"
+                                                        : "bg-yellow-100 text-yellow-600"
+                                            }`}
+                                        >
+                                            {sale.status}
+                                        </span>
                                     </td>
                                     <td className="p-3">${sale.totalPrice.toFixed(2)}</td>
                                     <td className="p-3 text-center">
                                         {expandedTransaction === sale.id ? "▲" : "▼"}
                                     </td>
                                 </tr>
-
-                                {/* Expanded row for actions */}
-                                {expandedTransaction === sale.id && (
-                                    <tr className="border-b bg-gray-50">
-                                        <td colSpan="6" className="p-4">
-                                            <div
-                                                className="flex gap-4 transition-all duration-300"
-                                                style={{
-                                                    maxHeight: expandedTransaction === sale.id ? "200px" : "0",
-                                                    overflow: "hidden",
-                                                }}
-                                            >
-                                                <button
-                                                    className="px-4 py-2 bg-red-500 text-white text-sm rounded-lg transition-all duration-300 hover:bg-red-600"
-                                                    onClick={() => handleAction("refundTransaction", sale.id)}
-                                                >
-                                                    Refund Transaction
-                                                </button>
-                                                <button
-                                                    className="px-4 py-2 bg-yellow-500 text-white text-sm rounded-lg transition-all duration-300 hover:bg-yellow-600"
-                                                    onClick={() => handleAction("banUser", sale.id)}
-                                                >
-                                                    Ban User
-                                                </button>
-                                                <button
-                                                    className="px-4 py-2 bg-gray-700 text-white text-sm rounded-lg transition-all duration-300 hover:bg-gray-800"
-                                                    onClick={() => handleAction("banAddress", sale.id)}
-                                                >
-                                                    Ban Address
-                                                </button>
+                                <tr>
+                                    <td colSpan="6">
+                                        <div className={`expanded-row ${expandedTransaction === sale.id ? 'open' : ''}`}>
+                                            <div className="p-4 bg-gray-50">
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <button
+                                                        className="px-4 py-2 bg-red-500 text-white text-sm rounded-lg transition-all duration-300 hover:bg-red-600"
+                                                        onClick={() => handleAction("refundTransaction", sale.id)}
+                                                    >
+                                                        Refund Transaction
+                                                    </button>
+                                                    <button
+                                                        className="px-4 py-2 bg-yellow-500 text-white text-sm rounded-lg transition-all duration-300 hover:bg-yellow-600"
+                                                        onClick={() => handleAction("banUser", sale.id)}
+                                                    >
+                                                        Ban User
+                                                    </button>
+                                                    <button
+                                                        className="px-4 py-2 bg-gray-700 text-white text-sm rounded-lg transition-all duration-300 hover:bg-gray-800"
+                                                        onClick={() => handleAction("banAddress", sale.id)}
+                                                    >
+                                                        Ban Address
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </td>
-                                    </tr>
-                                )}
+                                        </div>
+                                    </td>
+                                </tr>
                             </React.Fragment>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="6" className="p-4 text-center">
-                                No transactions found.
+                            <td colSpan="6" className="text-center p-4 text-gray-500">
+                                No transactions found
                             </td>
                         </tr>
                     )}
