@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import useMobileDetection from "../../mobileDetection.js";
+import ProfileDropdown from './../NavbarElements/ProfileDropdown';
+import ExpandableItem from './OrderItem.jsx';
 
 const ResponsiveNavbar = () => {
   const [activeTab, setActiveTab] = useState('A');
@@ -36,6 +38,29 @@ const ResponsiveNavbar = () => {
     setIsProfileOpen(!isProfileOpen);
   };
 
+  const handleButtonZClick = (index) => {
+    console.log(`Button Z clicked for item ${index}`);
+    // Add your button Z action here
+  };
+
+  const items = [
+    {
+      infoA: "Item Title 1 of a list item that will be very long because it will hold address and addresses are long",
+      infoB: [
+        "This is the first line of extended information.",
+        "This is the second line with more details.",
+        "And here's a third line with additional context."
+      ]
+    },
+    {
+      infoA: "Item Title 2",
+      infoB: [
+        "Extended information for the second item.",
+        "More details about this particular item."
+      ]
+    }
+  ];
+
   return (
     <div className="flex flex-col h-screen">
       {/* Navbar */}
@@ -54,25 +79,7 @@ const ResponsiveNavbar = () => {
           </div>
           
           {/* Profile dropdown */}
-          <div className="relative">
-            <button
-              className="px-4 py-2 rounded hover:bg-gray-700"
-              onClick={toggleProfile}
-            >
-              Me
-            </button>
-            
-            {isProfileOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow-lg">
-                <button className="block w-full text-left px-4 py-2 hover:bg-gray-200">
-                  Profile
-                </button>
-                <button className="block w-full text-left px-4 py-2 hover:bg-gray-200">
-                  Log out
-                </button>
-              </div>
-            )}
-          </div>
+          <ProfileDropdown toggleProfile={toggleProfile} isProfileOpen={isProfileOpen} />
         </div>
       </nav>
 
@@ -84,12 +91,20 @@ const ResponsiveNavbar = () => {
             className={`
               bg-gray-100 overflow-y-auto
               ${isDesktop 
-                ? 'w-64 h-full border-r border-gray-300' 
+                ? 'w-80 h-full border-r border-gray-300' 
                 : 'w-full h-1/2 border-b border-gray-300'}
             `}
           >
             <h1 className="p-4 text-xl font-bold">List of {activeTab}</h1>
             {/* List content would go here */}
+            {items.map((item, index) => (
+              <ExpandableItem
+                key={index}
+                infoA={item.infoA}
+                infoB={item.infoB}
+                onButtonZClick={() => handleButtonZClick(index)}
+              />
+            ))}
           </div>
         )}
 

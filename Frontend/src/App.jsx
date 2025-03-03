@@ -4,7 +4,7 @@ import Email from "./components/HomePage/EmailPopup/Email";
 import Header from "./components/Global/Header.jsx";
 import Slider from "./components/HomePage/SlideShow/Slider";
 import ItemPicker from "./components/HomePage/ItemPicker/ItemPicker";
-import Recipelist from "./components/RecipePage/Recipelist/Recipelist";
+import Recipelist from "./components/RecipePage/RecipeList/RecipeList";
 import Util from './Util';
 import "./App.css";
 import CartItemsLarge from "./components/CartPage/CartItemsLarge/CartItemsLarge.jsx";
