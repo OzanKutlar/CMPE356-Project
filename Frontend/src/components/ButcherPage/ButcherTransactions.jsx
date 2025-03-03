@@ -10,7 +10,7 @@ const FullscreenSales = () => {
     useEffect(() => {
         const fetchLatestSales = async () => {
             try {
-                const response = await Util.callBackend("getLatestSales", {
+                const response = await Util.callBackend("getSales", {
                     userID: Util.savedUser.id,
                 });
                 setSales(response);
