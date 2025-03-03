@@ -9,7 +9,7 @@ const GoogleMapsDirections = ({ targetAddress }) => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  const apikey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+  const apikey = import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
   const mapRef = useRef(null);
   const directionsServiceRef = useRef(null);

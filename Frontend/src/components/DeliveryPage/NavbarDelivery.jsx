@@ -27,7 +27,7 @@ const ResponsiveNavbar = () => {
             const response = await Util.callBackend('getOrders');
             setTabContents(response);
         } catch (error) {
-            console.error('Failed to fetch recipes:', error);
+            console.error('Failed to fetch orders:', error);
         }
     };
 
