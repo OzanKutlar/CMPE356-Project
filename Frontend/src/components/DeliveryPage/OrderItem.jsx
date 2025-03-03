@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 
-const ExpandableItem = ({ infoA, infoB, onButtonZClick }) => {
+const OrderItem = ({ address, content, onButtonZClick }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
@@ -31,7 +32,7 @@ const ExpandableItem = ({ infoA, infoB, onButtonZClick }) => {
       onClick={toggleExpand}
     >
       <div className="px-3 py-4 flex justify-between items-start">
-        <div className="font-medium text-sm text-gray-800">{infoA}</div>
+        <div className="font-medium text-sm text-gray-800">{address}</div>
         <button 
           className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 text-sm rounded-md transition-colors"
           onClick={handleButtonZClick}
@@ -48,7 +49,7 @@ const ExpandableItem = ({ infoA, infoB, onButtonZClick }) => {
         duration-300
         ${isExpanded ? 'opacity-100' : 'opacity-0'}
       `}>
-        {infoB.map((line, index) => (
+        {content.map((line, index) => (
           <p key={index} className="mb-2">{line}</p>
         ))}
       </div>
@@ -56,4 +57,10 @@ const ExpandableItem = ({ infoA, infoB, onButtonZClick }) => {
   );
 };
 
-export default ExpandableItem;
+OrderItem.propTypes = {
+  address: PropTypes.any,
+  content: PropTypes.string,
+  onButtonZClick: PropTypes.func
+};
+
+export default OrderItem;
