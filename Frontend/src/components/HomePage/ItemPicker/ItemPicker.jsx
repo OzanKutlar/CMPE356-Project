@@ -132,9 +132,11 @@ const ItemPicker = () => {
 
         {/* Modal for selected item */}
         {selectedItem && (
-            <div className={`fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50 modal-overlay ${isClosing ? 'fade-out' : ''}`}>
-              <div className={`bg-white rounded-lg w-full overflow-hidden ${isMobile ? "max-w-xs" : "max-w-lg"} modal-content ${isClosing ? 'fade-out' : ''}`}>
-              <div className={`overflow-hidden ${isMobile ? "h-40" : "h-64"}`}>
+            <div
+                className={`fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50 modal-overlay ${isClosing ? 'fade-out' : ''}`}>
+              <div
+                  className={`bg-white rounded-lg w-full overflow-hidden ${isMobile ? "max-w-xs" : "max-w-lg"} modal-content ${isClosing ? 'fade-out' : ''}`}>
+                <div className={`overflow-hidden ${isMobile ? "h-40" : "h-64"}`}>
                   <img
                       src={selectedItem.ItemPhotoLink || "/api/placeholder/400/300"}
                       alt={selectedItem.ItemName}
@@ -206,21 +208,21 @@ const ItemPicker = () => {
                       </div>
                   )}
 
-                  <div className="flex justify-between">
+                  <div className="flex">
                     <button
                         onClick={closeModal}
-                        className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+                        className="flex-1 px-4 py-3 bg-red-600 text-white rounded-l hover:bg-red-700 transition-colors"
                     >
-                      Close
+                      Cancel
                     </button>
                     <button
                         onClick={handlePurchase}
                         disabled={purchasing}
-                        className={`px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors ${
+                        className={`flex-1 px-4 py-3 bg-green-600 text-white rounded-r hover:bg-green-700 transition-colors ${
                             purchasing ? "opacity-70 cursor-not-allowed" : ""
                         }`}
                     >
-                      {purchasing ? "Processing..." : "Add to cart"}
+                      {purchasing ? "Processing..." : "Confirm"}
                     </button>
                   </div>
                 </div>
