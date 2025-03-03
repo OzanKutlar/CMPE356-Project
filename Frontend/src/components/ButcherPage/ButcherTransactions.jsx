@@ -6,6 +6,12 @@ const FullscreenSales = () => {
     const [sales, setSales] = useState([]);
     const [error, setError] = useState(null);
     const [expandedTransaction, setExpandedTransaction] = useState(null);
+    const [notification, setNotification] = useState({message: '', isLoading: false, isError: false});
+
+    const showNotification = (message, isError = false) => {
+        setNotification({message, isLoading: false, isError});
+        setTimeout(() => setNotification({message: '', isLoading: false, isError: false}), 3000);
+    };
 
     useEffect(() => {
         const fetchLatestSales = async () => {
@@ -26,22 +32,18 @@ const FullscreenSales = () => {
         setExpandedTransaction((prev) => (prev === transactionId ? null : transactionId));
     };
 
-    // First, add loading state
-    const [loading, setLoading] = useState(false);
 
-// Then modify your handleAction to use loading state instead of alert
-    const handleAction = async () => {
-        setLoading(true);
+    const handleAction = async (action, transactionId) => {
+        setNotification({message: '', isLoading: true, isError: false});
         try {
             await Util.callBackend(action, {
                 userID: Util.savedUser.id,
                 transactionID: transactionId,
             });
+            showNotification('Action completed successfully');
         } catch (err) {
             console.error(err);
-            setError("Action failed");
-        } finally {
-            setLoading(false);
+            showNotification('Action failed', true);
         }
     };
 
@@ -52,6 +54,20 @@ const FullscreenSales = () => {
 
     return (
         <div className="bg-white h-screen overflow-y-auto">
+            {/* Loading and Notification UI */}
+            {notification.message || notification.isLoading ? (
+                <div className={`fixed right-4 bottom-4 p-4 rounded shadow-2xl transition-all ${
+                    notification.isError ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                    {notification.isLoading ? (
+                        <div className="flex items-center">
+                            <div
+                                className="loader border-t-4 border-b-4 border-gray-800 w-6 h-6 rounded-full animate-spin mr-2"></div>
+                        </div>
+                    ) : (
+                        notification.message
+                    )}
+                </div>
+            ) : null}
             {/* Header */}
             <div className="flex justify-between items-center p-6 border-b mb-4">
                 <h1 className="text-3xl font-bold text-gray-800">Latest Transactions</h1>
@@ -149,7 +165,6 @@ const FullscreenSales = () => {
                     </tbody>
                 </table>
             </div>
-            {loading && <p className="text-blue-500 px-4">Loading...</p>}
         </div>
     );
 };
