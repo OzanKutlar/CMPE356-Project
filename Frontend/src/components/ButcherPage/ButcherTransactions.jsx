@@ -16,11 +16,14 @@ const FullscreenSales = () => {
     useEffect(() => {
         const fetchLatestSales = async () => {
             try {
+                setLoading(true);
                 const response = await Util.callBackend("getSales", {
                     userID: Util.savedUser.id,
                 });
+                setLoading(false);
                 setSales(response);
             } catch (err) {
+                setLoading(false);
                 setError("Failed to fetch latest sales data");
                 console.error(err);
             }
@@ -31,6 +34,9 @@ const FullscreenSales = () => {
     const handleExpand = (transactionId) => {
         setExpandedTransaction((prev) => (prev === transactionId ? null : transactionId));
     };
+
+    // First, add loading state
+    const [loading, setLoading] = useState(false);
 
 
     const handleAction = async (action, transactionId) => {
@@ -157,9 +163,15 @@ const FullscreenSales = () => {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="6" className="text-center p-4 text-gray-500">
-                                No transactions found
-                            </td>
+                            {loading ? (
+                                <div className="flex items-center">
+                                    <div className="loader border-t-4 border-b-4 border-gray-800 w-6 h-6 rounded-full animate-spin mr-2"></div>
+                                </div>
+                            ) : (
+                                <td colSpan="6" className="text-center p-4 text-gray-500">
+                                    No transactions found
+                                </td>
+                            )}
                         </tr>
                     )}
                     </tbody>
