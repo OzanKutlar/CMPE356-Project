@@ -144,6 +144,38 @@ class Util {
           }
       ],
       "saveButcher": "success",
+      "getLatestSales": [
+          {
+              itemPhoto: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
+              itemCount: 2,
+              totalPrice: 119.98,
+              saleProfit: 30.00
+          },
+          {
+              itemPhoto: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
+              itemCount: 1,
+              totalPrice: 69.99,
+              saleProfit: 15.00
+          },
+          {
+              itemPhoto: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
+              itemCount: 3,
+              totalPrice: 360.00,
+              saleProfit: 90.00
+          },
+          {
+              itemPhoto: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
+              itemCount: 1,
+              totalPrice: 99.99,
+              saleProfit: 25.00
+          },
+          {
+              itemPhoto: "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
+              itemCount: 1,
+              totalPrice: 66.99,
+              saleProfit: 16.99
+          }
+      ],
       "getRecipes": [
           {
               "name": "Grilled Steak with Garlic Butter",

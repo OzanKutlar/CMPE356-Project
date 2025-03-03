@@ -14,6 +14,7 @@ import NavbarDelivery from "./components/DeliveryPage/NavbarDelivery.jsx";
 import UserList from "./components/AdminPage/UserList.jsx";
 import AdminHeader from "./components/AdminPage/AdminHeader.jsx";
 import ButcherHeader from "./components/ButcherPage/ButcherHeader.jsx";
+import ButcherData from "./components/ButcherPage/ButcherData.jsx";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(Util.currentPage);
@@ -75,7 +76,7 @@ export default function App() {
                 return (
                     <div>
                         <ButcherHeader/>
-                        <ButcherItemPicker/>
+                        <ButcherData/>
                         <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
                     </div>
                 );
