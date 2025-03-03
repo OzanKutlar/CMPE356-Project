@@ -240,7 +240,7 @@ class Util {
               "address": "123 Sample St, New York, NY, 10001",
               "itemName": "Minced Meat",
               "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
-              "paymentMethod": "Paypal",
+              "paymentMethod": "Credit Card",
               "paymentID": "#416645453773",
               "status": "Success",
               "totalPrice": 119.98

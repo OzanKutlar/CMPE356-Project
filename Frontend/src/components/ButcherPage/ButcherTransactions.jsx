@@ -26,18 +26,25 @@ const FullscreenSales = () => {
         setExpandedTransaction((prev) => (prev === transactionId ? null : transactionId));
     };
 
-    const handleAction = async (action, transactionId) => {
+    // First, add loading state
+    const [loading, setLoading] = useState(false);
+
+// Then modify your handleAction to use loading state instead of alert
+    const handleAction = async () => {
+        setLoading(true);
         try {
             await Util.callBackend(action, {
                 userID: Util.savedUser.id,
                 transactionID: transactionId,
             });
-            alert(`${action.replace(/([a-z])([A-Z])/g, "$1 $2")} successful!`);
         } catch (err) {
-            console.error("Action failed:", err);
-            alert("Failed to complete the action.");
+            console.error(err);
+            setError("Action failed");
+        } finally {
+            setLoading(false);
         }
     };
+
 
     if (error) {
         return <div className="text-red-500 text-center mt-4 font-medium">{error}</div>;
@@ -47,7 +54,7 @@ const FullscreenSales = () => {
         <div className="bg-white h-screen overflow-y-auto">
             {/* Header */}
             <div className="flex justify-between items-center p-6 border-b mb-4">
-                <h1 className="text-3xl font-bold text-gray-800">Fullscreen Recent Transactions</h1>
+                <h1 className="text-3xl font-bold text-gray-800">Latest Transactions</h1>
             </div>
 
             {/* Table */}
@@ -142,6 +149,7 @@ const FullscreenSales = () => {
                     </tbody>
                 </table>
             </div>
+            {loading && <p className="text-blue-500 px-4">Loading...</p>}
         </div>
     );
 };
