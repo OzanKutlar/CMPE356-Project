@@ -16,6 +16,7 @@ import AdminHeader from "./components/AdminPage/AdminHeader.jsx";
 import ButcherHeader from "./components/ButcherPage/ButcherHeader.jsx";
 import ButcherMostProfit from "./components/ButcherPage/ButcherMostProfit.jsx";
 import ButcherLatestSale from "./components/ButcherPage/ButcherLatestSale.jsx";
+import ButcherTransactions from "./components/ButcherPage/ButcherTransactions.jsx";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(Util.currentPage);
@@ -85,6 +86,22 @@ export default function App() {
                     </div>
                 );
             case "butcher/add": // Butcher Add Page
+                return (
+                    <div>
+                        <ButcherHeader/>
+                        <ButcherItemSelector/>
+                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+                    </div>
+                );
+            case "butcher/transactions": // Butcher Add Page
+                return (
+                    <div>
+                        <ButcherHeader/>
+                        <ButcherTransactions/>
+                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
+                    </div>
+                );
+            case "butcher/sales": // Butcher Add Page
                 return (
                     <div>
                         <ButcherHeader/>

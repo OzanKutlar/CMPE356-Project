@@ -178,6 +178,9 @@ class Util {
       ],
       "getLatestSales": [
           {
+              "id": "tx-1",
+              "userID": "user-123",
+              "address": "123 Sample St, New York, NY, 10001",
               "itemName": "Minced Meat",
               "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
               "paymentMethod": "Paypal",
@@ -186,6 +189,9 @@ class Util {
               "totalPrice": 119.98
           },
           {
+              "id": "tx-2",
+              "userID": "user-124",
+              "address": "456 Example Rd, San Francisco, CA, 94121",
               "itemName": "Cubed Meat",
               "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
               "paymentMethod": "Apple Pay",
@@ -194,6 +200,9 @@ class Util {
               "totalPrice": 69.99
           },
           {
+              "id": "tx-3",
+              "userID": "user-125",
+              "address": "789 Demo Ave, Chicago, IL, 60616",
               "itemName": "Entrecôte",
               "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
               "paymentMethod": "Stripe",
@@ -202,6 +211,9 @@ class Util {
               "totalPrice": 360.00
           },
           {
+              "id": "tx-4",
+              "userID": "user-123",
+              "address": "123 Sample St, New York, NY, 10001",
               "itemName": "Steak",
               "itemPhoto": "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
               "paymentMethod": "PayU",
@@ -210,6 +222,9 @@ class Util {
               "totalPrice": 99.99
           },
           {
+              "id": "tx-5",
+              "userID": "user-126",
+              "address": "12 Market Rd, Austin, TX, 78703",
               "itemName": "Chopped Meat",
               "itemPhoto": "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
               "paymentMethod": "Paytm",

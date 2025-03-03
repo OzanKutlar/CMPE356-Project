@@ -31,7 +31,7 @@ const LatestSales = () => {
                 <h2 className="text-2xl font-bold text-gray-800">Recent Transactions</h2>
                 <button
                     className="px-4 h-8 bg-gray-800 text-white text-sm font-medium rounded-lg cursor-pointer transition-all duration-300 hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-                    onClick={() => Util.navigateTo("butcher/sales")}
+                    onClick={() => Util.navigateTo("butcher/transactions")}
                 >
                     View All →
                 </button>
