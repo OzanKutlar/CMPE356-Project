@@ -14,7 +14,7 @@ import NavbarDelivery from "./components/DeliveryPage/NavbarDelivery.jsx";
 import UserList from "./components/AdminPage/UserList.jsx";
 import AdminHeader from "./components/AdminPage/AdminHeader.jsx";
 import ButcherHeader from "./components/ButcherPage/ButcherHeader.jsx";
-import ButcherData from "./components/ButcherPage/ButcherData.jsx";
+import ButcherData from "./components/ButcherPage/ButcherLatestSale.jsx";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(Util.currentPage);
