@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import useMobileDetection from "../../mobileDetection.js";
 import ProfileDropdown from './../NavbarElements/ProfileDropdown';
 import ExpandableItem from './OrderItem.jsx';
+import GoogleMapsDirections from './MapDirection.jsx';
 
 const ResponsiveNavbar = () => {
   const [activeTab, setActiveTab] = useState('A');
@@ -112,6 +113,7 @@ const ResponsiveNavbar = () => {
         <div className="flex-1 p-4 bg-white">
           <h2 className="text-xl">Main Content Area</h2>
           <p className="mt-2">This is where your main content would go.</p>
+          <GoogleMapsDirections targetAddress={ "Yeniköy, Köybaşı Cd. No:166/B, 34464 Sarıyer/İstanbul" }/>
         </div>
       </div>
     </div>
