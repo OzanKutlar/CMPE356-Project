@@ -9,11 +9,11 @@ import Util from './Util';
 import "./App.css";
 import CartItemsLarge from "./components/CartPage/CartItemsLarge/CartItemsLarge.jsx";
 import ButcherItemSelector from "./components/ButcherPage/ButcherItem.jsx";
-import NavbarButcher from "./components/ButcherPage/NavbarButcher.jsx";
 import ButcherItemPicker from "./components/ButcherPage/ButcherItemPicker.jsx"; // Import styles
 import NavbarDelivery from "./components/DeliveryPage/NavbarDelivery.jsx";
 import UserList from "./components/AdminPage/UserList.jsx";
 import AdminHeader from "./components/AdminPage/AdminHeader.jsx";
+import ButcherHeader from "./components/ButcherPage/ButcherHeader.jsx";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(Util.currentPage);
@@ -74,8 +74,7 @@ export default function App() {
             case "butcher": // Butcher Main page
                 return (
                     <div>
-                        <h1>Butcher Page</h1>
-                        <NavbarButcher/>
+                        <ButcherHeader/>
                         <ButcherItemPicker/>
                         <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
                     </div>
@@ -83,8 +82,7 @@ export default function App() {
             case "butcher/add": // Butcher Add Page
                 return (
                     <div>
-                        <h1>Butcher Add Page</h1>
-                        <NavbarButcher/>
+                        <ButcherHeader/>
                         <ButcherItemSelector/>
                         <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
                     </div>

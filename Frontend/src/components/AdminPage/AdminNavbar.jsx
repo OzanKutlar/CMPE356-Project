@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import Util from "../../Util.js";
 
-const CartBar = ({showNavbar, setShowNavbar}) => {
+const AdminNavBar = ({showNavbar, setShowNavbar}) => {
     const navigatePages = [
         {name: "Manage Users", page: "admin/users"},
         {name: "Manage Shops", page: "admin/shops"},
@@ -43,4 +43,4 @@ const CartBar = ({showNavbar, setShowNavbar}) => {
     );
 };
 
-export default CartBar;
+export default AdminNavBar;
