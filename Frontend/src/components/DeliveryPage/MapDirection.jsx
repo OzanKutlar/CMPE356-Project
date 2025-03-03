@@ -9,6 +9,8 @@ const GoogleMapsDirections = ({ targetAddress }) => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   
+  const apikey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
   const mapRef = useRef(null);
   const directionsServiceRef = useRef(null);
   const directionsRendererRef = useRef(null);
@@ -91,7 +93,7 @@ const GoogleMapsDirections = ({ targetAddress }) => {
     // Load Google Maps API if not already loaded
     if (!window.google) {
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBPyCp_clGNv0f7bu11zGod8LAbP-hvIk4&libraries=places`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apikey}&libraries=places`;
       script.async = true;
       script.defer = true;
       script.onload = initMap;
