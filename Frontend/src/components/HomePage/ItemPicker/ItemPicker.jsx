@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Util from '../../../Util.js';
 import useMobileDetection from "../../../mobileDetection.js";
+import './ItemPicker.css';
 
 const ItemPicker = () => {
   const isMobile = useMobileDetection();
@@ -11,6 +12,8 @@ const ItemPicker = () => {
   const [quantity, setQuantity] = useState(1);
   const [purchasing, setPurchasing] = useState(false);
   const [purchaseMessage, setPurchaseMessage] = useState(null);
+  const [isClosing, setIsClosing] = useState(false);
+
 
   const countToKG = 50;
   const multiplier = 1000 / countToKG;
@@ -38,7 +41,11 @@ const ItemPicker = () => {
   };
 
   const closeModal = () => {
-    setSelectedItem(null);
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      setSelectedItem(null);
+    }, 300); // Match this with your animation duration (0.3s = 300ms)
   };
 
   const handleQuantityChange = (e) => {
@@ -125,9 +132,9 @@ const ItemPicker = () => {
 
         {/* Modal for selected item */}
         {selectedItem && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-              <div className={`bg-white rounded-lg w-full overflow-hidden ${isMobile ? "max-w-xs" : "max-w-lg"}`}>
-                <div className={`overflow-hidden ${isMobile ? "h-40" : "h-64"}`}>
+            <div className={`fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50 modal-overlay ${isClosing ? 'fade-out' : ''}`}>
+              <div className={`bg-white rounded-lg w-full overflow-hidden ${isMobile ? "max-w-xs" : "max-w-lg"} modal-content ${isClosing ? 'fade-out' : ''}`}>
+              <div className={`overflow-hidden ${isMobile ? "h-40" : "h-64"}`}>
                   <img
                       src={selectedItem.ItemPhotoLink || "/api/placeholder/400/300"}
                       alt={selectedItem.ItemName}
