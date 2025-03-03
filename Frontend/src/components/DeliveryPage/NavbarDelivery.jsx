@@ -1,21 +1,38 @@
 import { useState, useEffect } from 'react';
 import useMobileDetection from "../../mobileDetection.js";
 import ProfileDropdown from './../NavbarElements/ProfileDropdown';
-import ExpandableItem from './OrderItem.jsx';
+import OrderItem from './OrderItem.jsx';
 import GoogleMapsDirections from './MapDirection.jsx';
+import Util from '../../Util.js';
 
 const ResponsiveNavbar = () => {
   const [activeTab, setActiveTab] = useState('A');
   const [isListBarOpen, setIsListBarOpen] = useState(false);
+  const [tabContents, setTabContents] = useState({ 'A':[], 'B':[], 'C':[] });
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const isDesktop = !useMobileDetection();
   
+  //const tabContents =
+
   useEffect(() => {
     if (isDesktop) {
       //keep list bar open on desktop
       setIsListBarOpen(true); 
     }
   }, [isDesktop]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+        try {
+            const response = await Util.callBackend('getOrders');
+            setTabContents(response);
+        } catch (error) {
+            console.error('Failed to fetch recipes:', error);
+        }
+    };
+
+    fetchOrders();
+}, []);
   
   // Handle tab click
   const handleTabClick = (tab) => {
@@ -44,23 +61,28 @@ const ResponsiveNavbar = () => {
     // Add your button Z action here
   };
 
-  const items = [
-    {
-      infoA: "Item Title 1 of a list item that will be very long because it will hold address and addresses are long",
-      infoB: [
-        "This is the first line of extended information.",
-        "This is the second line with more details.",
-        "And here's a third line with additional context."
-      ]
-    },
-    {
-      infoA: "Item Title 2",
-      infoB: [
-        "Extended information for the second item.",
-        "More details about this particular item."
-      ]
-    }
-  ];
+  //remove this when util's fake data works
+  // const tabContents = {
+  //   'A': [
+  //     {
+  //       address: "Item Title 1 of a list item that will be very long because it will hold address and addresses are long",
+  //       content: [
+  //         "This is the first line of extended information.",
+  //         "This is the second line with more details.",
+  //         "And here's a third line with additional context."
+  //       ]
+  //     },
+  //     {
+  //       address: "Item Title 2",
+  //       content: [
+  //         "Extended information for the second item.",
+  //         "More details about this particular item."
+  //       ]
+  //     }
+  //   ],
+  //   'B': [],
+  //   'C': []
+  // };
 
   return (
     <div className="flex flex-col h-screen">
@@ -98,14 +120,20 @@ const ResponsiveNavbar = () => {
           >
             <h1 className="p-4 text-xl font-bold">List of {activeTab}</h1>
             {/* List content would go here */}
-            {items.map((item, index) => (
-              <ExpandableItem
-                key={index}
-                infoA={item.infoA}
-                infoB={item.infoB}
-                onButtonZClick={() => handleButtonZClick(index)}
-              />
-            ))}
+            <div className="p-2">
+              {tabContents[activeTab].length > 0 ? (
+                tabContents[activeTab].map((item, index) => (
+                  <OrderItem
+                    key={index}
+                    address={item.address}
+                    content={item.content}
+                    onButtonZClick={() => handleButtonZClick(index)}
+                  />
+                ))
+              ) : (
+                <p className="p-4 text-gray-500">No orders available</p>
+              )}
+            </div>
           </div>
         )}
 
