@@ -144,36 +144,78 @@ class Util {
           }
       ],
       "saveButcher": "success",
+      "getMostProfits": [
+          {
+              itemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
+              itemName: "Minced Meat",
+              totalProfit: 1199.80,
+              totalSales: 20
+          },
+          {
+              itemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
+              itemName: "Cubed Meat",
+              totalProfit: 1399.80,
+              totalSales: 20
+          },
+          {
+              itemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
+              itemName: "Entrecôte",
+              totalProfit: 7200.00,
+              totalSales: 60
+          },
+          {
+              itemPhotoLink: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
+              itemName: "Steak",
+              totalProfit: 2999.70,
+              totalSales: 30
+          },
+          {
+              itemPhotoLink: "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
+              itemName: "Chopped Meat",
+              totalProfit: 3349.50,
+              totalSales: 50
+          }
+      ],
       "getLatestSales": [
           {
-              itemPhoto: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
-              itemCount: 2,
-              totalPrice: 119.98,
-              saleProfit: 30.00
+              "itemName": "Minced Meat",
+              "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
+              "paymentMethod": "Paypal",
+              "paymentID": "#416645453773",
+              "status": "Success",
+              "totalPrice": 119.98
           },
           {
-              itemPhoto: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
-              itemCount: 1,
-              totalPrice: 69.99,
-              saleProfit: 15.00
+              "itemName": "Cubed Meat",
+              "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
+              "paymentMethod": "Apple Pay",
+              "paymentID": "#147784455454",
+              "status": "Canceled",
+              "totalPrice": 69.99
           },
           {
-              itemPhoto: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
-              itemCount: 3,
-              totalPrice: 360.00,
-              saleProfit: 90.00
+              "itemName": "Entrecôte",
+              "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
+              "paymentMethod": "Stripe",
+              "paymentID": "#147784455454",
+              "status": "Pending",
+              "totalPrice": 360.00
           },
           {
-              itemPhoto: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
-              itemCount: 1,
-              totalPrice: 99.99,
-              saleProfit: 25.00
+              "itemName": "Steak",
+              "itemPhoto": "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
+              "paymentMethod": "PayU",
+              "paymentID": "#147784455454",
+              "status": "Success",
+              "totalPrice": 99.99
           },
           {
-              itemPhoto: "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
-              itemCount: 1,
-              totalPrice: 66.99,
-              saleProfit: 16.99
+              "itemName": "Chopped Meat",
+              "itemPhoto": "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
+              "paymentMethod": "Paytm",
+              "paymentID": "#147784455454",
+              "status": "Success",
+              "totalPrice": 66.99
           }
       ],
       "getRecipes": [
