@@ -10,11 +10,10 @@ const Header = () => {
 
   return (
       <>
-          // Make it so that the cartbar only shows up when savedUser.role is user or empty AI!
         <header className="bg-red-300 flex justify-between items-center p-2 relative">
           {/* Navigation Button */}
           <button
-              className="w-10 h-10 flex justify-center items-center text-2xl rounded-lg bg-red-800 text-pink-200 cursor-pointer transition-all duration-300 hover:bg-red-600 hover:text-white ml-3 focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              className="w-10 h-10 flex justify-center items-center text-2xl rounded-lg bg-red-800 text-pink-200 cursor-pointer transition-all duration-300 hover:bg-red-600 hover:text-white ml-3 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               onClick={() => setShowNavbar(!showNavbar)}
           >
             ☰
@@ -28,7 +27,7 @@ const Header = () => {
               <UserProfile/>
           ) : (
               <button
-                  className="w-20 h-10 bg-red-800 text-pink-200 rounded-3xl cursor-pointer transition-all duration-300 hover:bg-red-600 hover:text-white mr-3 focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  className="w-20 h-10 bg-red-800 text-pink-200 rounded-3xl cursor-pointer transition-all duration-300 hover:bg-red-600 hover:text-white mr-3 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   onClick={() => setShowLogin(true)}
               >
                 Login

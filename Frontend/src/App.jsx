@@ -13,6 +13,7 @@ import NavbarButcher from "./components/ButcherPage/NavbarButcher.jsx";
 import ButcherItemPicker from "./components/ButcherPage/ButcherItemPicker.jsx"; // Import styles
 import NavbarDelivery from "./components/DeliveryPage/NavbarDelivery.jsx";
 import UserList from "./components/AdminPage/UserList.jsx";
+import AdminHeader from "./components/AdminPage/AdminHeader.jsx";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(Util.currentPage);
@@ -61,10 +62,11 @@ export default function App() {
                         <button onClick={() => Util.navigateTo("admin")}>Go to Admin Panel</button>
                     </div>
                 );
+            case "admin/users":
             case "admin":
                 return (
                     <div>
-                        <h1>Admin Page</h1>
+                        <AdminHeader />
                         <UserList />
                         <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
                     </div>

@@ -33,7 +33,7 @@ export default function UserProfile() {
             <img
                 src={profilePictureURL}
                 alt="User Profile"
-                className="w-16 h-16 rounded-full cursor-pointer"
+                className="w-16 h-16 rounded-full cursor-pointer border-4 border-gray-300"
                 onClick={toggleMenu}
             />
             {menuOpen && (
