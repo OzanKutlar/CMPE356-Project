@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
 
 const GoogleMapsDirections = ({ targetAddress }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -9,7 +8,7 @@ const GoogleMapsDirections = ({ targetAddress }) => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  const apikey = import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+  const apikey = "AIzaSyDbOQL-5NhQI-fft7fzJ74726ec6clN05M";//import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
   const mapRef = useRef(null);
   const directionsServiceRef = useRef(null);
@@ -59,7 +58,7 @@ const GoogleMapsDirections = ({ targetAddress }) => {
             map.setCenter(userLocation);
             
             // Place a marker at user's location
-            new window.google.maps.marker.AdvancedMarketElement({
+            new window.google.maps.Marker({
               position: userLocation,
               map,
               icon: {
@@ -93,7 +92,7 @@ const GoogleMapsDirections = ({ targetAddress }) => {
     // Load Google Maps API if not already loaded
     if (!window.google) {
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apikey}&libraries=places`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDbOQL-5NhQI-fft7fzJ74726ec6clN05M&libraries=places`;
       script.async = true;
       script.defer = true;
       script.onload = initMap;
@@ -208,10 +207,6 @@ const GoogleMapsDirections = ({ targetAddress }) => {
       ></div>
     </div>
   );
-};
-
-GoogleMapsDirections.propTypes = {
-  targetAddress: PropTypes.any
 };
 
 export default GoogleMapsDirections;

@@ -8,6 +8,7 @@ export default function UserProfile() {
     const savedUser = Util.savedUser;
     const profilePictureURL = savedUser.profilePictureLink || '/default-profile.png'; // Fallback to a default image
     const isAdmin = savedUser.role === 'admin';
+    const isDelivery = savedUser.role === 'delivery';
 
     const toggleMenu = () => {
         setMenuOpen((prev) => !prev);
@@ -27,6 +28,11 @@ export default function UserProfile() {
         console.log('Switch to Admin Panel clicked');
         Util.navigateTo("admin");
     };
+
+    const handleSwitchToDeliveryPanel = () => {
+        console.log('Switch to Delivery Panel clicked');
+        Util.navigateTo("delivery");
+    }
 
     return (
         <div className="relative inline-block">
@@ -56,6 +62,14 @@ export default function UserProfile() {
                             onClick={handleSwitchToAdminPanel}
                         >
                             Switch to Admin Panel
+                        </button>
+                    )}
+                    {isDelivery && (
+                        <button
+                            className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                            onClick={handleSwitchToDeliveryPanel}
+                        >
+                            Switch to Delivery Panel
                         </button>
                     )}
                 </div>

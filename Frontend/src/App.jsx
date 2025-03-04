@@ -10,7 +10,6 @@ import "./App.css";
 import CartItemsLarge from "./components/CartPage/CartItemsLarge/CartItemsLarge.jsx";
 import ButcherItemSelector from "./components/ButcherPage/ButcherItem.jsx";
 import ButcherItemPicker from "./components/ButcherPage/ButcherItemPicker.jsx"; // Import styles
-import NavbarDelivery from "./components/DeliveryPage/NavbarDelivery.jsx";
 import UserList from "./components/AdminPage/UserList.jsx";
 import AdminHeader from "./components/AdminPage/AdminHeader.jsx";
 import ButcherHeader from "./components/ButcherPage/Global/ButcherHeader.jsx";
@@ -18,6 +17,7 @@ import ButcherMostProfit from "./components/ButcherPage/Home/ButcherMostProfit.j
 import ButcherLatestSale from "./components/ButcherPage/Home/ButcherLatestSale.jsx";
 import ButcherTransactions from "./components/ButcherPage/Transactions/ButcherTransactions.jsx";
 import ButcherItems from "./components/ButcherPage/Items/ButcherItems.jsx";
+import DeliveryPage from "./components/DeliveryPage/DeliveryPage.jsx";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(Util.currentPage);
@@ -127,7 +127,7 @@ export default function App() {
             case "delivery":
                 return (
                     <div>
-                        <NavbarDelivery/>
+                        <DeliveryPage/>
                         <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
                     </div>
                 )
