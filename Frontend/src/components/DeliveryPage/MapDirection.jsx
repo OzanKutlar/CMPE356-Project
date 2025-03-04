@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
 
 const GoogleMapsDirections = ({ targetAddress }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -59,7 +58,7 @@ const GoogleMapsDirections = ({ targetAddress }) => {
             map.setCenter(userLocation);
             
             // Place a marker at user's location
-            new window.google.maps.marker.AdvancedMarketElement({
+            new window.google.maps.Marker({
               position: userLocation,
               map,
               icon: {
@@ -208,10 +207,6 @@ const GoogleMapsDirections = ({ targetAddress }) => {
       ></div>
     </div>
   );
-};
-
-GoogleMapsDirections.propTypes = {
-  targetAddress: PropTypes.any
 };
 
 export default GoogleMapsDirections;
