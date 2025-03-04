@@ -75,21 +75,7 @@ const BestSellerListFullScreen = () => {
     };
 
     return (
-        <div className="w-full h-screen bg-gray-50 flex flex-col">
-            {/* Header */}
-            <div className="flex justify-between items-center border-b pb-4 px-6">
-                <h3 className="text-2xl font-bold text-gray-800">Best Sellers</h3>
-                {!loading && (
-                    <button
-                        className="px-4 h-8 bg-gray-800 text-white text-sm font-medium rounded-lg cursor-pointer transition-all duration-300 hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-                        onClick={() => Util.navigateTo("butcher/sales")}
-                    >
-                        View All →
-                    </button>
-                )}
-            </div>
-
-
+        <div className="w-full bg-gray-50 flex flex-col">
             {/* Content */}
             {loading ? (
                 <div className="flex items-center justify-center flex-grow">

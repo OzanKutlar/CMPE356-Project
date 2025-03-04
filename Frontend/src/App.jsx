@@ -24,19 +24,10 @@ export default function App() {
     const [animationClass, setAnimationClass] = useState("opacity-100");
 
     useEffect(() => {
-        // Register listener for page changes
-        const removeListener = Util.addPageChangeListener((newPage) => {
-            setAnimationClass("opacity-0");
-            setTimeout(() => {
-                setCurrentPage(newPage);
-                setAnimationClass("opacity-100"); // Fade-in new page
-                window.history.pushState({}, '', `/${newPage}`);
-            }, 300);
-        });
-
-    const handlePopState = () => {
-            const path = window.location.pathname.split('/')[1];
-            Util.navigateTo(path || "home");
+        const handlePopState = () => {
+            const path = window.location.pathname.substring(1);
+            console.log(path);
+            Util.navigateSilent(path || "home");
         };
         window.addEventListener("popstate", handlePopState);
 
@@ -48,12 +39,21 @@ export default function App() {
     }, []);
 
     useEffect(() => {
-        const path = window.location.pathname;
-        const value = path.split('/')[1];
+        const value = window.location.pathname.substring(1);
         if (value) {
             Util.navigateTo(value);
         }
     }, []);
+
+    const removeListener = Util.addPageChangeListener((newPage) => {
+        setAnimationClass("opacity-0");
+        setTimeout(() => {
+            setCurrentPage(newPage);
+            setAnimationClass("opacity-100"); // Fade-in new page
+            window.history.pushState({}, '', `/${newPage}`);
+        }, 300);
+    });
+
 
     const renderPage = () => {
         switch (currentPage) {
