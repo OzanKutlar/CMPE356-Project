@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import Util from "../../Util.js";
+import Util from "../../../Util.js";
 import "./ButcherTransactions.css"
 
 const FullscreenSales = () => {
@@ -8,6 +8,7 @@ const FullscreenSales = () => {
     const [expandedTransaction, setExpandedTransaction] = useState(null);
     const [notification, setNotification] = useState({message: '', isLoading: false, isError: false});
     const [loading, setLoading] = useState(false);
+    const [disabledButtons, setDisabledButtons] = useState({});
 
     const showNotification = (message, isError = false) => {
         setNotification({message, isLoading: false, isError});
@@ -36,9 +37,8 @@ const FullscreenSales = () => {
         setExpandedTransaction((prev) => (prev === transactionId ? null : transactionId));
     };
 
-
-
     const handleAction = async (action, transactionId) => {
+        setDisabledButtons((prev) => ({...prev, [action + transactionId]: true}));
         setNotification({message: '', isLoading: true, isError: false});
         try {
             await Util.callBackend(action, {
@@ -49,9 +49,10 @@ const FullscreenSales = () => {
         } catch (err) {
             console.error(err);
             showNotification('Action failed', true);
+        } finally {
+            setDisabledButtons((prev) => ({...prev, [action + transactionId]: false}));
         }
     };
-
 
     if (error) {
         return <div className="text-red-500 text-center mt-4 font-medium">{error}</div>;
@@ -136,24 +137,40 @@ const FullscreenSales = () => {
                                 </tr>
                                 <tr>
                                     <td colSpan="6">
-                                        <div className={`expanded-row ${expandedTransaction === sale.id ? 'open' : ''}`}>
+                                        <div
+                                            className={`expanded-row ${expandedTransaction === sale.id ? 'open' : ''}`}>
                                             <div className="p-4 bg-gray-50">
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <button
-                                                        className="px-4 py-2 bg-red-500 text-white text-sm rounded-lg transition-all duration-300 hover:bg-red-600"
+                                                        className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${
+                                                            disabledButtons["refundTransaction" + sale.id]
+                                                                ? "bg-gray-400 cursor-not-allowed"
+                                                                : "bg-red-500 hover:bg-red-600"
+                                                        }`}
                                                         onClick={() => handleAction("refundTransaction", sale.id)}
+                                                        disabled={disabledButtons["refundTransaction" + sale.id]}
                                                     >
                                                         Refund Transaction
                                                     </button>
                                                     <button
-                                                        className="px-4 py-2 bg-yellow-500 text-white text-sm rounded-lg transition-all duration-300 hover:bg-yellow-600"
+                                                        className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${
+                                                            disabledButtons["banUser" + sale.id]
+                                                                ? "bg-gray-400 cursor-not-allowed"
+                                                                : "bg-yellow-500 hover:bg-yellow-600"
+                                                        }`}
                                                         onClick={() => handleAction("banUser", sale.id)}
+                                                        disabled={disabledButtons["banUser" + sale.id]}
                                                     >
                                                         Ban User
                                                     </button>
                                                     <button
-                                                        className="px-4 py-2 bg-gray-700 text-white text-sm rounded-lg transition-all duration-300 hover:bg-gray-800"
+                                                        className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${
+                                                            disabledButtons["banAddress" + sale.id]
+                                                                ? "bg-gray-400 cursor-not-allowed"
+                                                                : "bg-gray-700 hover:bg-gray-800"
+                                                        }`}
                                                         onClick={() => handleAction("banAddress", sale.id)}
+                                                        disabled={disabledButtons["banAddress" + sale.id]}
                                                     >
                                                         Ban Address
                                                     </button>
@@ -168,7 +185,8 @@ const FullscreenSales = () => {
                         <tr>
                             {loading ? (
                                 <div className="flex items-center">
-                                    <div className="loader border-t-4 border-b-4 border-gray-800 w-6 h-6 rounded-full animate-spin mr-2"></div>
+                                    <div
+                                        className="loader border-t-4 border-b-4 border-gray-800 w-6 h-6 rounded-full animate-spin mr-2"></div>
                                 </div>
                             ) : (
                                 <td colSpan="6" className="text-center p-4 text-gray-500">

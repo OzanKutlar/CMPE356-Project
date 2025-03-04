@@ -1,5 +1,5 @@
 import React from "react";
-import Util from '../../Util.js';
+import Util from '../../../Util.js';
 
 const NavbarButcher =  ({showNavbar, setShowNavbar}) => {
     const navigatePages = [

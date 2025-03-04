@@ -13,10 +13,10 @@ import ButcherItemPicker from "./components/ButcherPage/ButcherItemPicker.jsx"; 
 import NavbarDelivery from "./components/DeliveryPage/NavbarDelivery.jsx";
 import UserList from "./components/AdminPage/UserList.jsx";
 import AdminHeader from "./components/AdminPage/AdminHeader.jsx";
-import ButcherHeader from "./components/ButcherPage/ButcherHeader.jsx";
-import ButcherMostProfit from "./components/ButcherPage/ButcherMostProfit.jsx";
-import ButcherLatestSale from "./components/ButcherPage/ButcherLatestSale.jsx";
-import ButcherTransactions from "./components/ButcherPage/ButcherTransactions.jsx";
+import ButcherHeader from "./components/ButcherPage/Global/ButcherHeader.jsx";
+import ButcherMostProfit from "./components/ButcherPage/Home/ButcherMostProfit.jsx";
+import ButcherLatestSale from "./components/ButcherPage/Home/ButcherLatestSale.jsx";
+import ButcherTransactions from "./components/ButcherPage/Transactions/ButcherTransactions.jsx";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(Util.currentPage);

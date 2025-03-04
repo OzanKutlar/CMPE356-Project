@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Util from "../../Util.js";
+import Util from "../../../Util.js";
 
 const LatestSales = () => {
     const [sales, setSales] = useState([]);
