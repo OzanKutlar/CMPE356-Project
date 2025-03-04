@@ -7,7 +7,7 @@
 
 ## Setup
 
-1. Copy 'secrets.env.example' to 'secrets.env'.
+1. Copy '.env.example' to '.env'.
 2. Replace api keys in '.env' with your api keys.
   - Google Maps API Key is needed.
 3. Run project.
