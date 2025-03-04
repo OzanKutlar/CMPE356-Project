@@ -7,6 +7,7 @@ const FullscreenSales = () => {
     const [error, setError] = useState(null);
     const [expandedTransaction, setExpandedTransaction] = useState(null);
     const [notification, setNotification] = useState({message: '', isLoading: false, isError: false});
+    const [loading, setLoading] = useState(false);
 
     const showNotification = (message, isError = false) => {
         setNotification({message, isLoading: false, isError});
@@ -35,8 +36,6 @@ const FullscreenSales = () => {
         setExpandedTransaction((prev) => (prev === transactionId ? null : transactionId));
     };
 
-    // First, add loading state
-    const [loading, setLoading] = useState(false);
 
 
     const handleAction = async (action, transactionId) => {
@@ -57,6 +56,14 @@ const FullscreenSales = () => {
     if (error) {
         return <div className="text-red-500 text-center mt-4 font-medium">{error}</div>;
     }
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <div className="w-16 h-16 border-4 border-t-gray-500 border-gray-200 rounded-full animate-spin"></div>
+                <p className="ml-4 text-xl font-semibold">Loading your transactions...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white h-screen overflow-y-auto">
@@ -74,10 +81,6 @@ const FullscreenSales = () => {
                     )}
                 </div>
             ) : null}
-            {/* Header */}
-            <div className="flex justify-between items-center p-6 border-b mb-4">
-                <h1 className="text-3xl font-bold text-gray-800">Latest Transactions</h1>
-            </div>
 
             {/* Table */}
             <div className="px-6">

@@ -33,8 +33,9 @@ const BestSellerList = () => {
                 )}
             </div>
             {loading ? (
-                <div className="flex items-center">
-                    <div className="loader border-t-4 border-b-4 border-gray-800 w-6 h-6 rounded-full animate-spin mr-2"></div>
+                <div className="flex items-center justify-center h-screen">
+                    <div className="w-16 h-16 border-4 border-t-gray-500 border-gray-200 rounded-full animate-spin"></div>
+                    <p className="ml-4 text-xl font-semibold">Loading your best sellers...</p>
                 </div>
             ) : (
                 <ul className="space-y-4">
