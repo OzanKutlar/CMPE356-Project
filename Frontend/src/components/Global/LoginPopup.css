@@ -1,0 +1,87 @@
+/* Wrapper for the login popup */
+.login-popup-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Background Overlay */
+.login-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    backdrop-filter: blur(5px); /* Blur effect */
+    z-index: 1;
+}
+
+/* Popup container */
+.login-popup {
+    position: relative;
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90vw;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    z-index: 2; /* Above the overlay */
+    transform: translateY(100px);
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+/* Show the popup with animation */
+.login-popup.show {
+    transform: translateY(0); /* Move up into view */
+    opacity: 1;
+}
+
+/* Input fields styling */
+.login-popup input {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Button styling */
+.login-popup button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.login-popup button:hover {
+    opacity: 0.9;
+}
+
+/* Forgot Password Button */
+.login-popup .forgot-password {
+    background: none;
+    color: #007bff;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    text-align: center;
+}
+
+.login-popup .forgot-password:hover {
+    color: #0056b3;
+}

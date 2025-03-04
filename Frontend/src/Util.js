@@ -1,7 +1,7 @@
 class Util {
   static backendIp = 'http://127.0.0.1:3199/';
   static fakeIt = true;
-  static fakeDataDelay = 2000; // Define the timeout delay
+  static fakeDataDelay = 200; // Define the timeout delay
   static fakeData = {
     'endpoint2': { data: 'Fake Data for Endpoint 2' },
       "items": [

@@ -1,10 +1,8 @@
-// LoginPopup.js
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Util from '../../Util.js';
-import useMobileDetection from "../../mobileDetection.js";
+import './LoginPopup.css'; // Import the CSS file
 
-const LoginPopup = ({setShowLogin}) => {
-    const isMobile = useMobileDetection();
+const LoginPopup = ({ setShowLogin }) => {
     const [username, setUsername] = useState('');
     const [showPasswordField, setShowPasswordField] = useState(false);
     const [showConfirmPasswordField, setShowConfirmPasswordField] = useState(false);
@@ -33,10 +31,8 @@ const LoginPopup = ({setShowLogin}) => {
     }, [username]);
 
     const checkUserExistence = async (usernameString) => {
-        console.log("Trying to send backend request with user: " + usernameString);
         try {
-            const data = await Util.callBackend(`check-user`, {username: usernameString});
-            console.log("Received that the user exists? " + data.exists);
+            const data = await Util.callBackend(`check-user`, { username: usernameString });
             if (data.exists) {
                 setShowPasswordField(true);
                 setShowConfirmPasswordField(false);
@@ -55,8 +51,6 @@ const LoginPopup = ({setShowLogin}) => {
     };
 
     const handleLoginClick = async () => {
-        console.log(`${buttonText} clicked`);
-
         const headers = {
             username: username,
             password: document.querySelector('input[placeholder="Password"]').value,
@@ -72,7 +66,7 @@ const LoginPopup = ({setShowLogin}) => {
 
             if (s.message === "Success") {
                 Util.savedUser = s.user;
-                setShowLogin(false); // Close the popup
+                setShowLogin(false);
             } else {
                 console.error(`Error: ${s.message}`);
             }
@@ -81,39 +75,30 @@ const LoginPopup = ({setShowLogin}) => {
         }
     };
 
+    const handleForgotPasswordClick = () => {
+        Util.navigateTo('forgot');
+    };
+
     return (
-        <div
-            className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 w-[300px] p-5 z-[3] bg-white rounded-[8px] shadow-[0_0_20px_rgba(0,0,0,0.2)] transition-transform duration-500 ease-in-out ${fadeIn ? 'translate-y-0' : 'translate-y-[100px] opacity-0'}`}
-        >
-            <div className="flex flex-col items-center">
-                {isMobile && (
-                    <p className="mb-5 text-lg text-[#333]">This content is optimized for mobile devices.</p>
-                )}
-                <h2 className="mb-5 text-2xl text-[#333]">
-                    {buttonText === 'Login' ? 'Login' : 'Register'}
-                </h2>
+        <div className="login-popup-wrapper">
+            {/* Background Overlay */}
+            <div className="login-overlay" onClick={() => setShowLogin(false)}></div>
+
+            {/* Popup */}
+            <div className={`login-popup ${fadeIn ? 'show' : ''}`}>
+                <h2>{buttonText === 'Login' ? 'Login' : 'Register'}</h2>
                 <input
                     type="text"
                     placeholder="Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="w-full p-2.5 my-2.5 border border-[1px] border-[#ccc] rounded-[4px]"
                 />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    className={`w-full p-2.5 my-2.5 border border-[1px] border-[#ccc] rounded-[4px] overflow-hidden transition-all duration-300 ease-in-out ${
-                        showPasswordField ? 'max-h-[50px] opacity-100 visible' : 'max-h-0 opacity-0 invisible'
-                    }`}
-                />
-                <input
-                    type="password"
-                    placeholder="Confirm Password"
-                    className={`w-full p-2.5 my-2.5 border border-[1px] border-[#ccc] rounded-[4px] overflow-hidden transition-all ease-in-out ${
-                        showConfirmPasswordField ? 'max-h-[50px] opacity-100' : 'max-h-0 opacity-0'
-                    }`}
-                    style={{transition: 'max-height 0.35s ease-in-out, opacity 0.3s ease-in-out'}}
-                />
+                {showPasswordField && (
+                    <input type="password" placeholder="Password" />
+                )}
+                {showConfirmPasswordField && (
+                    <input type="password" placeholder="Confirm Password" />
+                )}
                 <button
                     onClick={handleLoginClick}
                     onMouseEnter={() => setIsHovered(true)}
@@ -122,6 +107,12 @@ const LoginPopup = ({setShowLogin}) => {
                     className="mt-[15px] px-5 py-2 rounded-[4px] text-[16px] text-white cursor-pointer transition-colors duration-300"
                 >
                     {buttonText}
+                </button>
+                <button
+                    onClick={handleForgotPasswordClick}
+                    className="forgot-password"
+                >
+                    Forgot your password?
                 </button>
             </div>
         </div>
