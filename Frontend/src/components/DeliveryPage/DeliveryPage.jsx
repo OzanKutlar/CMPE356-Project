@@ -51,12 +51,12 @@ const DeliveryPage = () => {
     };
 
     const handleOrdersClick = (index) => {
-        console.log(`Button Z clicked for item ${index}`);
+        console.log(`in tab A ${index}`);
         // Add your button Z action here
     };
 
     const handleCurrentOrdersClick = (index) => {
-        console.log(`Button Z clicked for item ${index}`);
+        console.log(`in tab B ${index}`);
     }
 
     const renderListBar = () => {
@@ -91,6 +91,8 @@ const DeliveryPage = () => {
     //   'C': []
     // };
 
+    const targetAddress = "Yeniköy, Köybaşı Cd. No:166/B, 34464 Sarıyer/İstanbul";
+    const startAddress = "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul";
     return (
         <div className="flex flex-col h-screen">
             {/* Navbar */}
@@ -98,9 +100,11 @@ const DeliveryPage = () => {
 
             {/* Main content area */}
             <div className={`flex flex-1 ${isDesktop ? 'flex-row' : 'flex-col'}`}>
+                
                 {isListBarOpen && renderListBar()}
+                
                 <div className="flex-1 p-4 bg-white">
-                    <GoogleMapsDirections targetAddress={"Yeniköy, Köybaşı Cd. No:166/B, 34464 Sarıyer/İstanbul"} />
+                    <GoogleMapsDirections startAddress={startAddress} targetAddress={targetAddress} />
                 </div>
             </div>
         </div>
