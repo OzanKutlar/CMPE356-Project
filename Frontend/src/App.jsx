@@ -17,6 +17,7 @@ import ButcherHeader from "./components/ButcherPage/Global/ButcherHeader.jsx";
 import ButcherMostProfit from "./components/ButcherPage/Home/ButcherMostProfit.jsx";
 import ButcherLatestSale from "./components/ButcherPage/Home/ButcherLatestSale.jsx";
 import ButcherTransactions from "./components/ButcherPage/Transactions/ButcherTransactions.jsx";
+import ButcherItems from "./components/ButcherPage/Items/ButcherItems.jsx";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(Util.currentPage);
@@ -105,7 +106,7 @@ export default function App() {
                 return (
                     <div>
                         <ButcherHeader/>
-                        <ButcherItemSelector/>
+                        <ButcherItems/>
                         <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
                     </div>
                 );
