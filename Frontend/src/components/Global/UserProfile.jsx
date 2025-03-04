@@ -35,11 +35,11 @@ export default function UserProfile() {
     }
 
     return (
-        <div className="relative inline-block">
+        <div className="relative inline-block ">
             <img
                 src={profilePictureURL}
                 alt="User Profile"
-                className="w-16 h-16 rounded-full cursor-pointer border-4 border-gray-300"
+                className="w-10 h-10 rounded-full cursor-pointer border-4 border-gray-300"
                 onClick={toggleMenu}
             />
             {menuOpen && (
