@@ -85,3 +85,19 @@
 .login-popup .forgot-password:hover {
     color: #0056b3;
 }
+
+/* Password Field Container */
+.password-field-container {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.5s ease, transform 0.5s ease;
+    transform: translateY(-20px);
+    opacity: 0;
+}
+
+/* Slide-down animation when triggered */
+.password-field-container.slide-down {
+    max-height: 150px; /* Adjust as needed */
+    transform: translateY(0);
+    opacity: 1;
+}

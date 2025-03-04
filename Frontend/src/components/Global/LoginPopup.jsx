@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Util from '../../Util.js';
-import './LoginPopup.css'; // Import the CSS file
+import './LoginPopup.css'; // Import the updated CSS file
 
 const LoginPopup = ({ setShowLogin }) => {
     const [username, setUsername] = useState('');
@@ -93,12 +93,14 @@ const LoginPopup = ({ setShowLogin }) => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
-                {showPasswordField && (
-                    <input type="password" placeholder="Password" />
-                )}
-                {showConfirmPasswordField && (
-                    <input type="password" placeholder="Confirm Password" />
-                )}
+                <div className={`password-field-container ${showPasswordField ? 'slide-down' : ''}`}>
+                    {showPasswordField && (
+                        <input type="password" placeholder="Password" />
+                    )}
+                    {showConfirmPasswordField && (
+                        <input type="password" placeholder="Confirm Password" />
+                    )}
+                </div>
                 <button
                     onClick={handleLoginClick}
                     onMouseEnter={() => setIsHovered(true)}
@@ -108,12 +110,14 @@ const LoginPopup = ({ setShowLogin }) => {
                 >
                     {buttonText}
                 </button>
-                <button
-                    onClick={handleForgotPasswordClick}
-                    className="forgot-password"
-                >
-                    Forgot your password?
-                </button>
+                {buttonText === 'Login' && (
+                    <button
+                        className="forgot-password"
+                        onClick={handleForgotPasswordClick}
+                    >
+                        Forgot Password?
+                    </button>
+                )}
             </div>
         </div>
     );
