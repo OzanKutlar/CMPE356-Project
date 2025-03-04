@@ -108,7 +108,7 @@ class Util {
               Username: "john_doe",
               email: "john.doe@example.com",
               phone: "+1 (555) 123-4567",
-              role: "user"
+              role: "delivery"
           },
           {
               id: 2,
@@ -317,29 +317,27 @@ class Util {
               "data": "Heat oil in a pan. Add chopped meat, bell peppers, onions, and soy sauce. Stir-fry on high heat until cooked through. Serve with rice."
           }
       ],
-    "orders": [
-        {
-            'A': [
-                {
-                address: "Item Title 1 of a list item that will be very long because it will hold address and addresses are long",
-                content: [
-                    "This is the first line of extended information.",
-                    "This is the second line with more details.",
-                    "And here's a third line with additional context."
-                ]
-                },
-                {
-                address: "Item Title 2",
-                content: [
-                    "Extended information for the second item.",
-                    "More details about this particular item."
-                ]
-                }
-            ],
-            'B': [],
-            'C': []
-        }
-    ]
+    "orders": {
+        'A': [
+            {
+            address: "Item Title 1 of a list item that will be very long because it will hold address and addresses are long",
+            content: [
+                "This is the first line of extended information.",
+                "This is the second line with more details.",
+                "And here's a third line with additional context."
+            ]
+            },
+            {
+            address: "Item Title 2",
+            content: [
+                "Extended information for the second item.",
+                "More details about this particular item."
+            ]
+            }
+        ],
+        'B': [],
+        'C': []
+    }
   };
 
   // Navigation system
