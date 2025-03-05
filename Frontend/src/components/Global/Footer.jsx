@@ -1,4 +1,5 @@
 import React from "react";
+import Util from "../../Util.js";
 
 const Footer = () => {
   return (
@@ -28,6 +29,22 @@ const Footer = () => {
         <div className="mb-4">
           <p className="text-lg">Contact us: +123 456 7890</p>
           <p className="text-lg">Email: support@ebutcher.com</p>
+        </div>
+
+        {/* About Us and FAQ Links */}
+        <div className="mb-4">
+          <button
+              className="text-lg transition-all duration-300 hover:text-gray-300 mr-6"
+              onClick={() => Util.navigateTo("about")}
+          >
+            About Us
+          </button>
+          <button
+              className="text-lg transition-all duration-300 hover:text-gray-300 mr-6"
+              onClick={() => Util.navigateTo("faq")}
+          >
+            FAQ
+          </button>
         </div>
 
         {/* Quality & Copyright Message */}
