@@ -11,7 +11,7 @@ export function ListBarDelivery({ isDesktop, listContent, handleButtonClick }) {
       <div className="p-2">
         {listContent.length > 0 ? 
           listContent.map((item, index) => 
-          <OrderItem key={index} address={item.address} content={item.content} onButtonZClick={() => handleButtonClick(index)} />) 
+          <OrderItem key={index} order={listContent[index]} onButtonClick={() => handleButtonClick(index)} />) 
           : <p className="p-4 text-gray-500">No orders available</p>}
       </div>
     </div>
