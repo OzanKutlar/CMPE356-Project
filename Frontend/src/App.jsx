@@ -145,6 +145,7 @@ export default function App() {
 
     return (
         <div className={`app-container transition-opacity duration-300 ${animationClass}`}>
+             <Email />
             {renderPage()}
         </div>
     );
