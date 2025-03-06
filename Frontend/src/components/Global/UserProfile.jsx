@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Util from "../../Util.js";
 
 export default function UserProfile() {
@@ -15,36 +15,31 @@ export default function UserProfile() {
         setMenuOpen((prev) => !prev);
     };
 
-    const handleEditProfile = () => {
-        console.log('Edit Profile clicked');
-        // Add logic for editing profile here
+    const handleAction = (action) => {
+        switch (action) {
+            case 'editProfile':
+                // Add logic for editing profile here
+                break;
+            case 'changePassword':
+                // Add logic for changing password here
+                break;
+            case 'switchToAdminPanel':
+                Util.navigateTo("admin");
+                break;
+            case 'switchToDeliveryPanel':
+                Util.navigateTo("delivery");
+                break;
+            case 'logout':
+                Util.navigateTo("home");
+                Util.delUser();
+                break;
+            case 'switchToButcher':
+                Util.navigateTo("butcher");
+                break;
+            default:
+                break;
+        }
     };
-
-    const handleChangePassword = () => {
-        console.log('Change Password clicked');
-        // Add logic for changing password here
-    };
-
-    const handleSwitchToAdminPanel = () => {
-        console.log('Switch to Admin Panel clicked');
-        Util.navigateTo("admin");
-    };
-
-    const handleSwitchToDeliveryPanel = () => {
-        console.log('Switch to Delivery Panel clicked');
-        Util.navigateTo("delivery");
-    };
-
-    const handleLogout = () => {
-        console.log('Switch to Delivery Panel clicked');
-        Util.navigateTo("home");
-        Util.delUser();
-    };
-
-    const handleSwitchToButcher = () => {
-        console.log('Switch to Butcher clicked');
-        Util.navigateTo("butcher");
-    }
 
     return (
         <div className="relative inline-block ">
@@ -58,20 +53,20 @@ export default function UserProfile() {
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
                     <button
                         className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                        onClick={handleEditProfile}
+                        onClick={() => handleAction('editProfile')}
                     >
                         Edit Profile
                     </button>
                     <button
                         className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                        onClick={handleChangePassword}
+                        onClick={() => handleAction('changePassword')}
                     >
                         Change Password
                     </button>
                     {isAdmin && (
                         <button
                             className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                            onClick={handleSwitchToAdminPanel}
+                            onClick={() => handleAction('switchToAdminPanel')}
                         >
                             Switch to Admin Panel
                         </button>
@@ -79,7 +74,7 @@ export default function UserProfile() {
                     {isDelivery && (
                         <button
                             className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                            onClick={handleSwitchToDeliveryPanel}
+                            onClick={() => handleAction('switchToDeliveryPanel')}
                         >
                             Switch to Delivery Panel
                         </button>
@@ -87,14 +82,14 @@ export default function UserProfile() {
                     {isButcher && (
                         <button
                             className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                            onClick={handleSwitchToButcher}
+                            onClick={() => handleAction('switchToButcher')}
                         >
                             Switch to Butcher Panel
                         </button>
                     )}
                     <button
                         className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                        onClick={handleLogout}
+                        onClick={() => handleAction('logout')}
                     >
                         Log Out
                     </button>
