@@ -3,6 +3,8 @@ import { ListBarDelivery } from './ListBarDelivery.jsx';
 import { ButtonContext } from './ButtonContext';
 import useMobileDetection from "../../mobileDetection.js";
 import GoogleMapsDirections from './MapDirection.jsx';
+import RouteMap from './MarkerMap.jsx';
+import OpenLayerMap from './OpenLayerMap.jsx';
 import Util from '../../Util.js';
 import NavbarDelivery from './NavbarDelivery.jsx';
 
@@ -12,8 +14,8 @@ const DeliveryPage = () => {
     const [AllOrders, setAllOrders] = useState({ 'A': [], 'B': [], 'C': [] });
     const isDesktop = !useMobileDetection();
     
-    const [startAddress, setStartAddress] = useState("");
-    const [targetAddress, setTargetAddress] = useState("");
+    const [startLocation, setStartLocation] = useState("");
+    const [destination, setDestination] = useState("");
 
     useEffect(() => {
         if (isDesktop) {
@@ -88,6 +90,11 @@ const DeliveryPage = () => {
         removeOrderFromTab(order.order_id, currentTab);
     };
 
+    const handleMapRouting = (startLocation, destination) => {
+        setStartLocation(startLocation);
+        setDestination(destination);
+    };
+
     //list rendering according to tab
     const renderListBar = () => {
         if (activeTab === 'A') {
@@ -105,13 +112,16 @@ const DeliveryPage = () => {
 
             {/* Main content area */}
             <div className={`flex flex-1 ${isDesktop ? 'flex-row' : 'flex-col'} overflow-y-auto`}>
-                <ButtonContext.Provider value={{ handleTakeOrder, handleDropOrder, handleComplete }}>
+                <ButtonContext.Provider value={{ handleTakeOrder, handleDropOrder, handleComplete, handleMapRouting }}>
                     {isListBarOpen && renderListBar()}
                 </ButtonContext.Provider>
 
                 <div className="flex-1 p-4 bg-white">
-                    {//<GoogleMapsDirections startAddress={startAddress} targetAddress={targetAddress} />
+                    {//<GoogleMapsDirections startAddress={startLocation} targetAddress={destination} />
                     }
+                    {//<RouteMap startLocation={startLocation} destination={destination} />
+                    }
+                    <OpenLayerMap startLocation={startLocation} destination={destination} />
                 </div>
             </div>
         </div>
