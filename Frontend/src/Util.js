@@ -376,6 +376,18 @@ class Util {
       address: ''
   };
 
+  static delUser(){
+      this.savedUser = {
+          id: '',
+          username: '',
+          profilePictureLink: '',
+          role: '',
+          email: '',
+          phone: '',
+          address: ''
+      };
+  }
+
   static fakeLogin(username){
         const user = Util.fakeData["getUsers"].find(user => user.Username === username);
         if (user) {

@@ -7,7 +7,7 @@ import ItemPicker from "./components/HomePage/ItemPicker/ItemPicker";
 import Recipelist from "./components/RecipePage/RecipeList/RecipeList";
 import Util from './Util';
 import "./App.css";
-import CartItemsLarge from "./components/CartPage/CartItemsLarge/CartItemsLarge.jsx";
+import CartItemsLarge from "./components/CartPage/CartItemsLarge.jsx";
 import ButcherItemSelector from "./components/ButcherPage/ButcherItem.jsx";
 import ButcherItemPicker from "./components/ButcherPage/ButcherItemPicker.jsx"; // Import styles
 import UserList from "./components/AdminPage/UserList.jsx";

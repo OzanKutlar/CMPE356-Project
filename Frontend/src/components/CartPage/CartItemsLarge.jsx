@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import Util from '../../../Util.js';
-import OrderForm from "../CreditCardDetails/OrderForm.jsx";
+import Util from '../../Util.js';
+import OrderForm from "./OrderForm.jsx";
 
 const CartItemsLarge = () => {
     const [cartItems, setCartItems] = useState([]);

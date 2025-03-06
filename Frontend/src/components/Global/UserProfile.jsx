@@ -9,6 +9,7 @@ export default function UserProfile() {
     const profilePictureURL = savedUser.profilePictureLink || '/default-profile.png'; // Fallback to a default image
     const isAdmin = savedUser.role === 'admin';
     const isDelivery = savedUser.role === 'delivery';
+    const isButcher = savedUser.role === 'butcher';
 
     const toggleMenu = () => {
         setMenuOpen((prev) => !prev);
@@ -32,6 +33,17 @@ export default function UserProfile() {
     const handleSwitchToDeliveryPanel = () => {
         console.log('Switch to Delivery Panel clicked');
         Util.navigateTo("delivery");
+    };
+
+    const handleLogout = () => {
+        console.log('Switch to Delivery Panel clicked');
+        Util.navigateTo("home");
+        Util.delUser();
+    };
+
+    const handleSwitchToButcher = () => {
+        console.log('Switch to Butcher clicked');
+        Util.navigateTo("butcher");
     }
 
     return (
@@ -72,6 +84,20 @@ export default function UserProfile() {
                             Switch to Delivery Panel
                         </button>
                     )}
+                    {isButcher && (
+                        <button
+                            className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                            onClick={handleSwitchToButcher}
+                        >
+                            Switch to Butcher Panel
+                        </button>
+                    )}
+                    <button
+                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                        onClick={handleLogout}
+                    >
+                        Log Out
+                    </button>
                 </div>
             )}
         </div>
