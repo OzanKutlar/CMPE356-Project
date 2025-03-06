@@ -7,7 +7,6 @@ const OrderForm = ({formData, onFormDataChange}) => {
         onFormDataChange(updatedFormData);
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         // Send the form data to the backend
@@ -23,7 +22,7 @@ const OrderForm = ({formData, onFormDataChange}) => {
     return (
         <form className="p-0">
             <div className="mb-4">
-                <label htmlFor="cardNumber" className="block text-gray-700 font-medium mb-2">
+                <label htmlFor="cardNumber" className="block text-gray-700 font-medium text-xl font-bold mb-2">
                     Card Number:
                 </label>
                 <input
@@ -33,11 +32,13 @@ const OrderForm = ({formData, onFormDataChange}) => {
                     value={formData.cardNumber}
                     onChange={handleChange}
                     required
+                    maxLength="19"
+                    pattern="\d{4}-\d{4}-\d{4}-\d{4}"
                     className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="expiryDate" className="block text-gray-700 font-medium mb-2">
+                <label htmlFor="expiryDate" className="block text-gray-700 font-medium text-xl font-bold mb-2">
                     Expiry Date:
                 </label>
                 <input
@@ -47,11 +48,13 @@ const OrderForm = ({formData, onFormDataChange}) => {
                     value={formData.expiryDate}
                     onChange={handleChange}
                     required
+                    maxLength="7"
+                    pattern="\d{2}/\d{2}"
                     className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="cvv" className="block text-gray-700 font-medium mb-2">
+                <label htmlFor="cvv" className="block text-gray-700 font-medium text-xl font-bold mb-2">
                     CVV:
                 </label>
                 <input
@@ -61,11 +64,13 @@ const OrderForm = ({formData, onFormDataChange}) => {
                     value={formData.cvv}
                     onChange={handleChange}
                     required
+                    maxLength="3"
+                    pattern="\d{3}"
                     className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="address" className="block text-gray-700 font-medium mb-2">
+                <label htmlFor="address" className="block text-gray-700 font-medium text-xl font-bold mb-2">
                     Address:
                 </label>
                 <textarea
