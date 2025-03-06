@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import Util from "../../../Util.js";
 import useMobileDetection from "../../../mobileDetection.js";
 
@@ -35,11 +35,11 @@ const BestSellerListFullScreen = () => {
             await Util.callBackend("addToCart", headers);
             let unit = "";
             let amount = quantity * countToKG;
-            if(amount < 1000) unit = "gs"
-            else if(amount == 1000) unit = "kg"
+            if (amount < 1000) unit = "gs"
+            else if (amount == 1000) unit = "kg"
             else unit = "kgs";
 
-            if(unit.at(0) == 'k') amount = amount / 1000
+            if (unit.at(0) == 'k') amount = amount / 1000
 
             setPurchaseMessage({
                 type: "success",
@@ -57,7 +57,7 @@ const BestSellerListFullScreen = () => {
 
     useEffect(() => {
         setLoading(true);
-        Util.callBackend("getStock", { userID: Util.savedUser.id })
+        Util.callBackend("getStock", {userID: Util.savedUser.id})
             .then((data) => {
                 setBestSellers(data);
                 setLoading(false);
@@ -79,7 +79,8 @@ const BestSellerListFullScreen = () => {
             {/* Content */}
             {loading ? (
                 <div className="flex items-center justify-center flex-grow">
-                    <div className="w-16 h-16 border-4 border-t-gray-500 border-gray-200 rounded-full animate-spin"></div>
+                    <div
+                        className="w-16 h-16 border-4 border-t-gray-500 border-gray-200 rounded-full animate-spin"></div>
                     <p className="ml-4 text-xl font-semibold">
                         Loading your best sellers...
                     </p>
@@ -134,7 +135,8 @@ const BestSellerListFullScreen = () => {
 
                                     {/* Quantity selector */}
                                     <div className="mb-6 text-center">
-                                        <div className={`flex ${isMobile ? "flex-col" : "flex-row"} items-center justify-center`}>
+                                        <div
+                                            className={`flex ${isMobile ? "flex-col" : "flex-row"} items-center justify-center`}>
                                             {/* Buttons with adjustments for spacing */}
 
                                         </div>

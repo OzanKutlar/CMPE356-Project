@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import Util from "../../../Util.js";
 
 const LatestSales = () => {
@@ -55,7 +55,8 @@ const LatestSales = () => {
 
             {loading ? (
                 <div className="flex items-center justify-center h-screen">
-                    <div className="w-16 h-16 border-4 border-t-gray-500 border-gray-200 rounded-full animate-spin"></div>
+                    <div
+                        className="w-16 h-16 border-4 border-t-gray-500 border-gray-200 rounded-full animate-spin"></div>
                     <p className="ml-4 text-xl font-semibold">Loading your transactions...</p>
                 </div>
             ) : (
@@ -86,7 +87,7 @@ const LatestSales = () => {
                                             <span className="font-medium">{sale.itemName}</span>
                                         </td>
                                         <td className="p-3 text-blue-600 font-medium">
-                                            {sale.paymentMethod} <br />
+                                            {sale.paymentMethod} <br/>
                                             <span className="text-gray-500 text-xs">{sale.paymentID}</span>
                                         </td>
                                         <td className="p-3">

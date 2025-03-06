@@ -1,5 +1,5 @@
-import { ListBarDelivery } from './ListBarDelivery.jsx';
-import { useState, useEffect } from 'react';
+import {ListBarDelivery} from './ListBarDelivery.jsx';
+import {useState, useEffect} from 'react';
 import useMobileDetection from "../../mobileDetection.js";
 import GoogleMapsDirections from './MapDirection.jsx';
 import Util from '../../Util.js';
@@ -10,7 +10,7 @@ import UserProfile from '../Global/UserProfile';
 const DeliveryPage = () => {
     const [activeTab, setActiveTab] = useState('A');
     const [isListBarOpen, setIsListBarOpen] = useState(false);
-    const [AllOrders, setAllOrders] = useState({ 'A': [], 'B': [], 'C': [] });
+    const [AllOrders, setAllOrders] = useState({'A': [], 'B': [], 'C': []});
     const isDesktop = !useMobileDetection();
 
     //const tabContents =
@@ -61,13 +61,15 @@ const DeliveryPage = () => {
 
     const renderListBar = () => {
         if (activeTab === 'A') {
-            return <ListBarDelivery isDesktop={isDesktop} listContent={AllOrders[activeTab]} handleButtonClick={handleOrdersClick} />
+            return <ListBarDelivery isDesktop={isDesktop} listContent={AllOrders[activeTab]}
+                                    handleButtonClick={handleOrdersClick}/>
         } else if (activeTab === 'B') {
-            return <ListBarDelivery isDesktop={isDesktop} listContent={AllOrders[activeTab]} handleButtonClick={handleCurrentOrdersClick} />
+            return <ListBarDelivery isDesktop={isDesktop} listContent={AllOrders[activeTab]}
+                                    handleButtonClick={handleCurrentOrdersClick}/>
         }
         return <h1>Error loading list bar</h1>;
     };
-        
+
     //remove this when util's fake data works
     // const orders = {
     //   'A': [
@@ -96,15 +98,15 @@ const DeliveryPage = () => {
     return (
         <div className="flex flex-col h-screen">
             {/* Navbar */}
-            <NavbarDelivery activeTab={activeTab} handleTabClick={handleTabClick} />
+            <NavbarDelivery activeTab={activeTab} handleTabClick={handleTabClick}/>
 
             {/* Main content area */}
             <div className={`flex flex-1 ${isDesktop ? 'flex-row' : 'flex-col'}`}>
-                
+
                 {isListBarOpen && renderListBar()}
-                
+
                 <div className="flex-1 p-4 bg-white">
-                    <GoogleMapsDirections startAddress={startAddress} targetAddress={targetAddress} />
+                    <GoogleMapsDirections startAddress={startAddress} targetAddress={targetAddress}/>
                 </div>
             </div>
         </div>

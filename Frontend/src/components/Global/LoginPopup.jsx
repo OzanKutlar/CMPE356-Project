@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import Util from '../../Util.js';
 import './LoginPopup.css'; // Import the updated CSS file
 
-const LoginPopup = ({ setShowLogin }) => {
+const LoginPopup = ({setShowLogin}) => {
     const [username, setUsername] = useState('');
     const [showPasswordField, setShowPasswordField] = useState(false);
     const [showConfirmPasswordField, setShowConfirmPasswordField] = useState(false);
@@ -35,7 +35,7 @@ const LoginPopup = ({ setShowLogin }) => {
 
     const checkUserExistence = async (usernameString) => {
         try {
-            const data = await Util.callBackend(`check-user`, { username: usernameString });
+            const data = await Util.callBackend(`check-user`, {username: usernameString});
             if (data.exists) {
                 setShowPasswordField(true);
                 setShowConfirmPasswordField(false);
@@ -99,10 +99,11 @@ const LoginPopup = ({ setShowLogin }) => {
                 />
                 <div className={`password-field-container ${showPasswordField ? 'slide-down' : ''}`}>
                     {showPasswordField && (
-                        <input type="password" placeholder="Password" className="w-full p-3 mb-4 border rounded" />
+                        <input type="password" placeholder="Password" className="w-full p-3 mb-4 border rounded"/>
                     )}
                     {showConfirmPasswordField && (
-                        <input type="password" placeholder="Confirm Password" className="w-full p-3 mb-4 border rounded" />
+                        <input type="password" placeholder="Confirm Password"
+                               className="w-full p-3 mb-4 border rounded"/>
                     )}
                 </div>
                 <button

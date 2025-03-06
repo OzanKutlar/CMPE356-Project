@@ -1,12 +1,12 @@
 import React from "react";
 import Util from '../../../Util.js';
 
-const NavbarButcher =  ({showNavbar, setShowNavbar}) => {
+const NavbarButcher = ({showNavbar, setShowNavbar}) => {
     const navigatePages = [
-        { name: 'Home', path: 'butcher' },
-        { name: 'Add Items', path: 'butcher/add' },
-        { name: 'Sales', path: 'butcher/sales' },
-        { name: 'Reviews', path: 'butcher/reviews' }
+        {name: 'Home', path: 'butcher'},
+        {name: 'Add Items', path: 'butcher/add'},
+        {name: 'Sales', path: 'butcher/sales'},
+        {name: 'Reviews', path: 'butcher/reviews'}
     ];
 
 

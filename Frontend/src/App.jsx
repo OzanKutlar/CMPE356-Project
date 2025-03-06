@@ -70,8 +70,8 @@ export default function App() {
             case "admin":
                 return (
                     <div>
-                        <AdminHeader />
-                        <UserList />
+                        <AdminHeader/>
+                        <UserList/>
                     </div>
                 );
             case "butcher": // Butcher Main page
@@ -139,9 +139,9 @@ export default function App() {
 
     return (
         <div className={`app-container transition-opacity duration-300 ${animationClass}`}>
-             {/*<Email />*/}
+            {/*<Email />*/}
             {renderPage()}
-            <Footer />
+            <Footer/>
         </div>
     );
 }

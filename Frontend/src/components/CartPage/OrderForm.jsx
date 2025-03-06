@@ -1,6 +1,6 @@
 import React from 'react';
 
-const OrderForm = ({ formData, onFormDataChange }) => {
+const OrderForm = ({formData, onFormDataChange}) => {
     const handleChange = (e) => {
         const {name, value} = e.target;
         const updatedFormData = {...formData, [name]: value};

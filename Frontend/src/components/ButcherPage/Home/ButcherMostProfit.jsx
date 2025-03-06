@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import Util from "../../../Util.js";
 
 const BestSellerList = () => {
@@ -7,7 +7,7 @@ const BestSellerList = () => {
     useEffect(() => {
         // Fetch best-selling items data from the backend
         setLoading(true);
-        Util.callBackend("getMostProfits", { userID: Util.savedUser.id })
+        Util.callBackend("getMostProfits", {userID: Util.savedUser.id})
             .then((data) => {
                 setBestSellers(data);
                 setLoading(false);
@@ -34,7 +34,8 @@ const BestSellerList = () => {
             </div>
             {loading ? (
                 <div className="flex items-center justify-center h-screen">
-                    <div className="w-16 h-16 border-4 border-t-gray-500 border-gray-200 rounded-full animate-spin"></div>
+                    <div
+                        className="w-16 h-16 border-4 border-t-gray-500 border-gray-200 rounded-full animate-spin"></div>
                     <p className="ml-4 text-xl font-semibold">Loading your best sellers...</p>
                 </div>
             ) : (

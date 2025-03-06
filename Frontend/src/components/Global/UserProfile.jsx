@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import Util from "../../Util.js";
 
 export default function UserProfile() {
