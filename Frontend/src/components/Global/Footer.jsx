@@ -11,7 +11,7 @@ const Footer = () => {
             href="https://twitter.com/yourhandle"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-2xl transition-all duration-300 hover:text-gray-300"
+            className="text-2xl transition-all duration-300 hover:text-blue-300"
           >
             Twitter
           </a>
@@ -19,7 +19,7 @@ const Footer = () => {
             href="https://www.instagram.com/yourhandle"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-2xl transition-all duration-300 hover:text-gray-300"
+            className="text-2xl transition-all duration-300 hover:text-blue-300"
           >
             Instagram
           </a>
@@ -34,13 +34,13 @@ const Footer = () => {
         {/* About Us and FAQ Links */}
         <div className="mb-4">
           <button
-              className="text-lg transition-all duration-300 hover:text-gray-300 mr-6"
+              className="text-lg transition-all duration-300 hover:text-blue-300 mr-6"
               onClick={() => Util.navigateTo("about")}
           >
             About Us
           </button>
           <button
-              className="text-lg transition-all duration-300 hover:text-gray-300 mr-6"
+              className="text-lg transition-all duration-300 hover:text-blue-300 mr-6"
               onClick={() => Util.navigateTo("faq")}
           >
             FAQ

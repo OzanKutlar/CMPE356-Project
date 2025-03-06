@@ -64,7 +64,6 @@ export default function App() {
                         <Header/>
                         <Slider/>
                         <ItemPicker/>
-                        <button onClick={() => Util.navigateTo("admin")}>Go to Admin Panel</button>
                     </div>
                 );
             case "admin/users":
@@ -73,7 +72,6 @@ export default function App() {
                     <div>
                         <AdminHeader />
                         <UserList />
-                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
                     </div>
                 );
             case "butcher": // Butcher Main page
@@ -84,7 +82,6 @@ export default function App() {
                             <ButcherLatestSale/>
                             <ButcherMostProfit/>
                         </div>
-                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
                     </div>
                 );
             case "butcher/add": // Butcher Add Page
@@ -92,7 +89,6 @@ export default function App() {
                     <div>
                         <ButcherHeader/>
                         <ButcherItemSelector/>
-                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
                     </div>
                 );
             case "butcher/transactions": // Butcher Add Page
@@ -100,7 +96,6 @@ export default function App() {
                     <div>
                         <ButcherHeader/>
                         <ButcherTransactions/>
-                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
                     </div>
                 );
             case "butcher/sales": // Butcher Add Page
@@ -108,28 +103,26 @@ export default function App() {
                     <div>
                         <ButcherHeader/>
                         <ButcherItems/>
-                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
                     </div>
                 );
             case "recipe":
                 return (
                     <div>
+                        <Header/>
                         <Recipelist/>
-                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
                     </div>
                 );
             case "cart":
                 return (
                     <div>
+                        <Header/>
                         <CartItemsLarge/>
-                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
                     </div>
                 );
             case "delivery":
                 return (
                     <div>
                         <DeliveryPage/>
-                        <button onClick={() => Util.navigateTo("home")}>Back to Home</button>
                     </div>
                 )
 

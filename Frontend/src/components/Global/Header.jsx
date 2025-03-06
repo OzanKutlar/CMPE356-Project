@@ -1,46 +1,55 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import CartBar from "../HomePage/CartBar/CartBar.jsx";
 import LoginPopup from "./LoginPopup.jsx";
 import Util from "../../Util.js";
 import UserProfile from "./UserProfile.jsx";
 
 const Header = () => {
-  const [showLogin, setShowLogin] = useState(false);
-  const [showNavbar, setShowNavbar] = useState(false);
+    const [showLogin, setShowLogin] = useState(false);
+    const [showNavbar, setShowNavbar] = useState(false);
 
-  return (
-      <>
-        <header className="bg-rose-500 flex justify-between items-center p-2 relative">
-          {/* Navigation Button */}
-          <button
-              className="w-10 h-10 flex justify-center items-center text-2xl rounded-lg bg-rose-50 text-rose-700 cursor-pointer transition-all duration-300 hover:bg-red-600 hover:text-white ml-3 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              onClick={() => setShowNavbar(!showNavbar)}
-          >
-            ☰
-          </button>
-          {/* Title */}
-          <h1 className="text-3xl font-bold text-red-200 text-center flex-grow">
-            E-Butcher
-          </h1>
-          {/* Login Button or User Profile */}
-          {Util.savedUser.id !== "" ? (
-              <UserProfile/>
-          ) : (
-              <button
-                  className="w-20 h-10 bg-rose-50 text-rose-700 rounded-3xl cursor-pointer transition-all duration-300 hover:bg-red-600 hover:text-white mr-3 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  onClick={() => setShowLogin(true)}
-              >
-                Login
-              </button>
-          )}
-        </header>
-        {/* Always render CartBar, but control its visibility */}
-        <CartBar showNavbar={showNavbar} setShowNavbar={setShowNavbar}/>
+    return (
+        <>
+            <header className="bg-rose-500 flex justify-between items-center p-2 relative">
+                {/* Navigation Button */}
+                <button
+                    className="w-10 h-10 flex justify-center items-center rounded-lg bg-rose-50 cursor-pointer transition-all duration-300 hover:bg-red-600 ml-3 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 group"
+                    onClick={() => setShowNavbar(!showNavbar)}
+                >
+                    <img
+                        src="/src/assets/trolley.svg"
+                        alt="Trolley Icon"
+                        className="w-6 h-6 transition-all duration-300 group-hover:invert group-hover:brightness-0 group-hover:contrast-200"
+                    />
+                </button>
 
-        {/* Login Popup */}
-        {showLogin && <LoginPopup setShowLogin={setShowLogin}/>}
-      </>
-  );
+                {/* Title */}
+                <a
+                    className="transition-all duration-300 text-3xl font-bold text-red-50 text-center flex-grow hover:text-blue-300 mr-6"
+                    target="_blank"
+                    onClick={() => Util.navigateTo("home")}
+                >
+                    E-Butcher
+                </a>
+                {/* Login Button or User Profile */}
+                {Util.savedUser.id !== "" ? (
+                    <UserProfile/>
+                ) : (
+                    <button
+                        className="w-20 h-10 bg-rose-50 text-rose-700 rounded-3xl cursor-pointer transition-all duration-300 hover:bg-red-600 hover:text-white mr-3 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        onClick={() => setShowLogin(true)}
+                    >
+                        Login
+                    </button>
+                )}
+            </header>
+            {/* Always render CartBar, but control its visibility */}
+            <CartBar showNavbar={showNavbar} setShowNavbar={setShowNavbar}/>
+
+            {/* Login Popup */}
+            {showLogin && <LoginPopup setShowLogin={setShowLogin}/>}
+        </>
+    );
 };
 
 export default Header;
