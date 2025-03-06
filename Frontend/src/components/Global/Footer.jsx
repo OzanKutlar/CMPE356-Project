@@ -1,6 +1,5 @@
 import React from "react";
 import Util from "../../Util.js";
-# Modify the instagram and twitter handles to use the same style as the about us and FAQ buttons AI!
 const Footer = () => {
   return (
     <footer className="bg-rose-500 text-white py-6 mt-8">

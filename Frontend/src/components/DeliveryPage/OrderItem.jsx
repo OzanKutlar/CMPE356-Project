@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import DetailsPopup from './DetailsPopup';
 
 const OrderItem = ({ order, onButtonClick }) => {
   const [isExpanded, setIsExpanded] = useState(false);

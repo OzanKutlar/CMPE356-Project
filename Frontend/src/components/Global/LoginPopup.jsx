@@ -13,8 +13,11 @@ const LoginPopup = ({ setShowLogin }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     useEffect(() => {
-        setFadeIn(true);
-        return () => setFadeIn(false);
+        const timeout = setTimeout(() => setFadeIn(true), 50);
+        return () => {
+            clearTimeout(timeout);
+            setFadeIn(false);
+        };
     }, []);
 
     useEffect(() => {
