@@ -75,7 +75,7 @@ const BestSellerListFullScreen = () => {
     };
 
     return (
-        <div className="w-full bg-gray-50 flex flex-col">
+        <div className="bg-white h-screen overflow-y-auto">
             {/* Content */}
             {loading ? (
                 <div className="flex items-center justify-center flex-grow">
@@ -86,7 +86,7 @@ const BestSellerListFullScreen = () => {
                     </p>
                 </div>
             ) : (
-                <div className="flex-grow overflow-y-auto px-6 pb-6">
+                <div className="flex-grow overflow-y-auto px-6 pb-6 pt-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {bestSellers.map((item, index) => (
                             <div

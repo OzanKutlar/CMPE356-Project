@@ -9,8 +9,9 @@ const LatestSales = () => {
         const fetchLatestSales = async () => {
             try {
                 setLoading(true);
-                const response = await Util.callBackend("getLatestSales", {
+                const response = await Util.callBackend("getTransactions", {
                     userID: Util.savedUser.id,
+                    limit: 5
                 });
                 setLoading(false);
                 setSales(response);
