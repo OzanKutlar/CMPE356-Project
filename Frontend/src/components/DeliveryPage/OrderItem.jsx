@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import DetailsPopup from './DetailsPopup';
 
-const OrderItem = ({ address, content, onButtonZClick }) => {
+const OrderItem = ({ order, onButtonClick }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
 
-  const handleButtonZClick = (e) => {
+  const handleButtonClick = (e) => {
     e.stopPropagation(); // Prevent triggering the parent div onClick
-    onButtonZClick();
+    onButtonClick();
   };
 
   return (
@@ -32,13 +34,16 @@ const OrderItem = ({ address, content, onButtonZClick }) => {
       onClick={toggleExpand}
     >
       <div className="px-3 py-4 flex justify-between items-start">
-        <div className="font-medium text-sm text-gray-800">{address}</div>
+        <div className="font-medium text-sm text-gray-800">Order: #{order.order_id}</div>
         <button 
           className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 text-sm rounded-md transition-colors"
-          onClick={handleButtonZClick}
+          onClick={handleButtonClick}
         >
-          Button Z
+          Details
         </button>
+
+        {isOpen && <DetailsPopup closePopup={() => setIsOpen(false)} onAction={handleButtonClick} />}
+      
       </div>
       
       <div className={`
@@ -49,18 +54,21 @@ const OrderItem = ({ address, content, onButtonZClick }) => {
         duration-300
         ${isExpanded ? 'opacity-100' : 'opacity-0'}
       `}>
-        {content.map((line, index) => (
-          <p key={index} className="mb-2">{line}</p>
-        ))}
+        <h2>Destination: </h2>
+        <p>{order.destination}</p>
       </div>
     </div>
   );
 };
 
 OrderItem.propTypes = {
-  address: PropTypes.any,
-  content: PropTypes.string,
-  onButtonZClick: PropTypes.func
+  order: PropTypes.shape({
+    order_id: PropTypes.any,
+    startLocation: PropTypes.string,
+    destination: PropTypes.string,
+    content: PropTypes.array
+  }),
+  onButtonClick: PropTypes.func
 };
 
 export default OrderItem;

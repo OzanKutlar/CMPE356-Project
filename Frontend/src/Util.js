@@ -328,15 +328,20 @@ class Util {
     "orders": {
         'A': [
             {
-            address: "Item Title 1 of a list item that will be very long because it will hold address and addresses are long",
+            order_id: 1,
+            destination: "Item Title 1 of a list item that will be very long because it will hold address and addresses are long",
+            startLocation: "abcdefgh",
             content: [
                 "This is the first line of extended information.",
                 "This is the second line with more details.",
                 "And here's a third line with additional context."
             ]
+
             },
             {
-            address: "Item Title 2",
+            order_id: 2,
+            destination: "Item Title 2",
+            startLocation: "item 2 location",
             content: [
                 "Extended information for the second item.",
                 "More details about this particular item."
@@ -345,7 +350,9 @@ class Util {
         ],
         'B': [
             {
-            address: "Item Title 2",
+            order_id: 3,
+            destination: "Item Title 3",
+            startLocation: "item 3 location",
             content: [
                 "Extended information for the second item.",
                 "More details about this particular item."
