@@ -1,394 +1,394 @@
 class Util {
-  static backendIp = 'http://127.0.0.1:3199/';
-  static fakeIt = true;
-  static fakeDataDelay = 200; // Define the timeout delay
-  static fakeData = {
-    'endpoint2': { data: 'Fake Data for Endpoint 2' },
-      "items": [
-          {
-              ItemName: "Minced Meat",
-              ItemPrice: 59.99,
-              ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg"
-          },
-          {
-              ItemName: "Cubed Meat",
-              ItemPrice: 69.99,
-              ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg"
-          },
-          {
-              ItemName: "Entrecôte",
-              ItemPrice: 120,
-              ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg"
-          },
-          {
-              ItemName: "Steak",
-              ItemPrice: 99.99,
-              ItemPhotoLink: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg"
-          },
-          {
-              ItemName: "Steak",
-              ItemPrice: 99.99,
-              ItemPhotoLink: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg"
-          },
-          {
-              ItemName: "Chopped Meat",
-              ItemPrice: 66.99,
-              ItemPhotoLink: "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500"
-          }],
-      "cart": [
-          {
-              "ItemCount": 2,
-              "ItemName": "Minced Meat",
-              "ItemPhotoLink": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
-              "ItemPrice": 59.99
-          },
-          {
-              "ItemCount": 1,
-              "ItemName": "Cubed Meat",
-              "ItemPhotoLink": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
-              "ItemPrice": 69.99
-          },
-          {
-              "ItemCount": 3,
-              "ItemName": "Entrecôte",
-              "ItemPhotoLink": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
-              "ItemPrice": 120
-          },
-          {
-              "ItemCount": 1,
-              "ItemName": "Steak",
-              "ItemPhotoLink": "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
-              "ItemPrice": 99.99
-          }
-      ],
-    "submitOrder": "success",
-      "getStock": [
-          {
-              ItemName: "Minced Meat",
-              ItemPrice: 59.99,
-              ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
-              currentStock: 12,
-              startStock: 30
-          },
-          {
-              ItemName: "Cubed Meat",
-              ItemPrice: 69.99,
-              ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
-              currentStock: 10,
-              startStock: 24
-          },
-          {
-              ItemName: "Entrecôte",
-              ItemPrice: 120,
-              ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
-              currentStock: 0,
-              startStock: 60
-          },
-          {
-              ItemName: "Steak",
-              ItemPrice: 99.99,
-              ItemPhotoLink: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
-              currentStock: 30,
-              startStock: 30
-          },
-          {
-              ItemName: "Chopped Meat",
-              ItemPrice: 66.99,
-              ItemPhotoLink: "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
-              currentStock: 25,
-              startStock: 50
-          }],
-      "addToCart": "success",
-      "changeUserRole": "success",
-      "saveCart": "success",
-      "getUsers": [
-          {
-              id: 1,
-              profilePictureLink: "/src/assets/face1.jpg",
-              Username: "john_doe",
-              email: "john.doe@example.com",
-              phone: "+1 (555) 123-4567",
-              role: "delivery"
-          },
-          {
-              id: 2,
-              profilePictureLink: "/src/assets/face2.jpg",
-              Username: "jane_smith",
-              email: "jane.smith@example.com",
-              phone: "+1 (555) 234-5678",
-              role: "admin"
-          },
-          {
-              id: 3,
-              profilePictureLink: "/src/assets/face3.jpg",
-              Username: "bob_wilson",
-              email: "bob.wilson@example.com",
-              phone: "+1 (555) 345-6789",
-              role: "user"
-          },
-          {
-              id: 4,
-              profilePictureLink: "/src/assets/face4.jpg",
-              Username: "alice_brown",
-              email: "alice.brown@example.com",
-              phone: "+1 (555) 456-7890",
-              role: "admin"
-          },
-          {
-              id: 5,
-              profilePictureLink: "/src/assets/face5.jpg",
-              Username: "tom_harris",
-              email: "tom.harris@example.com",
-              phone: "+1 (555) 567-8901",
-              role: "admin"
-          },
-          {
-              id: 6,
-              profilePictureLink: "/src/assets/face6.jpeg",
-              Username: "emir_ozen",
-              email: "tom.harris@example.com",
-              phone: "+1 (555) 567-8901",
-              role: "butcher"
-          }
-      ],
-      "saveButcher": "success",
-      "getMostProfits": [ // Returns the top 5 profiting items
-          {
-              itemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
-              itemName: "Minced Meat",
-              totalProfit: 1199.80,
-              totalSales: 20
-          },
-          {
-              itemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
-              itemName: "Cubed Meat",
-              totalProfit: 1399.80,
-              totalSales: 20
-          },
-          {
-              itemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
-              itemName: "Entrecôte",
-              totalProfit: 7200.00,
-              totalSales: 60
-          },
-          {
-              itemPhotoLink: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
-              itemName: "Steak",
-              totalProfit: 2999.70,
-              totalSales: 30
-          },
-          {
-              itemPhotoLink: "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
-              itemName: "Chopped Meat",
-              totalProfit: 3349.50,
-              totalSales: 50
-          }
-      ],
-      "getLatestSales": [ // Returns the last 5 sales
-          {
-              "id": "tx-1",
-              "userID": "user-123",
-              "address": "123 Sample St, New York, NY, 10001",
-              "itemName": "Minced Meat",
-              "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
-              "paymentMethod": "Paypal",
-              "paymentID": "#416645453773",
-              "status": "Success",
-              "totalPrice": 119.98
-          },
-          {
-              "id": "tx-2",
-              "userID": "user-124",
-              "address": "456 Example Rd, San Francisco, CA, 94121",
-              "itemName": "Cubed Meat",
-              "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
-              "paymentMethod": "Apple Pay",
-              "paymentID": "#147784455454",
-              "status": "Canceled",
-              "totalPrice": 69.99
-          },
-          {
-              "id": "tx-3",
-              "userID": "user-125",
-              "address": "789 Demo Ave, Chicago, IL, 60616",
-              "itemName": "Entrecôte",
-              "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
-              "paymentMethod": "Stripe",
-              "paymentID": "#147784455454",
-              "status": "Pending",
-              "totalPrice": 360.00
-          },
-          {
-              "id": "tx-4",
-              "userID": "user-123",
-              "address": "123 Sample St, New York, NY, 10001",
-              "itemName": "Steak",
-              "itemPhoto": "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
-              "paymentMethod": "PayU",
-              "paymentID": "#147784455454",
-              "status": "Success",
-              "totalPrice": 99.99
-          },
-          {
-              "id": "tx-5",
-              "userID": "user-126",
-              "address": "12 Market Rd, Austin, TX, 78703",
-              "itemName": "Chopped Meat",
-              "itemPhoto": "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
-              "paymentMethod": "Paytm",
-              "paymentID": "#147784455454",
-              "status": "Success",
-              "totalPrice": 66.99
-          }
-      ],
-      "getSales": [ // Returns the last 50 sales.
-          {
-              "id": "tx-1",
-              "userID": "user-123",
-              "address": "123 Sample St, New York, NY, 10001",
-              "itemName": "Minced Meat",
-              "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
-              "paymentMethod": "Credit Card",
-              "paymentID": "#416645453773",
-              "status": "Success",
-              "totalPrice": 119.98
-          },
-          {
-              "id": "tx-2",
-              "userID": "user-124",
-              "address": "456 Example Rd, San Francisco, CA, 94121",
-              "itemName": "Cubed Meat",
-              "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
-              "paymentMethod": "Apple Pay",
-              "paymentID": "#147784455454",
-              "status": "Canceled",
-              "totalPrice": 69.99
-          },
-          {
-              "id": "tx-3",
-              "userID": "user-125",
-              "address": "789 Demo Ave, Chicago, IL, 60616",
-              "itemName": "Entrecôte",
-              "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
-              "paymentMethod": "Stripe",
-              "paymentID": "#147784455454",
-              "status": "Pending",
-              "totalPrice": 360.00
-          },
-          {
-              "id": "tx-4",
-              "userID": "user-123",
-              "address": "123 Sample St, New York, NY, 10001",
-              "itemName": "Steak",
-              "itemPhoto": "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
-              "paymentMethod": "PayU",
-              "paymentID": "#147784455454",
-              "status": "Success",
-              "totalPrice": 99.99
-          },
-          {
-              "id": "tx-5",
-              "userID": "user-126",
-              "address": "12 Market Rd, Austin, TX, 78703",
-              "itemName": "Chopped Meat",
-              "itemPhoto": "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
-              "paymentMethod": "Paytm",
-              "paymentID": "#147784455454",
-              "status": "Success",
-              "totalPrice": 66.99
-          }
-      ],
-      "getRecipes": [
-          {
-              "name": "Grilled Steak with Garlic Butter",
-              "photo": "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
-              "data": "Season the steak with salt and pepper. Grill on high heat for 3-4 minutes per side. Melt butter with minced garlic and pour over the steak before serving."
-          },
-          {
-              "name": "Beef Entrecôte with Herb Sauce",
-              "photo": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
-              "data": "Season entrecôte with salt and sear on high heat for 3 minutes per side. Make a sauce with olive oil, parsley, garlic, and lemon juice. Drizzle over the meat."
-          },
-          {
-              "name": "Minced Meat Tacos",
-              "photo": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
-              "data": "Cook minced meat with taco seasoning. Serve in taco shells with chopped lettuce, tomatoes, shredded cheese, and sour cream."
-          },
-          {
-              "name": "Cubed Meat Stew",
-              "photo": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
-              "data": "Brown the cubed meat in a pot. Add onions, carrots, potatoes, and beef stock. Simmer for 2 hours until tender."
-          },
-          {
-              "name": "Chopped Meat Stir-Fry",
-              "photo": "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
-              "data": "Heat oil in a pan. Add chopped meat, bell peppers, onions, and soy sauce. Stir-fry on high heat until cooked through. Serve with rice."
-          }
-      ],
-    "orders": {
-        'A': [
+    static backendIp = 'http://127.0.0.1:3199/';
+    static fakeIt = true;
+    static fakeDataDelay = 200; // Define the timeout delay
+    static fakeData = {
+        'endpoint2': {data: 'Fake Data for Endpoint 2'},
+        "items": [
             {
-            order_id: 1,
-            destination: "Item Title 1 of a list item that will be very long because it will hold address and addresses are long",
-            startLocation: "abcdefgh",
-            content: [
-                "This is the first line of extended information.",
-                "This is the second line with more details.",
-                "And here's a third line with additional context."
-            ]
-
+                ItemName: "Minced Meat",
+                ItemPrice: 59.99,
+                ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg"
             },
             {
-            order_id: 2,
-            destination: "Item Title 2",
-            startLocation: "item 2 location",
-            content: [
-                "Extended information for the second item.",
-                "More details about this particular item."
-            ]
-            }
-        ],
-        'B': [
+                ItemName: "Cubed Meat",
+                ItemPrice: 69.99,
+                ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg"
+            },
             {
-            order_id: 3,
-            destination: "Item Title 3",
-            startLocation: "item 3 location",
-            content: [
-                "Extended information for the second item.",
-                "More details about this particular item."
-            ]
+                ItemName: "Entrecôte",
+                ItemPrice: 120,
+                ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg"
+            },
+            {
+                ItemName: "Steak",
+                ItemPrice: 99.99,
+                ItemPhotoLink: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg"
+            },
+            {
+                ItemName: "Steak",
+                ItemPrice: 99.99,
+                ItemPhotoLink: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg"
+            },
+            {
+                ItemName: "Chopped Meat",
+                ItemPrice: 66.99,
+                ItemPhotoLink: "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500"
+            }],
+        "cart": [
+            {
+                "ItemCount": 2,
+                "ItemName": "Minced Meat",
+                "ItemPhotoLink": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
+                "ItemPrice": 59.99
+            },
+            {
+                "ItemCount": 1,
+                "ItemName": "Cubed Meat",
+                "ItemPhotoLink": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
+                "ItemPrice": 69.99
+            },
+            {
+                "ItemCount": 3,
+                "ItemName": "Entrecôte",
+                "ItemPhotoLink": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
+                "ItemPrice": 120
+            },
+            {
+                "ItemCount": 1,
+                "ItemName": "Steak",
+                "ItemPhotoLink": "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
+                "ItemPrice": 99.99
             }
         ],
-        'C': []
+        "submitOrder": "success",
+        "getStock": [
+            {
+                ItemName: "Minced Meat",
+                ItemPrice: 59.99,
+                ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
+                currentStock: 12,
+                startStock: 30
+            },
+            {
+                ItemName: "Cubed Meat",
+                ItemPrice: 69.99,
+                ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
+                currentStock: 10,
+                startStock: 24
+            },
+            {
+                ItemName: "Entrecôte",
+                ItemPrice: 120,
+                ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
+                currentStock: 0,
+                startStock: 60
+            },
+            {
+                ItemName: "Steak",
+                ItemPrice: 99.99,
+                ItemPhotoLink: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
+                currentStock: 30,
+                startStock: 30
+            },
+            {
+                ItemName: "Chopped Meat",
+                ItemPrice: 66.99,
+                ItemPhotoLink: "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
+                currentStock: 25,
+                startStock: 50
+            }],
+        "addToCart": "success",
+        "changeUserRole": "success",
+        "saveCart": "success",
+        "getUsers": [
+            {
+                id: 1,
+                profilePictureLink: "/src/assets/face1.jpg",
+                Username: "john_doe",
+                email: "john.doe@example.com",
+                phone: "+1 (555) 123-4567",
+                role: "delivery"
+            },
+            {
+                id: 2,
+                profilePictureLink: "/src/assets/face2.jpg",
+                Username: "jane_smith",
+                email: "jane.smith@example.com",
+                phone: "+1 (555) 234-5678",
+                role: "admin"
+            },
+            {
+                id: 3,
+                profilePictureLink: "/src/assets/face3.jpg",
+                Username: "bob_wilson",
+                email: "bob.wilson@example.com",
+                phone: "+1 (555) 345-6789",
+                role: "user"
+            },
+            {
+                id: 4,
+                profilePictureLink: "/src/assets/face4.jpg",
+                Username: "alice_brown",
+                email: "alice.brown@example.com",
+                phone: "+1 (555) 456-7890",
+                role: "admin"
+            },
+            {
+                id: 5,
+                profilePictureLink: "/src/assets/face5.jpg",
+                Username: "tom_harris",
+                email: "tom.harris@example.com",
+                phone: "+1 (555) 567-8901",
+                role: "admin"
+            },
+            {
+                id: 6,
+                profilePictureLink: "/src/assets/face6.jpeg",
+                Username: "emir_ozen",
+                email: "tom.harris@example.com",
+                phone: "+1 (555) 567-8901",
+                role: "butcher"
+            }
+        ],
+        "saveButcher": "success",
+        "getMostProfits": [ // Returns the top 5 profiting items
+            {
+                itemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
+                itemName: "Minced Meat",
+                totalProfit: 1199.80,
+                totalSales: 20
+            },
+            {
+                itemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
+                itemName: "Cubed Meat",
+                totalProfit: 1399.80,
+                totalSales: 20
+            },
+            {
+                itemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
+                itemName: "Entrecôte",
+                totalProfit: 7200.00,
+                totalSales: 60
+            },
+            {
+                itemPhotoLink: "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
+                itemName: "Steak",
+                totalProfit: 2999.70,
+                totalSales: 30
+            },
+            {
+                itemPhotoLink: "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
+                itemName: "Chopped Meat",
+                totalProfit: 3349.50,
+                totalSales: 50
+            }
+        ],
+        "getLatestSales": [ // Returns the last 5 sales
+            {
+                "id": "tx-1",
+                "userID": "user-123",
+                "address": "123 Sample St, New York, NY, 10001",
+                "itemName": "Minced Meat",
+                "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
+                "paymentMethod": "Paypal",
+                "paymentID": "#416645453773",
+                "status": "Success",
+                "totalPrice": 119.98
+            },
+            {
+                "id": "tx-2",
+                "userID": "user-124",
+                "address": "456 Example Rd, San Francisco, CA, 94121",
+                "itemName": "Cubed Meat",
+                "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
+                "paymentMethod": "Apple Pay",
+                "paymentID": "#147784455454",
+                "status": "Canceled",
+                "totalPrice": 69.99
+            },
+            {
+                "id": "tx-3",
+                "userID": "user-125",
+                "address": "789 Demo Ave, Chicago, IL, 60616",
+                "itemName": "Entrecôte",
+                "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
+                "paymentMethod": "Stripe",
+                "paymentID": "#147784455454",
+                "status": "Pending",
+                "totalPrice": 360.00
+            },
+            {
+                "id": "tx-4",
+                "userID": "user-123",
+                "address": "123 Sample St, New York, NY, 10001",
+                "itemName": "Steak",
+                "itemPhoto": "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
+                "paymentMethod": "PayU",
+                "paymentID": "#147784455454",
+                "status": "Success",
+                "totalPrice": 99.99
+            },
+            {
+                "id": "tx-5",
+                "userID": "user-126",
+                "address": "12 Market Rd, Austin, TX, 78703",
+                "itemName": "Chopped Meat",
+                "itemPhoto": "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
+                "paymentMethod": "Paytm",
+                "paymentID": "#147784455454",
+                "status": "Success",
+                "totalPrice": 66.99
+            }
+        ],
+        "getSales": [ // Returns the last 50 sales.
+            {
+                "id": "tx-1",
+                "userID": "user-123",
+                "address": "123 Sample St, New York, NY, 10001",
+                "itemName": "Minced Meat",
+                "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
+                "paymentMethod": "Credit Card",
+                "paymentID": "#416645453773",
+                "status": "Success",
+                "totalPrice": 119.98
+            },
+            {
+                "id": "tx-2",
+                "userID": "user-124",
+                "address": "456 Example Rd, San Francisco, CA, 94121",
+                "itemName": "Cubed Meat",
+                "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
+                "paymentMethod": "Apple Pay",
+                "paymentID": "#147784455454",
+                "status": "Canceled",
+                "totalPrice": 69.99
+            },
+            {
+                "id": "tx-3",
+                "userID": "user-125",
+                "address": "789 Demo Ave, Chicago, IL, 60616",
+                "itemName": "Entrecôte",
+                "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
+                "paymentMethod": "Stripe",
+                "paymentID": "#147784455454",
+                "status": "Pending",
+                "totalPrice": 360.00
+            },
+            {
+                "id": "tx-4",
+                "userID": "user-123",
+                "address": "123 Sample St, New York, NY, 10001",
+                "itemName": "Steak",
+                "itemPhoto": "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
+                "paymentMethod": "PayU",
+                "paymentID": "#147784455454",
+                "status": "Success",
+                "totalPrice": 99.99
+            },
+            {
+                "id": "tx-5",
+                "userID": "user-126",
+                "address": "12 Market Rd, Austin, TX, 78703",
+                "itemName": "Chopped Meat",
+                "itemPhoto": "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
+                "paymentMethod": "Paytm",
+                "paymentID": "#147784455454",
+                "status": "Success",
+                "totalPrice": 66.99
+            }
+        ],
+        "getRecipes": [
+            {
+                "name": "Grilled Steak with Garlic Butter",
+                "photo": "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
+                "data": "Season the steak with salt and pepper. Grill on high heat for 3-4 minutes per side. Melt butter with minced garlic and pour over the steak before serving."
+            },
+            {
+                "name": "Beef Entrecôte with Herb Sauce",
+                "photo": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
+                "data": "Season entrecôte with salt and sear on high heat for 3 minutes per side. Make a sauce with olive oil, parsley, garlic, and lemon juice. Drizzle over the meat."
+            },
+            {
+                "name": "Minced Meat Tacos",
+                "photo": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
+                "data": "Cook minced meat with taco seasoning. Serve in taco shells with chopped lettuce, tomatoes, shredded cheese, and sour cream."
+            },
+            {
+                "name": "Cubed Meat Stew",
+                "photo": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
+                "data": "Brown the cubed meat in a pot. Add onions, carrots, potatoes, and beef stock. Simmer for 2 hours until tender."
+            },
+            {
+                "name": "Chopped Meat Stir-Fry",
+                "photo": "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
+                "data": "Heat oil in a pan. Add chopped meat, bell peppers, onions, and soy sauce. Stir-fry on high heat until cooked through. Serve with rice."
+            }
+        ],
+        "orders": {
+            'A': [
+                {
+                    order_id: 1,
+                    destination: "Item Title 1 of a list item that will be very long because it will hold address and addresses are long",
+                    startLocation: "abcdefgh",
+                    content: [
+                        "This is the first line of extended information.",
+                        "This is the second line with more details.",
+                        "And here's a third line with additional context."
+                    ]
+
+                },
+                {
+                    order_id: 2,
+                    destination: "Item Title 2",
+                    startLocation: "item 2 location",
+                    content: [
+                        "Extended information for the second item.",
+                        "More details about this particular item."
+                    ]
+                }
+            ],
+            'B': [
+                {
+                    order_id: 3,
+                    destination: "Item Title 3",
+                    startLocation: "item 3 location",
+                    content: [
+                        "Extended information for the second item.",
+                        "More details about this particular item."
+                    ]
+                }
+            ],
+            'C': []
+        }
+    };
+
+    // Navigation system
+    static currentPage = 'home';
+    static pageChangeListeners = [];
+    static savedUser = {
+        id: '',
+        username: '',
+        profilePictureLink: '',
+        role: '',
+        email: '',
+        phone: '',
+        address: ''
+    };
+
+    static delUser() {
+        this.savedUser = {
+            id: '',
+            username: '',
+            profilePictureLink: '',
+            role: '',
+            email: '',
+            phone: '',
+            address: ''
+        };
     }
-  };
 
-  // Navigation system
-  static currentPage = 'home';
-  static pageChangeListeners = [];
-  static savedUser = {
-      id: '',
-      username: '',
-      profilePictureLink: '',
-      role: '',
-      email: '',
-      phone: '',
-      address: ''
-  };
-
-  static delUser(){
-      this.savedUser = {
-          id: '',
-          username: '',
-          profilePictureLink: '',
-          role: '',
-          email: '',
-          phone: '',
-          address: ''
-      };
-  }
-
-  static fakeLogin(username){
+    static fakeLogin(username) {
         const user = Util.fakeData["getUsers"].find(user => user.Username === username);
         if (user) {
             return user;
@@ -396,15 +396,15 @@ class Util {
             console.error("User not found");
             return null; // or throw an error, depending on your use case
         }
-  }
+    }
 
-  static navigateTo(page) {
-    this.currentPage = page;
-    // Notify all listeners
-    this.pageChangeListeners.forEach(listener => listener(page));
-  }
+    static navigateTo(page) {
+        this.currentPage = page;
+        // Notify all listeners
+        this.pageChangeListeners.forEach(listener => listener(page));
+    }
 
-    static navigateSilent(page){
+    static navigateSilent(page) {
         this.currentPage = page;
     }
 
