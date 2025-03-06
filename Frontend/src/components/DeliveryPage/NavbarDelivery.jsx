@@ -12,7 +12,7 @@ export default function NavbarDelivery({activeTab, handleTabClick}) {
         <nav className="bg-gray-800 p-4">
             <div className="flex justify-between items-center">
                 <div className="flex space-x-4">
-                    {['A', 'B'].map((tab) => (
+                    {['Waiting Orders', 'Taken Orders'].map((tab) => (
                         <button
                             key={tab}
                             className={`px-4 py-2 text-white rounded ${activeTab === tab ? 'bg-blue-600' : 'hover:bg-gray-700'}`}
@@ -41,6 +41,6 @@ export default function NavbarDelivery({activeTab, handleTabClick}) {
 }
 
 NavbarDelivery.propTypes = {
-    activeTab: PropTypes.any,
+    activeTab: PropTypes.string,
     handleTabClick: PropTypes.func
 };

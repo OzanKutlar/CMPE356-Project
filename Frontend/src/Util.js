@@ -270,111 +270,130 @@ class Util {
             }
         ],
         "orders": {
-            "A": [
+        "Waiting Orders": [
             {
                 "order_id": 1,
                 "destination": "Yeniköy, Köybaşı Cd. No:166/B, 34464 Sarıyer/İstanbul",
                 "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
+                "totalPrice": 349.97,
                 "content": [
-                "This is the first line of extended information.",
-                "This is the second line with more details.",
-                "And here's a third line with additional context."
+                    "Minced Meat - 1.2kg",
+                    "Steak - 1.1kg",
+                    "Entrecôte - 0.8kg"
                 ]
             },
             {
                 "order_id": 2,
                 "destination": "Atatürk Mahallesi Ataşehir Bulvarı, Ertuğrul, Gazi Sokak, 34758 Ataşehir/İstanbul",
                 "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
+                "totalPrice": 129.98,
                 "content": [
-                "Extended information for the second item.",
-                "More details about this particular item."
+                    "Cubed Meat - 1.6kg"
                 ]
             },
             {
                 "order_id": 3,
                 "destination": "Levazım, Vadi Caddesi Zorlu Center No:2, 34340 Beşiktaş/İstanbul",
                 "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
+                "totalPrice": 454.48,
                 "content": [
-                "Details about this third item with context.",
-                "Important follow-up information related to the item."
+                    "Entrecôte - 1.5kg",
+                    "Chopped Meat - 1.2kg",
+                    "Steak - 1.3kg",
+                    "Minced Meat - 1.1kg"
                 ]
             },
             {
                 "order_id": 4,
                 "destination": "Yeniköy, Köybaşı Cd. No:166/B, 34464 Sarıyer/İstanbul",
                 "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
+                "totalPrice": 85.98,
                 "content": [
-                "New item update with a lot of extra detail.",
-                "Additional context added for clarity."
+                    "Steak - 0.8kg"
                 ]
             },
             {
                 "order_id": 5,
                 "destination": "Atatürk Mahallesi Ataşehir Bulvarı, Ertuğrul, Gazi Sokak, 34758 Ataşehir/İstanbul",
                 "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
+                "totalPrice": 289.97,
                 "content": [
-                "Extended explanation for the fifth item in the list.",
-                "Further information included for this order."
+                    "Chopped Meat - 1.6kg",
+                    "Minced Meat - 0.5kg",
+                    "Cubed Meat - 1.3kg"
                 ]
             },
             {
                 "order_id": 6,
                 "destination": "Levazım, Vadi Caddesi Zorlu Center No:2, 34340 Beşiktaş/İstanbul",
                 "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
+                "totalPrice": 120.00,
                 "content": [
-                "Details for a specific item going to Levazım.",
-                "Another set of detailed content for the sixth order."
+                    "Entrecôte - 1kg"
                 ]
             }
-            ],
-            "B": [
+        ],
+        "Taken Orders": [
             {
                 "order_id": 7,
                 "destination": "Yeniköy, Köybaşı Cd. No:166/B, 34464 Sarıyer/İstanbul",
                 "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
+                "totalPrice": 449.94,
                 "content": [
-                "First order in B with detailed information.",
-                "Additional context regarding the destination and item."
+                    "Minced Meat - 1.7kg",
+                    "Cubed Meat - 0.8kg",
+                    "Steak - 1.2kg",
+                    "Entrecôte - 0.9kg",
+                    "Chopped Meat - 1.3kg"
                 ]
             },
             {
                 "order_id": 8,
                 "destination": "Atatürk Mahallesi Ataşehir Bulvarı, Ertuğrul, Gazi Sokak, 34758 Ataşehir/İstanbul",
                 "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
+                "totalPrice": 345.97,
                 "content": [
-                "Extended content for this second order in B.",
-                "Additional insights into the item’s specifics."
+                    "Cubed Meat - 1.2kg",
+                    "Steak - 1.1kg",
+                    "Chopped Meat - 0.9kg"
                 ]
             },
             {
                 "order_id": 9,
                 "destination": "Levazım, Vadi Caddesi Zorlu Center No:2, 34340 Beşiktaş/İstanbul",
                 "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
+                "totalPrice": 257.00,
                 "content": [
-                "This is a longer explanation about the third order in B.",
-                "More specific details about the order’s context."
+                    "Entrecôte - 1.5kg",
+                    "Chopped Meat - 1.2kg"
                 ]
             },
             {
                 "order_id": 10,
                 "destination": "Yeniköy, Köybaşı Cd. No:166/B, 34464 Sarıyer/İstanbul",
                 "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
+                "totalPrice": 219.99,
                 "content": [
-                "This is a new entry with detailed information for the order.",
-                "The item has some added context, as discussed."
+                    "Steak - 1.1kg",
+                    "Minced Meat - 1.5kg",
+                    "Cubed Meat - 0.6kg"
                 ]
             },
             {
                 "order_id": 11,
                 "destination": "Atatürk Mahallesi Ataşehir Bulvarı, Ertuğrul, Gazi Sokak, 34758 Ataşehir/İstanbul",
                 "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
+                "totalPrice": 473.56,
                 "content": [
-                "Order with detailed context on the specifics of the destination.",
-                "Additional information included for clarity."
+                    "Chopped Meat - 1.4kg",
+                    "Cubed Meat - 0.6kg",
+                    "Minced Meat - 1.9kg",
+                    "Entrecôte - 1.5kg",
+                    "Steak - 1.1kg",
                 ]
             }
-            ]
-        }
+        ]
+    }
     };
 
     // Navigation system

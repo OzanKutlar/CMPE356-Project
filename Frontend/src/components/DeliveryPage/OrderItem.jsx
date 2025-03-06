@@ -20,27 +20,27 @@ export function OrderItem({
   // Render buttons based on current tab
   const renderButtons = () => {
     switch(currentTab) {
-      case 'A':
+      case 'Waiting Orders':
         return (
           <button 
             onClick={(e) => {
               e.stopPropagation();
-              handleTakeOrder(order, 'B', currentTab);
+              handleTakeOrder(order, 'Taken Orders', currentTab);
             }} 
-            className="flex items-center justify-center bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
+            className="w-full flex items-center justify-center bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
           >
             Take Order
           </button>
         );
-      case 'B':
+      case 'Taken Orders':
         return (
-          <div className="flex space-x-2">
+          <div className="flex w-full space-x-2">
             <button 
               onClick={(e) => {
                 e.stopPropagation();
-                handleDropOrder(order, 'A', currentTab);
+                handleDropOrder(order, 'Waiting Orders', currentTab);
               }} 
-              className="flex items-center justify-center bg-gray-300 text-gray-700 p-2 rounded hover:bg-gray-400 transition-colors"
+              className="flex-1 flex items-center justify-center bg-gray-300 text-gray-700 p-2 rounded hover:bg-gray-400 transition-colors"
             >
               Drop
             </button>
@@ -49,7 +49,7 @@ export function OrderItem({
                 e.stopPropagation();
                 handleComplete(order, currentTab);
               }} 
-              className="flex items-center justify-center bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
+              className="flex-1 flex items-center justify-center bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
             >
               Complete
             </button>
@@ -60,17 +60,18 @@ export function OrderItem({
     }
   };
 
+
   return (
     <div 
       className={`
-        border border-gray-200 rounded-lg mb-2 overflow-hidden 
-        transition-all duration-300 ease-in-out
+        border border-gray-300 rounded-lg mb-2 overflow-hidden 
+        transition-all duration-300 ease-in-out bg-white
         ${isExpanded ? 'shadow-lg' : 'shadow-sm'}
       `}
       onClick={toggleExpand}
     >
       {/* Basic Order Information */}
-      <div className="flex justify-between items-center p-4 cursor-pointer">
+      <div className="flex justify-between items-center p-2 cursor-pointer">
         <div className="flex-grow">
           <h3 className="font-semibold text-gray-800">Order: #{order.order_id}</h3>
           <h4 className="font-semibold text-gray-800">Pickup</h4>
@@ -83,18 +84,20 @@ export function OrderItem({
       {/* Expandable Content */}
       <div 
         className={`
-          px-4 pb-4 transition-all duration-300 ease-in-out
-          ${isExpanded ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}
+          px-4 transition-all duration-300 ease-in-out
+          ${isExpanded ? 'max-h-screen opacity-100 pb-3' : 'max-h-0 opacity-0 overflow-hidden pb-1'}
         `}
       >
         {/* Detailed Order Information */}
         <div className="border-t pt-4 mt-2">
-          <p className="text-gray-700 mb-2"><strong>Order Details:</strong></p>
+          <p className="text-gray-700 mb-2"><strong>Order Details</strong></p>
           <div className="space-y-1">
             <p>Total Items: {order.content.length}</p>
-            <p>Total Price: {//${order.totalPrice.toFixed(2)}
-            }</p>
-            <p>Delivery Address: {order.destination}</p>
+            <p>Total Price: ${order.totalPrice.toFixed(2)}</p>
+            <p className="whitespace-pre-line pt-2">
+              <strong className="text-gray-700 mb-2">Products</strong> {"\n"}
+              {order.content.map(item => `${item}`).join("\n")}
+            </p>
           </div>
         </div>
 
@@ -110,13 +113,13 @@ export function OrderItem({
 OrderItem.propTypes = {
   order: PropTypes.shape({
     order_id: PropTypes.number.isRequired,
-    //totalPrice: PropTypes.number.isRequired,
+    totalPrice: PropTypes.number.isRequired,
     content: PropTypes.array.isRequired,
     startLocation: PropTypes.string.isRequired,
     destination: PropTypes.string.isRequired
   }).isRequired,
   onButtonClick: PropTypes.func.isRequired,
-  currentTab: PropTypes.oneOf(['A', 'B']).isRequired,
+  currentTab: PropTypes.string.isRequired,
   onTrackClick: PropTypes.func,
   onCompleteClick: PropTypes.func,
   isExpanded: PropTypes.bool,

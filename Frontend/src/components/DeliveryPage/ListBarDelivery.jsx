@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 
 export function ListBarDelivery({ isDesktop, listContent, currentTab }) {
   const [expandedOrder, setExpandedOrder] = useState(null);
-  //let expandedOrder = null;
 
   useEffect(() => {
     setExpandedOrder(null);
@@ -39,7 +38,7 @@ export function ListBarDelivery({ isDesktop, listContent, currentTab }) {
 ListBarDelivery.propTypes = {
   isDesktop: PropTypes.bool.isRequired,
   listContent: PropTypes.array,
-  currentTab: PropTypes.any,
+  currentTab: PropTypes.string,
 }
 
 

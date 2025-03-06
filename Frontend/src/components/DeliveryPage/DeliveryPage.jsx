@@ -2,16 +2,15 @@ import { useState, useEffect } from 'react';
 import { ListBarDelivery } from './ListBarDelivery.jsx';
 import { ButtonContext } from './ButtonContext';
 import useMobileDetection from "../../mobileDetection.js";
-import GoogleMapsDirections from './MapDirection.jsx';
-import RouteMap from './MarkerMap.jsx';
+//import GoogleMapsDirections from './MapDirection.jsx';
 import OpenLayerMap from './OpenLayerMap.jsx';
 import Util from '../../Util.js';
 import NavbarDelivery from './NavbarDelivery.jsx';
 
 const DeliveryPage = () => {
-    const [activeTab, setActiveTab] = useState('A');
+    const [activeTab, setActiveTab] = useState('Waiting Orders');
     const [isListBarOpen, setIsListBarOpen] = useState(false);
-    const [AllOrders, setAllOrders] = useState({ 'A': [], 'B': [], 'C': [] });
+    const [AllOrders, setAllOrders] = useState({ 'Waiting Orders': [], 'Taken Orders': [] });
     const isDesktop = !useMobileDetection();
     
     const [startLocation, setStartLocation] = useState("");
@@ -97,10 +96,10 @@ const DeliveryPage = () => {
 
     //list rendering according to tab
     const renderListBar = () => {
-        if (activeTab === 'A') {
-            return <ListBarDelivery isDesktop={isDesktop} listContent={AllOrders[activeTab]} currentTab={'A'} />
-        } else if (activeTab === 'B') {
-            return <ListBarDelivery isDesktop={isDesktop} listContent={AllOrders[activeTab]} currentTab={'B'} />
+        if (activeTab === 'Waiting Orders') {
+            return <ListBarDelivery isDesktop={isDesktop} listContent={AllOrders[activeTab]} currentTab={activeTab} />
+        } else if (activeTab === 'Taken Orders') {
+            return <ListBarDelivery isDesktop={isDesktop} listContent={AllOrders[activeTab]} currentTab={activeTab} />
         }
         return <h1>Error loading list bar</h1>;
     };
@@ -112,16 +111,16 @@ const DeliveryPage = () => {
 
             {/* Main content area */}
             <div className={`flex flex-1 ${isDesktop ? 'flex-row' : 'flex-col'} overflow-y-auto`}>
+                <div className="flex-none">
                 <ButtonContext.Provider value={{ handleTakeOrder, handleDropOrder, handleComplete, handleMapRouting }}>
                     {isListBarOpen && renderListBar()}
                 </ButtonContext.Provider>
-
+                </div>
                 <div className="flex-1 p-4 bg-white">
                     {//<GoogleMapsDirections startAddress={startLocation} targetAddress={destination} />
                     }
-                    {//<RouteMap startLocation={startLocation} destination={destination} />
-                    }
                     <OpenLayerMap startLocation={startLocation} destination={destination} />
+                    
                 </div>
             </div>
         </div>

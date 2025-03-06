@@ -385,22 +385,22 @@ const OpenLayerMap = ({ startLocation, destination }) => {
   };
 
   return (
-    <div className="route-map-container">
-      {loading && <div className="loading">Loading map...</div>}
-      {error && <div className="error">Error: {error}</div>}
+    <div className="route-map-container overflow-y-auto">
+      {loading && <div className="loading p-2 text-center text-gray-600">Loading map...</div>}
+      {error && <div className="error p-2 text-center text-red-600">Error: {error}</div>}
       <div
         ref={mapRef}
-        style={{ width: '100%', height: '500px', borderRadius: '8px', position: 'relative' }}
+        className="w-full h-[calc(100vh-220px)] rounded-lg relative"
       ></div>
       {routeDetails && (
-        <div className="route-info">
-          <p><strong>Distance:</strong> {routeDetails.distance}</p>
-          <p><strong>Estimated Time:</strong> {routeDetails.duration}</p>
+        <div className="route-info mt-1 p-1 bg-gray-100 rounded-lg">
+          <p><strong className="font-semibold">Distance:</strong> {routeDetails.distance}</p>
+          <p><strong className="font-semibold">Estimated Time:</strong> {routeDetails.duration}</p>
         </div>
       )}
-      <div className="location-info">
-        <p><strong>Start:</strong> {startLocation}</p>
-        <p><strong>Destination:</strong> {destination}</p>
+      <div className="location-info mt-1 p-1 bg-gray-100 rounded-lg">
+        <p><strong className="font-semibold">Start:</strong> {startLocation}</p>
+        <p><strong className="font-semibold">Destination:</strong> {destination}</p>
       </div>
     </div>
   );

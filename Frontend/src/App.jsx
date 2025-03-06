@@ -141,7 +141,7 @@ export default function App() {
         <div className={`app-container transition-opacity duration-300 ${animationClass}`}>
             {/*<Email />*/}
             {renderPage()}
-            <Footer/>
+            {currentPage != "delivery" ? <Footer/> : null}
         </div>
     );
 }
