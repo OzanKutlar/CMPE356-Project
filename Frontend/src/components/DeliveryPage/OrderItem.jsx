@@ -8,12 +8,13 @@ export function OrderItem({
   isExpanded,
   onExpandChange
 }) {
-  const { handleTakeOrder, handleDropOrder, handleComplete } = useContext(ButtonContext);
+  const { handleTakeOrder, handleDropOrder, handleComplete, handleMapRouting } = useContext(ButtonContext);
 
   // Handle item expansion
   const toggleExpand = (e) => {
     e.stopPropagation();
     onExpandChange(order);
+    handleMapRouting(order.startLocation, order.destination);
   };
 
   // Render buttons based on current tab
