@@ -1,11 +1,40 @@
 import React from 'react';
 
-const OrderForm = ({formData, onFormDataChange}) => {
+const OrderForm = ({ formData, onFormDataChange }) => {
+
     const handleChange = (e) => {
-        const {name, value} = e.target;
-        const updatedFormData = {...formData, [name]: value};
-        onFormDataChange(updatedFormData);
+        const { name, value } = e.target;
+
+        if (name === 'cardNumber') {
+            // Format card number with spaces every 4 digits
+            const formattedValue = value.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ');
+            onFormDataChange({ ...formData, [name]: formattedValue });
+        } else if (name === 'expiryDate') {
+            // Allow only numbers in expiry date
+            let formattedValue = value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');
+
+            if(value.length === 2 || value.length === 5){
+                const [monthStr, yearStr] = value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/').split('/');
+                const month = Number(monthStr);
+                const formattedMonth = month ? Math.min(month, 12).toString().padStart(2, '0') : '01';
+
+                if(value.length === 5) {
+                    const year = Number(yearStr);
+                    const currentYear = new Date().getFullYear() % 100;
+
+                    const formattedYear = year ? Math.max(year, currentYear).toString().slice(-2) : (currentYear + 1).toString().slice(-2);
+                    formattedValue = `${formattedMonth}/${formattedYear}`;
+                }
+                else{
+                    formattedValue = `${formattedMonth}`;
+                }
+            }
+            onFormDataChange({ ...formData, [name]: formattedValue });
+        } else {
+            onFormDataChange({ ...formData, [name]: value });
+        }
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -20,7 +49,7 @@ const OrderForm = ({formData, onFormDataChange}) => {
     };
 
     return (
-        <form className="p-0">
+        <form className="p-0" onSubmit={handleSubmit}>
             <div className="mb-4">
                 <label htmlFor="cardNumber" className="block text-gray-700 font-medium text-xl font-bold mb-2">
                     Card Number:
@@ -32,8 +61,6 @@ const OrderForm = ({formData, onFormDataChange}) => {
                     value={formData.cardNumber}
                     onChange={handleChange}
                     required
-                    maxLength="19"
-                    pattern="\d{4}-\d{4}-\d{4}-\d{4}"
                     className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
                 />
             </div>
@@ -48,8 +75,7 @@ const OrderForm = ({formData, onFormDataChange}) => {
                     value={formData.expiryDate}
                     onChange={handleChange}
                     required
-                    maxLength="7"
-                    pattern="\d{2}/\d{2}"
+                    maxLength="5"
                     className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
                 />
             </div>
@@ -82,6 +108,9 @@ const OrderForm = ({formData, onFormDataChange}) => {
                     className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
                 ></textarea>
             </div>
+            <button type="submit" className="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
+                Submit Order
+            </button>
         </form>
     );
 };
