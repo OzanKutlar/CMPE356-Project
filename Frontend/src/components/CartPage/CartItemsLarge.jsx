@@ -15,7 +15,6 @@ const CartItemsLarge = () => {
         address: ''
     });
 
-    // Add this function to handle form data updates
     const handleFormDataChange = (newFormData) => {
         setFormData(newFormData);
     };
@@ -23,7 +22,6 @@ const CartItemsLarge = () => {
     const countToKG = 50;
     const multiplier = 1000 / countToKG;
     const buttonAdd = (100 / countToKG);
-
 
     useEffect(() => {
         fetchCartItems();
@@ -72,7 +70,6 @@ const CartItemsLarge = () => {
             return;
         }
 
-        // Validate form data
         if (!formData.cardNumber || !formData.expiryDate || !formData.cvv || !formData.address) {
             setMessage({
                 type: "error",
@@ -94,7 +91,6 @@ const CartItemsLarge = () => {
                     text: "Order submitted successfully!"
                 });
                 setCartItems([]);
-                // Reset form data
                 setFormData({
                     cardNumber: '',
                     expiryDate: '',
@@ -117,7 +113,6 @@ const CartItemsLarge = () => {
             setSubmitting(false);
         }
     };
-
 
     if (loading) {
         return (
@@ -237,14 +232,14 @@ const CartItemsLarge = () => {
                                         ? `${cartItems.reduce((sum, item) => sum + item.ItemCount, 0) * countToKG}g`
                                         : `${(cartItems.reduce((sum, item) => sum + item.ItemCount, 0) * countToKG / 1000).toFixed(2)}kg`}</span>
                                 </div>
-                                <div className="flex justify-between text-xl font-bold">
+                                <div className="flex justify-between text-lg">
                                     <span>Total Price:</span>
                                     <span>${calculateTotalPrice()}</span>
                                 </div>
                             </div>
                             <button
                                 className={`w-full bg-red-500 text-white py-3 rounded-lg font-medium
-                  ${submitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-600'} 
+                  ${submitting ? 'opacity-50 hover:bg-gray-600' : 'hover:bg-red-600'} 
                   transition-colors`}
                                 onClick={handleSubmitOrder}
                                 disabled={submitting}
@@ -253,7 +248,7 @@ const CartItemsLarge = () => {
                             </button>
                             <button
                                 onClick={() => Util.navigateTo("home")}
-                                className="w-full mt-4 bg-gray-200 text-gray-800 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                                className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors w-full"
                             >
                                 Continue Shopping
                             </button>
@@ -265,4 +260,4 @@ const CartItemsLarge = () => {
     );
 };
 
-export default CartItemsLarge;
+            export default CartItemsLarge;
