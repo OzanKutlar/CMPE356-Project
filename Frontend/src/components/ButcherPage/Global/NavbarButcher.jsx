@@ -6,7 +6,7 @@ const NavbarButcher = ({showNavbar, setShowNavbar}) => {
         {name: 'Home', path: 'butcher'},
         {name: 'Add Items', path: 'butcher/add'},
         {name: 'Sales', path: 'butcher/sales'},
-        {name: 'Reviews', path: 'butcher/reviews'}
+        {name: 'Transactions', path: 'butcher/transactions'}
     ];
 
 

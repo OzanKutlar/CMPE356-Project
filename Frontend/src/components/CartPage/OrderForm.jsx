@@ -1,6 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
+import Util from "../../Util.js";
 
 const OrderForm = ({formData, onFormDataChange}) => {
+
+    const [isCardValid, setCardValid] = useState(true);
 
     const handleChange = (e) => {
         const {name, value} = e.target;
@@ -8,11 +11,10 @@ const OrderForm = ({formData, onFormDataChange}) => {
         if (name === 'cardNumber') {
             // Format card number with spaces every 4 digits
             const formattedValue = value.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ');
-            if (isValidCardNumber(formattedValue.replace(/\s+/g, ''))) {
-                onFormDataChange({...formData, [name]: formattedValue, cardNumberValid: true});
-            } else {
-                onFormDataChange({...formData, [name]: formattedValue, cardNumberValid: false});
-            }
+
+            if(value.length === 19) setCardValid(isValidCardNumber(formattedValue.replace(/\s+/g, '')));
+
+            onFormDataChange({...formData, [name]: formattedValue});
         } else if (name === 'expiryDate') {
             // Allow only numbers in expiry date
             let formattedValue = value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');
@@ -74,13 +76,14 @@ const OrderForm = ({formData, onFormDataChange}) => {
     return (
         <form className="p-0" onSubmit={handleSubmit}>
             <div className="mb-4">
-                <label htmlFor="cardNumber" className="block text-gray-700 font-medium text-xl font-bold mb-2">
-                    Card Number:
+                <label htmlFor="cardNumber" className={`block ${isCardValid ? "text-gray-700" : "text-red-700"} font-medium text-xl font-bold mb-2`}>
+                    {isCardValid ? "Card Number" : "Card Number ( Please enter a valid Card ) "}
                 </label>
                 <input
                     type="text"
                     id="cardNumber"
                     name="cardNumber"
+                    maxLength="19"
                     value={formData.cardNumber}
                     onChange={handleChange}
                     required
