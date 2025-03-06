@@ -1,8 +1,9 @@
 import React from "react";
 import Util from "../../Util.js";
+
 const Footer = () => {
   return (
-    <footer className="bg-rose-500 text-white py-6 mt-8">
+    <footer className={`${Util.footerColor} text-white py-6 mt-8`}>
       <div className="container mx-auto text-center">
         <div className="flex justify-center space-x-6 mb-4">
           {/* Social Media Links */}

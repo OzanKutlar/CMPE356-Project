@@ -8,6 +8,7 @@ export default function NavbarDelivery({ activeTab, handleTabClick }) {
 
     const [showLogin, setShowLogin] = useState(false);
 
+    Util.footerColor = "bg-gray-800";
   return(
     <nav className="bg-gray-800 p-4">
       <div className="flex justify-between items-center">

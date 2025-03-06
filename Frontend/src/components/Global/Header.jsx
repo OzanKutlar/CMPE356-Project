@@ -8,9 +8,11 @@ const Header = () => {
     const [showLogin, setShowLogin] = useState(false);
     const [showNavbar, setShowNavbar] = useState(false);
 
+    Util.footerColor = "bg-rose-500";
+
     return (
         <>
-            <header className="bg-rose-500 flex justify-between items-center p-2 relative">
+            <header className={`${Util.footerColor} flex justify-between items-center p-2 relative`}>
                 {/* Navigation Button */}
                 <button
                     className="w-10 h-10 flex justify-center items-center rounded-lg bg-rose-50 cursor-pointer transition-all duration-300 hover:bg-red-600 ml-3 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 group"
