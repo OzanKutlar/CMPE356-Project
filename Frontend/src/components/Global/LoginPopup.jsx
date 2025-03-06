@@ -89,19 +89,20 @@ const LoginPopup = ({ setShowLogin }) => {
 
             {/* Popup */}
             <div className={`login-popup ${fadeIn ? 'show' : ''}`}>
-                <h2>{buttonText === 'Login' ? 'Login' : 'Register'}</h2>
+                <h2 className="text-2xl font-bold mb-4">{buttonText === 'Login' ? 'Login' : 'Register'}</h2>
                 <input
                     type="text"
                     placeholder="Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    className="w-full p-3 mb-4 border rounded"
                 />
                 <div className={`password-field-container ${showPasswordField ? 'slide-down' : ''}`}>
                     {showPasswordField && (
-                        <input type="password" placeholder="Password" />
+                        <input type="password" placeholder="Password" className="w-full p-3 mb-4 border rounded" />
                     )}
                     {showConfirmPasswordField && (
-                        <input type="password" placeholder="Confirm Password" />
+                        <input type="password" placeholder="Confirm Password" className="w-full p-3 mb-4 border rounded" />
                     )}
                 </div>
                 <button
@@ -109,7 +110,7 @@ const LoginPopup = ({ setShowLogin }) => {
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
                     style={{backgroundColor: isHovered ? '#0056b3' : buttonColor}}
-                    className="mt-[15px] px-5 py-2 rounded-[4px] text-[16px] text-white cursor-pointer transition-colors duration-300"
+                    className="w-full px-5 py-3 rounded text-white text-lg cursor-pointer transition-colors duration-300"
                 >
                     {buttonText}
                 </button>
