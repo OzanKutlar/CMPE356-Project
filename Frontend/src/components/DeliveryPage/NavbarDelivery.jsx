@@ -1,11 +1,10 @@
+import { useState } from "react";
 import UserProfile from '../Global/UserProfile';
 import PropTypes from 'prop-types';
 import Util from "../../Util.js";
-import React, {useState} from "react";
 import LoginPopup from "../Global/LoginPopup.jsx";
 
 export default function NavbarDelivery({activeTab, handleTabClick}) {
-
     const [showLogin, setShowLogin] = useState(false);
 
     Util.footerColor = "bg-gray-800";
@@ -13,7 +12,7 @@ export default function NavbarDelivery({activeTab, handleTabClick}) {
         <nav className="bg-gray-800 p-4">
             <div className="flex justify-between items-center">
                 <div className="flex space-x-4">
-                    {['A', 'B', 'C'].map((tab) => (
+                    {['A', 'B'].map((tab) => (
                         <button
                             key={tab}
                             className={`px-4 py-2 text-white rounded ${activeTab === tab ? 'bg-blue-600' : 'hover:bg-gray-700'}`}
