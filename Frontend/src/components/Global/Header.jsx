@@ -3,13 +3,19 @@ import CartBar from "../HomePage/CartBar/CartBar.jsx";
 import LoginPopup from "./PopUps/LoginPopup.jsx";
 import Util from "../../Util.js";
 import UserProfile from "./PopUps/UserProfile.jsx";
+import ChangePassword from "./PopUps/ChangePasswordPopup.jsx";
 
 const Header = () => {
     const [showLogin, setShowLogin] = useState(false);
+    const [showPassReset, setPassReset] = useState(false);
     const [showNavbar, setShowNavbar] = useState(false);
 
     Util.CallLogin = () => {
         setShowLogin(true);
+    };
+
+    Util.CallPasswordReset = () => {
+        setPassReset(true);
     };
 
 
@@ -55,6 +61,8 @@ const Header = () => {
 
             {/* Login Popup */}
             {showLogin && <LoginPopup setShowLogin={setShowLogin}/>}
+
+            {showPassReset && <ChangePassword setChangePass={setPassReset}/>}
         </>
     );
 };

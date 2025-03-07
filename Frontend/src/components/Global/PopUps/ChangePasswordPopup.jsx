@@ -3,7 +3,7 @@ import Util from '../../../Util.js';
 import './LoginPopup.css';
 import {EyeIcon, EyeOffIcon} from "../Icons.jsx"; // Import the updated CSS file
 
-const LoginPopup = ({setShowLogin}) => {
+const ChangePassword = ({setChangePass}) => {
     const [username, setUsername] = useState('');
     const [showPasswordField, setShowPasswordField] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -87,7 +87,7 @@ const LoginPopup = ({setShowLogin}) => {
 
             if (s.message === "Success") {
                 Util.savedUser = s.user;
-                setShowLogin(false);
+                setChangePass(false);
             } else {
                 console.error(`Error: ${s.message}`);
             }
@@ -97,16 +97,13 @@ const LoginPopup = ({setShowLogin}) => {
     };
 
     const handleForgotPasswordClick = () => {
-        setShowLogin(false);
-        if(Util.CallPasswordReset != null){
-            Util.CallPasswordReset(true);
-        }
+        Util.navigateTo('forgot');
     };
 
     return (
         <div className="login-popup-wrapper">
             {/* Background Overlay */}
-            <div className="login-overlay" onClick={() => setShowLogin(false)}></div>
+            <div className="login-overlay" onClick={() => setChangePass(false)}></div>
 
             {/* Popup */}
             <div className={`login-popup ${fadeIn ? 'show' : ''}`}>
@@ -193,4 +190,4 @@ const LoginPopup = ({setShowLogin}) => {
     );
 };
 
-export default LoginPopup;
+export default ChangePassword;

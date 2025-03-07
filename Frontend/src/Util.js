@@ -3,6 +3,8 @@ class Util {
     static fakeIt = true;
     static fakeDataDelay = 1000; // Define the timeout delay
     static CallLogin = null;
+    static CallPasswordReset = null;
+    static forgot = false;
     static tempPhoneNumber = '';
     static footerColor = "bg-rose-500";
     static fakeData = {
