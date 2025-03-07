@@ -12,13 +12,13 @@ const RegistrationPage = () => {
     password: '',
     confirmPassword: ''
   });
-  
+
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-  
+
   const countryCodes = [
     { code: '+1', country: 'USA/Canada' },
     { code: '+44', country: 'UK' },
@@ -31,19 +31,37 @@ const RegistrationPage = () => {
     { code: '+55', country: 'Brazil' },
     { code: '+61', country: 'Australia' }
   ];
-  
+
   const images = [
-    '/api/placeholder/800/600',
-    '/api/placeholder/800/600',
-    '/api/placeholder/800/600'
+    'https://assets.epicurious.com/photos/5c6dc12afd08082d5c726d24/1:1/w_3323,h_3323,c_limit/Cook-From-Frozen-Steak-With-Burst-Cherry-Tomato-Sauce-6x9-120219.jpg',
+    'https://images.food52.com/B-VWJ_VnXPG37JNwUtERbdRe-RY=/1200x900/a10038b2-6674-43ef-8149-f8b21718c926--2018-0907_roys-3-ingredient-soy-steak-sauce-genius_3x2_ty-mecham_001.jpg',
+    'https://thumbs.dreamstime.com/b/delicate-medallions-veal-vegetables-food-gourmet-luxury-lifestyle-expensive-restaurant-recipe-serving-concept-83494930.jpg'
   ];
-  
+
+  const captions = [
+    "Fresh Raw Beef Steak",
+    "Premium Cut Ribeye",
+    "BBQ Feast"
+  ];
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
+
+  const nextSlide = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
+  };
+
+  useEffect(() => {
+    const timer = setInterval(nextSlide, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
-    // Handle phone number to only accept numbers
+
     if (name === 'phoneNumber') {
       const numericValue = value.replace(/\D/g, '');
       setFormData({
@@ -56,7 +74,7 @@ const RegistrationPage = () => {
         [name]: value
       });
     }
-    
+
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -64,103 +82,116 @@ const RegistrationPage = () => {
       });
     }
   };
-  
+
   const validateEmail = (email) => {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
   };
-  
+
   const validatePassword = (password) => {
     if (password.length < 8 || password.length > 30) return false;
-    
+
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
-    
+
     return hasUpperCase && hasLowerCase && hasNumber;
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     const newErrors = {};
-    
+
     if (!formData.firstName) newErrors.firstName = 'Required';
     if (!formData.lastName) newErrors.lastName = 'Required';
     if (!formData.username) newErrors.username = 'Required';
     if (!formData.phoneNumber) newErrors.phoneNumber = 'Required';
-    
+
     if (!formData.email) {
       newErrors.email = 'Required';
     } else if (!validateEmail(formData.email)) {
       newErrors.email = 'Invalid email';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Required';
     } else if (!validatePassword(formData.password)) {
       newErrors.password = 'Must be 8-30 chars with uppercase, lowercase & number';
     }
-    
+
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Required';
     } else if (formData.password !== formData.confirmPassword) {
       newErrors.password = 'Passwords do not match';
       newErrors.confirmPassword = 'Passwords do not match';
     }
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
       console.log('Form submitted successfully:', formData);
     }
   };
-  
-  const changeImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-  };
-  
-  useEffect(() => {
-    const timer = setInterval(changeImage, 5000);
-    return () => clearInterval(timer);
-  }, []);
-  
+
   return (
     <div className="flex h-screen bg-gray-100">
       <div className="w-2/3 relative overflow-hidden bg-gray-900 hidden md:block">
         <div className="h-full w-full flex items-center justify-center">
-          <img 
-            src={images[currentImageIndex]} 
-            alt="Registration background" 
-            className="h-full w-full object-cover transition-opacity duration-500"
-          />
-          <div className="absolute inset-0 bg-black bg-opacity-30 flex flex-col items-center justify-center text-white">
-            <h1 className="text-4xl font-bold mb-2">Join Our Community</h1>
-            <p className="text-lg max-w-lg text-center">Discover new experiences and connect with people around the world.</p>
-          </div>
+          {images.map((img, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-500 ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
+              style={{ backgroundImage: `url(${img})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            >
+              {/* Black stripe centered vertically with height limitation */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="bg-[rgba(0,0,0,0.5)] h-[150px] w-full flex items-center justify-center text-white">
+                  <div className="text-center">
+                    <h1 className="text-4xl font-bold mb-2">Join Us Today!</h1>
+                    <p className="text-lg max-w-lg mx-auto">Purchase premium meat at low cost and light-speed delivery</p>
+                    <p className="text-lg max-w-lg mx-auto">Cook the best meat dishes of your life!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
+
         <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
           {images.map((_, index) => (
-            <button 
-              key={index} 
+            <button
+              key={index}
               className={`w-2 h-2 rounded-full ${index === currentImageIndex ? 'bg-white' : 'bg-gray-400'}`}
               onClick={() => setCurrentImageIndex(index)}
             />
           ))}
         </div>
+        <button
+          className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full"
+          onClick={prevSlide}
+        >
+          ❮
+        </button>
+        <button
+          className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full"
+          onClick={nextSlide}
+        >
+          ❯
+        </button>
       </div>
-      
+
       <div className="w-full md:w-1/3 p-4 flex items-center">
-        <div className="max-w-md mx-auto w-full">
+        <div className="max-w-md mx-auto w-full text-left">
           <div className="text-center mb-4">
             <h2 className="text-2xl font-bold mb-1">Create an Account</h2>
             <p className="text-gray-600 text-sm">Fill in your details to get started</p>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="firstName" className="block text-xs font-medium text-gray-700">First Name</label>
+                <label htmlFor="firstName" className="block text-xs px-1 font-medium text-gray-700">First Name</label>
                 <input
                   type="text"
                   id="firstName"
@@ -172,9 +203,9 @@ const RegistrationPage = () => {
                 />
                 {errors.firstName && <p className="text-xs text-red-500">{errors.firstName}</p>}
               </div>
-              
+
               <div>
-                <label htmlFor="lastName" className="block text-xs font-medium text-gray-700">Last Name</label>
+                <label htmlFor="lastName" className="block text-xs px-1 font-medium text-gray-700">Last Name</label>
                 <input
                   type="text"
                   id="lastName"
@@ -187,9 +218,9 @@ const RegistrationPage = () => {
                 {errors.lastName && <p className="text-xs text-red-500">{errors.lastName}</p>}
               </div>
             </div>
-            
+
             <div>
-              <label htmlFor="email" className="block text-xs font-medium text-gray-700">Email</label>
+              <label htmlFor="email" className="block text-xs px-1 font-medium text-gray-700">Email</label>
               <input
                 type="email"
                 id="email"
@@ -201,10 +232,10 @@ const RegistrationPage = () => {
               />
               {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
             </div>
-            
+
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="username" className="block text-xs font-medium text-gray-700">Username</label>
+                <label htmlFor="username" className="block text-xs px-1 font-medium text-gray-700">Username</label>
                 <input
                   type="text"
                   id="username"
@@ -216,9 +247,9 @@ const RegistrationPage = () => {
                 />
                 {errors.username && <p className="text-xs text-red-500">{errors.username}</p>}
               </div>
-              
+
               <div>
-                <label htmlFor="phoneNumber" className="block text-xs font-medium text-gray-700">Phone Number</label>
+                <label htmlFor="phoneNumber" className="block text-xs px-1 font-medium text-gray-700">Phone Number</label>
                 <div className="flex">
                   <div className="relative">
                     <button
@@ -229,9 +260,9 @@ const RegistrationPage = () => {
                       <span className="text-left">{formData.countryCode}</span>
                       <ChevronDownIcon />
                     </button>
-                    
+
                     {dropdownOpen && (
-                      <div 
+                      <div
                         ref={dropdownRef}
                         className="absolute left-0 z-10 mt-1 w-32 bg-white shadow-lg max-h-48 rounded-md overflow-auto"
                       >
@@ -253,7 +284,7 @@ const RegistrationPage = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   <input
                     type="tel"
                     id="phoneNumber"
@@ -268,9 +299,9 @@ const RegistrationPage = () => {
                 {errors.phoneNumber && <p className="text-xs text-red-500">{errors.phoneNumber}</p>}
               </div>
             </div>
-            
+
             <div>
-              <label htmlFor="password" className="block text-xs font-medium text-gray-700">Password</label>
+              <label htmlFor="password" className="block text-xs px-1 font-medium text-gray-700">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -290,12 +321,12 @@ const RegistrationPage = () => {
                 </button>
               </div>
               {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
-              <p className="text-xs text-gray-500">Password must be longer than 8, shorter than 30 characters.</p>
-              <p className="text-xs text-gray-500">Password must contain one upper and lowercase character, and a number.</p>
+              <p className="text-xs px-1 text-gray-500">Password must be longer than 8, shorter than 30 characters.</p>
+              <p className="text-xs px-1 text-gray-500">Password must contain one upper and lowercase character, and a number.</p>
             </div>
-            
+
             <div>
-              <label htmlFor="confirmPassword" className="block text-xs font-medium text-gray-700">Confirm Password</label>
+              <label htmlFor="confirmPassword" className="block text-xs px-1 font-medium text-gray-700">Confirm Password</label>
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
@@ -316,14 +347,14 @@ const RegistrationPage = () => {
               </div>
               {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword}</p>}
             </div>
-            
+
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-1.5 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 transition-colors text-sm"
             >
               Register Now
             </button>
-            
+
             <p className="text-center text-xs text-gray-600 mt-1">
               Already have an account? {' '}
               <a href="#" className="text-blue-600 hover:underline font-medium">
