@@ -28,7 +28,7 @@ const Footer = () => {
                 {/* Contact Info */}
                 <div className="mb-4">
                     <p className="text-lg">Contact us: +123 456 7890</p>
-                    <p className="text-lg">Email: support@ebutcher.com</p>
+                    <p className="text-lg">Email: support@meatgo.com</p>
                 </div>
 
                 {/* About Us and FAQ Links */}
@@ -50,7 +50,7 @@ const Footer = () => {
                 {/* Quality & Copyright Message */}
                 <div className="text-sm text-gray-200">
                     <p>We provide the highest quality meat sourced from trusted suppliers.</p>
-                    <p>&copy; {new Date().getFullYear()} E-Butcher. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} MeatGo. All rights reserved.</p>
                 </div>
             </div>
         </footer>

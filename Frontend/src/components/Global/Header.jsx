@@ -31,7 +31,7 @@ const Header = () => {
                     target="_blank"
                     onClick={() => Util.navigateTo("home")}
                 >
-                    E-Butcher
+                    MeatGo
                 </a>
                 {/* Login Button or User Profile */}
                 {Util.savedUser.id !== "" ? (
