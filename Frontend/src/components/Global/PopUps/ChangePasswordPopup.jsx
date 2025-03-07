@@ -107,14 +107,16 @@ const ChangePassword = ({setChangePass}) => {
 
             {/* Popup */}
             <div className={`login-popup ${fadeIn ? 'show' : ''}`}>
-                <h2 className="text-2xl font-bold mb-4">{buttonText === 'Login' ? 'Login' : 'Register'}</h2>
-                <input
-                    type="text"
-                    placeholder='Write your username to login/register'
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="w-full p-3 mb-4 border rounded"
-                />
+                {!Util.forgot && (
+                    <input
+                        type="text"
+                        placeholder='Your old password'
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="w-full p-3 mb-4 border rounded"
+                    />
+                )}
+
                 <div className={`password-field-container ${showPasswordField ? 'slide-down' : ''}`}>
                     {showPasswordField && (
                         <div>

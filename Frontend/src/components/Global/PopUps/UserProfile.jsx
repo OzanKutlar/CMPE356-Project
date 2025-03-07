@@ -23,7 +23,8 @@ export default function UserProfile() {
                 // Add logic for editing profile here
                 break;
             case 'changePassword':
-                // Add logic for changing password here
+                Util.forgot = false;
+                Util.CallPasswordReset(true);
                 break;
             case "orders":
                 Util.navigateTo("orders");

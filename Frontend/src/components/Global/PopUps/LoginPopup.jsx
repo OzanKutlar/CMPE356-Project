@@ -74,7 +74,7 @@ const LoginPopup = ({setShowLogin}) => {
     const handleLoginClick = async () => {
         const headers = {
             username: username,
-            password: document.querySelector('input[placeholder="Password"]').value,
+            password: document.querySelector('input[placeholder="Your password"]').value,
         };
 
         if (buttonText === 'Register') {
@@ -99,6 +99,7 @@ const LoginPopup = ({setShowLogin}) => {
     const handleForgotPasswordClick = () => {
         setShowLogin(false);
         if(Util.CallPasswordReset != null){
+            Util.forgot = true;
             Util.CallPasswordReset(true);
         }
     };
