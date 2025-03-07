@@ -10,7 +10,9 @@
 1. Copy '.env.example' to '.env'.
 2. Replace api keys in '.env' with your api keys.
   - Google Maps API Key is needed.
-3. Run project.
+  - OpenStreetMaps API Key is needed.
+3. Run npm install in terminal to install dependencies.
+4. Run project.
 
 ## TODO
 
