@@ -10,8 +10,8 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-//import Util from '../../Util';
 
+// Register necessary Chart.js components
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -29,255 +29,158 @@ const ServerMonitor = () => {
     const [labels, setLabels] = useState([]);
     const [showManageOptions, setShowManageOptions] = useState(false);
 
+    // Simulated backend function for fetching metrics and handling server commands
     const dummyBackend = async (endpoint) => {
         await new Promise(resolve => setTimeout(resolve, 500));
-
-        // Dummy data for /api/metrics endpoint
+        
+        // Dummy data for serverMetrics endpoint
         if (endpoint === 'serverMetrics') {
-            const dummyData = {
+            return {
                 cpu: Math.random() * 100, // Random CPU usage between 0% and 100%
                 gpu: Math.random() * 100, // Random GPU usage between 0% and 100%
                 network: Math.random() * 100, // Random network usage between 0 MB and 100 MB
                 timestamp: Math.floor(Date.now() / 1000), // Current timestamp in seconds
             };
-            return dummyData;
         }
-
+        
         // Dummy responses for other endpoints
-        if (endpoint === 'shutdown') {
-            return { message: 'Server is shutting down...' };
-        }
-
-        if (endpoint === 'restart') {
-            return { message: 'Server is restarting...' };
-        }
-
+        if (endpoint === 'shutdown') return { message: 'Server is shutting down...' };
+        if (endpoint === 'restart') return { message: 'Server is restarting...' };
+        
         throw new Error(`Endpoint ${endpoint} not found`);
     };
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Use the callBackend function to fetch metrics
-                const response = await dummyBackend("serverMetrics");//Util.callBackend('serverMetrics');
+                const response = await dummyBackend("serverMetrics"); //Util.callBackend("serverMetrics");
                 console.log('Backend Response:', response); // Log the response for debugging
 
                 const { cpu, gpu, network, timestamp } = response;
+                
+                // Convert timestamp to milliseconds and format time
+                const timeLabel = new Date(timestamp * 1000).toLocaleTimeString();
 
-                // Ensure the timestamp is a valid number
-                if (typeof timestamp !== 'number' || isNaN(timestamp)) {
-                    console.error('Invalid timestamp:', timestamp);
-                    return;
-                }
-
-                // Convert timestamp to milliseconds if it's in seconds
-                const timestampInMilliseconds = timestamp * 1000;
-
-                // Validate the timestamp again after conversion
-                if (typeof timestampInMilliseconds !== 'number' || isNaN(timestampInMilliseconds)) {
-                    console.error('Invalid timestamp after conversion:', timestampInMilliseconds);
-                    return;
-                }
-
-                // Format the time for the label
-                const timeLabel = new Date(timestampInMilliseconds).toLocaleTimeString();
-
-                setCpuData(prevData => [...prevData, cpu].slice(-10));
-                setGpuData(prevData => [...prevData, gpu].slice(-10));
-                setNetworkData(prevData => [...prevData, network].slice(-10));
-                setLabels(prevLabels => [...prevLabels, timeLabel].slice(-10));
+                setCpuData(prevData => [...prevData, cpu].slice(-10)); // Keep only last 10 data points
+                setGpuData(prevData => [...prevData, gpu].slice(-10)); // Keep only last 10 data points
+                setNetworkData(prevData => [...prevData, network].slice(-10)); // Keep only last 10 data points
+                setLabels(prevLabels => [...prevLabels, timeLabel].slice(-10)); // Keep only last 10 labels
             } catch (error) {
                 console.error('Error fetching metrics:', error);
             }
         };
 
-        const interval = setInterval(fetchData, 5000);
-        return () => clearInterval(interval);
+        const interval = setInterval(fetchData, 5000); // Fetch data every 5 seconds
+        return () => clearInterval(interval); // Cleanup interval on unmount
     }, []);
 
+    // Handle server shutdown
     const handleShutdown = async () => {
         try {
-            // Use the callBackend function to send shutdown request
-            await dummyBackend("shutdown"); //Util.callBackend('shutdown');
+            await dummyBackend("shutdown"); //Util.callBackend("shutdown");
             alert('Server is shutting down...');
         } catch (error) {
             console.error('Error shutting down server:', error);
         }
     };
 
+    // Handle server restart
     const handleRestart = async () => {
         try {
-            // Use the callBackend function to send restart request
-            await dummyBackend("restart"); //Util.callBackend('restart');
+            await dummyBackend("restart"); //Util.callBackend("restart");
             alert('Server is restarting...');
         } catch (error) {
             console.error('Error restarting server:', error);
         }
     };
 
-    const toggleManageOptions = () => {
-        setShowManageOptions(!showManageOptions);
-    };
+    // Toggle management options visibility
+    const toggleManageOptions = () => setShowManageOptions(!showManageOptions);
 
-    // Data for CPU Usage Graph
-    const cpuChartData = {
-        labels,
-        datasets: [
-            {
-                label: 'CPU Usage (%)',
-                data: cpuData,
-                borderColor: 'rgba(75, 192, 192, 1)',
-                fill: false,
-            },
-        ],
-    };
-
-    // Data for GPU Usage Graph
-    const gpuChartData = {
-        labels,
-        datasets: [
-            {
-                label: 'GPU Usage (%)',
-                data: gpuData,
-                borderColor: 'rgba(153, 102, 255, 1)',
-                fill: false,
-            },
-        ],
-    };
-
-    // Data for Network Usage Graph
-    const networkChartData = {
-        labels,
-        datasets: [
-            {
-                label: 'Network Usage (MB)',
-                data: networkData,
-                borderColor: 'rgba(255, 159, 64, 1)',
-                fill: false,
-            },
-        ],
-    };
-
-    // Common options for all charts
+    // Chart configuration options
     const chartOptions = {
         responsive: true,
-        maintainAspectRatio: false, // Allow charts to be smaller
-        animation: {
-            duration: 1000, // Animation duration in milliseconds
-            easing: 'easeInOutQuad', // Smooth easing function
+        maintainAspectRatio: false,
+        animation: false, // Disable animation for instant updates
+        scales: {
+            y: {
+                suggestedMin: 0, // Ensures consistent scale
+                suggestedMax: 100, // Ensures consistent scale
+            }
         },
         plugins: {
-            legend: {
-                position: 'top',
-            },
-            title: {
-                display: true,
-                text: '', // Title can be customized for each chart
-            },
+            legend: { position: 'top' }, // Position legend at the top
+        },
+        elements: {
+            line: { tension: 0 }, // Sharp lines instead of curves
         },
     };
 
+    // Generate chart data dynamically
+    const generateChartData = (label, data, color) => ({
+        labels, // X-axis labels
+        datasets: [{
+            label, // Dataset label
+            data, // Data points
+            borderColor: color, // Line color
+            backgroundColor: color + '33', // Slight transparency for fill
+            fill: true, // Enable area fill
+        }],
+    });
+
     return (
-        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-            <h1>Server Monitor</h1>
-
-            {/* Charts Side by Side */}
-            <div style={{ display: 'flex', gap: '40px', marginBottom: '40px' }}>
-                {/* CPU Usage Graph */}
-                <div style={{ flex: 1, height: '300px' }}>
-                    <h2>CPU Usage</h2>
-                    <Line
-                        data={cpuChartData}
-                        options={{
-                            ...chartOptions,
-                            plugins: {
-                                ...chartOptions.plugins,
-                                title: { ...chartOptions.plugins.title, text: 'CPU Usage Over Time' },
-                            },
-                        }}
-                    />
+        <div className="p-6 max-w-5xl mx-auto">
+            <h1 className="text-3xl font-bold text-center mb-6">Server Monitor</h1>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                {/* CPU Usage Chart */}
+                <div className="bg-white p-4 shadow-lg rounded-xl">
+                    <h2 className="text-xl font-semibold mb-2">CPU Usage</h2>
+                    <div className="h-64">
+                        <Line data={generateChartData('CPU Usage (%)', cpuData, '#4CAF50')} options={chartOptions} />
+                    </div>
                 </div>
-
-                {/* GPU Usage Graph */}
-                <div style={{ flex: 1, height: '300px' }}>
-                    <h2>GPU Usage</h2>
-                    <Line
-                        data={gpuChartData}
-                        options={{
-                            ...chartOptions,
-                            plugins: {
-                                ...chartOptions.plugins,
-                                title: { ...chartOptions.plugins.title, text: 'GPU Usage Over Time' },
-                            },
-                        }}
-                    />
+                {/* GPU Usage Chart */}
+                <div className="bg-white p-4 shadow-lg rounded-xl">
+                    <h2 className="text-xl font-semibold mb-2">GPU Usage</h2>
+                    <div className="h-64">
+                        <Line data={generateChartData('GPU Usage (%)', gpuData, '#3B82F6')} options={chartOptions} />
+                    </div>
                 </div>
-
-                {/* Network Usage Graph */}
-                <div style={{ flex: 1, height: '300px' }}>
-                    <h2>Network Usage</h2>
-                    <Line
-                        data={networkChartData}
-                        options={{
-                            ...chartOptions,
-                            plugins: {
-                                ...chartOptions.plugins,
-                                title: { ...chartOptions.plugins.title, text: 'Network Usage Over Time' },
-                            },
-                        }}
-                    />
+                {/* Network Usage Chart */}
+                <div className="bg-white p-4 shadow-lg rounded-xl">
+                    <h2 className="text-xl font-semibold mb-2">Network Usage</h2>
+                    <div className="h-64">
+                        <Line data={generateChartData('Network Usage (MB)', networkData, '#F59E0B')} options={chartOptions} />
+                    </div>
                 </div>
             </div>
 
-            {/* Buttons */}
-            <div style={{ textAlign: 'center' }}>
+            {/* Management Buttons */}
+            <div className="text-center">
                 <button
                     onClick={toggleManageOptions}
-                    style={{
-                        marginRight: '10px',
-                        padding: '10px 20px',
-                        backgroundColor: '#666',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer',
-                    }}
+                    className="px-4 py-2 bg-gray-700 text-white rounded-lg shadow-md hover:bg-gray-800 transition"
                 >
                     {showManageOptions ? 'Hide Manage Options' : 'Manage Backend'}
                 </button>
-
-                {showManageOptions && (
-                    <>
-                        <button
-                            onClick={handleShutdown}
-                            style={{
-                                marginRight: '10px',
-                                padding: '10px 20px',
-                                backgroundColor: '#ff4444',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '5px',
-                                cursor: 'pointer',
-                            }}
-                        >
-                            Shutdown Server
-                        </button>
-                        <button
-                            onClick={handleRestart}
-                            style={{
-                                padding: '10px 20px',
-                                backgroundColor: '#44aaff',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '5px',
-                                cursor: 'pointer',
-                            }}
-                        >
-                            Restart Server
-                        </button>
-                    </>
-                )}
             </div>
+
+            {showManageOptions && (
+                <div className="mt-4 flex justify-center gap-4">
+                    <button
+                        onClick={handleShutdown}
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition"
+                    >
+                        Shutdown Server
+                    </button>
+                    <button
+                        onClick={handleRestart}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition"
+                    >
+                        Restart Server
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
