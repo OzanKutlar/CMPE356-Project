@@ -21,6 +21,7 @@ import DeliveryPage from "./components/DeliveryPage/DeliveryPage.jsx";
 import Footer from "./components/Global/Footer.jsx";
 import { GlobalContext } from "./components/Global/GlobalContext.jsx";
 import RegistrationPage from "./components/RegisterPage/RegisterPage.jsx";
+import OrderList from "./components/HomePage/Orders/OrderList.jsx";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(Util.currentPage);
@@ -68,6 +69,13 @@ export default function App() {
                         <ItemPicker/>
                     </div>
                 );
+            case "orders":
+                return (
+                    <div>
+                        <Header/>
+                        <OrderList/>
+                    </div>
+                );
             case "register":
                 return (
                     <div>
@@ -97,12 +105,6 @@ export default function App() {
                     <div>
                         <ButcherHeader/>
                         <ButcherItemSelector/>
-                    </div>
-                );
-            case "register":
-                return (
-                    <div>
-                        <RegistrationPage/>
                     </div>
                 );
             case "butcher/transactions": // Butcher Add Page

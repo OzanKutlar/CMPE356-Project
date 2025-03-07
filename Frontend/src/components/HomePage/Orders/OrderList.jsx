@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Util from "../../../Util.js";
-import "./ButcherTransactions.css"
+import "../../ButcherPage/Transactions/ButcherTransactions.css"
 
 const FullscreenSales = () => {
     const [sales, setSales] = useState([]);
@@ -19,7 +19,7 @@ const FullscreenSales = () => {
         const fetchLatestSales = async () => {
             try {
                 setLoading(true);
-                const response = await Util.callBackend("getTransactions", {
+                const response = await Util.callBackend("getOrders", {
                     userID: Util.savedUser.id,
                     limit: 50,
                     pos: 0
@@ -152,7 +152,7 @@ const FullscreenSales = () => {
                                                         onClick={() => handleAction("refundTransaction", sale.id)}
                                                         disabled={disabledButtons["refundTransaction" + sale.id]}
                                                     >
-                                                        Refund Transaction
+                                                        Cancel Order
                                                     </button>
                                                     <button
                                                         className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${
@@ -163,7 +163,7 @@ const FullscreenSales = () => {
                                                         onClick={() => handleAction("banUser", sale.id)}
                                                         disabled={disabledButtons["banUser" + sale.id]}
                                                     >
-                                                        Ban User
+                                                        Change Adress
                                                     </button>
                                                     <button
                                                         className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${
@@ -174,7 +174,7 @@ const FullscreenSales = () => {
                                                         onClick={() => handleAction("banAddress", sale.id)}
                                                         disabled={disabledButtons["banAddress" + sale.id]}
                                                     >
-                                                        Ban Address
+                                                        Contact Driver
                                                     </button>
                                                 </div>
                                             </div>
