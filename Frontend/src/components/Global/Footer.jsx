@@ -11,18 +11,20 @@ const Footer = () => {
                         href="https://twitter.com/yourhandle"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-2xl transition-all duration-300 hover:text-blue-300"
+                        className="transition-all duration-300 hover:opacity-75"
                     >
-                        Twitter
+                        <img src="/src/assets/twitter.png" alt="Twitter" className="w-8 h-8" />
                     </a>
+
                     <a
                         href="https://www.instagram.com/yourhandle"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-2xl transition-all duration-300 hover:text-blue-300"
+                        className="transition-all duration-300 hover:opacity-75"
                     >
-                        Instagram
+                        <img src="/src/assets/instagram.png" alt="Instagram" className="w-8 h-8" />
                     </a>
+
                 </div>
 
                 {/* Contact Info */}
