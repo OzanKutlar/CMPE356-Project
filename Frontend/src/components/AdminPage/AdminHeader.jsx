@@ -1,8 +1,8 @@
 import React, {useState} from "react";
 import CartBar from "../HomePage/CartBar/CartBar.jsx";
-import LoginPopup from "../Global/LoginPopup.jsx";
+import LoginPopup from "../Global/PopUps/LoginPopup.jsx";
 import Util from "../../Util.js";
-import UserProfile from "../Global/UserProfile.jsx";
+import UserProfile from "../Global/PopUps/UserProfile.jsx";
 import AdminNavbar from "./AdminNavbar.jsx";
 
 const Header = () => {

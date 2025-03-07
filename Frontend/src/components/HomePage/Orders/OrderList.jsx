@@ -10,9 +10,15 @@ const FullscreenSales = () => {
     const [loading, setLoading] = useState(false);
     const [disabledButtons, setDisabledButtons] = useState({});
 
+    let timeOutConst = null;
+
     const showNotification = (message, isError = false) => {
+        if(timeOutConst != null){
+            clearTimeout(timeOutConst);
+            timeOutConst = null;
+        }
         setNotification({message, isLoading: false, isError});
-        setTimeout(() => setNotification({message: '', isLoading: false, isError: false}), 3000);
+        timeOutConst = setTimeout(() => setNotification({message: '', isLoading: false, isError: false}), 3000);
     };
 
     useEffect(() => {
@@ -35,24 +41,24 @@ const FullscreenSales = () => {
         fetchLatestSales();
     }, []);
 
-    const handleExpand = (transactionId) => {
-        setExpandedTransaction((prev) => (prev === transactionId ? null : transactionId));
+    const handleExpand = (orderID) => {
+        setExpandedTransaction((prev) => (prev === orderID ? null : orderID));
     };
 
-    const handleAction = async (action, transactionId) => {
-        setDisabledButtons((prev) => ({...prev, [action + transactionId]: true}));
+    const handleAction = async (action, orderID) => {
+        setDisabledButtons((prev) => ({...prev, [action + orderID]: true}));
         setNotification({message: '', isLoading: true, isError: false});
         try {
-            await Util.callBackend(action, {
+            let returnEd = await Util.callBackend(action, {
                 userID: Util.savedUser.id,
-                transactionID: transactionId,
+                transactionID: orderID,
             });
-            showNotification('Action completed successfully');
+            showNotification(returnEd.msg);
         } catch (err) {
             console.error(err);
             showNotification('Action failed', true);
         } finally {
-            setDisabledButtons((prev) => ({...prev, [action + transactionId]: false}));
+            setDisabledButtons((prev) => ({...prev, [action + orderID]: false}));
         }
     };
 
@@ -63,7 +69,7 @@ const FullscreenSales = () => {
         return (
             <div className="flex items-center justify-center h-screen">
                 <div className="w-16 h-16 border-4 border-t-gray-500 border-gray-200 rounded-full animate-spin"></div>
-                <p className="ml-4 text-xl font-semibold">Loading your transactions...</p>
+                <p className="ml-4 text-xl font-semibold">Loading your orders...</p>
             </div>
         );
     }
@@ -145,34 +151,34 @@ const FullscreenSales = () => {
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <button
                                                         className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${
-                                                            disabledButtons["refundTransaction" + sale.id]
+                                                            disabledButtons["cancelOrder" + sale.id]
                                                                 ? "bg-gray-400 cursor-not-allowed"
                                                                 : "bg-red-500 hover:bg-red-600"
                                                         }`}
-                                                        onClick={() => handleAction("refundTransaction", sale.id)}
-                                                        disabled={disabledButtons["refundTransaction" + sale.id]}
+                                                        onClick={() => handleAction("cancelOrder", sale.id)}
+                                                        disabled={disabledButtons["cancelOrder" + sale.id]}
                                                     >
                                                         Cancel Order
                                                     </button>
                                                     <button
                                                         className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${
-                                                            disabledButtons["banUser" + sale.id]
+                                                            disabledButtons["changeAddr" + sale.id]
                                                                 ? "bg-gray-400 cursor-not-allowed"
                                                                 : "bg-yellow-500 hover:bg-yellow-600"
                                                         }`}
-                                                        onClick={() => handleAction("banUser", sale.id)}
-                                                        disabled={disabledButtons["banUser" + sale.id]}
+                                                        onClick={() => handleAction("changeAddr", sale.id)}
+                                                        disabled={disabledButtons["changeAddr" + sale.id]}
                                                     >
-                                                        Change Adress
+                                                        Change Address
                                                     </button>
                                                     <button
                                                         className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${
-                                                            disabledButtons["banAddress" + sale.id]
+                                                            disabledButtons["contDriver" + sale.id]
                                                                 ? "bg-gray-400 cursor-not-allowed"
                                                                 : "bg-gray-700 hover:bg-gray-800"
                                                         }`}
-                                                        onClick={() => handleAction("banAddress", sale.id)}
-                                                        disabled={disabledButtons["banAddress" + sale.id]}
+                                                        onClick={() => handleAction("contDriver", sale.id)}
+                                                        disabled={disabledButtons["contDriver" + sale.id]}
                                                     >
                                                         Contact Driver
                                                     </button>

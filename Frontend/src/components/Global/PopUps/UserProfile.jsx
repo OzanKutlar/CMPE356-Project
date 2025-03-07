@@ -1,6 +1,6 @@
 import React, {useContext, useState} from 'react';
-import Util from "../../Util.js";
-import { GlobalContext } from './GlobalContext.jsx';
+import Util from "../../../Util.js";
+import { GlobalContext } from '../GlobalContext.jsx';
 
 export default function UserProfile() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -24,6 +24,9 @@ export default function UserProfile() {
                 break;
             case 'changePassword':
                 // Add logic for changing password here
+                break;
+            case "orders":
+                Util.navigateTo("orders");
                 break;
             case 'switchToAdminPanel':
                 Util.navigateTo("admin");
@@ -65,6 +68,12 @@ export default function UserProfile() {
                         onClick={() => handleAction('editProfile')}
                     >
                         Edit Profile
+                    </button>
+                    <button
+                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                        onClick={() => handleAction('orders')}
+                    >
+                        My Orders
                     </button>
                     <button
                         className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"

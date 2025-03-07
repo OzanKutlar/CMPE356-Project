@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Util from '../../Util.js';
-import '../Global/LoginPopup.css'
+import '../Global/PopUps/LoginPopup.css'
 
 const LoginOrPhone = ({setShowPopUp}) => {
     const [phoneNo, setPhoneNo] = useState('');

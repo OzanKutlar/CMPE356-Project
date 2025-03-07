@@ -10,9 +10,17 @@ const FullscreenSales = () => {
     const [loading, setLoading] = useState(false);
     const [disabledButtons, setDisabledButtons] = useState({});
 
+
+
+    let timeOutConst = null;
+
     const showNotification = (message, isError = false) => {
+        if(timeOutConst != null){
+            clearTimeout(timeOutConst);
+            timeOutConst = null;
+        }
         setNotification({message, isLoading: false, isError});
-        setTimeout(() => setNotification({message: '', isLoading: false, isError: false}), 3000);
+        timeOutConst = setTimeout(() => setNotification({message: '', isLoading: false, isError: false}), 3000);
     };
 
     useEffect(() => {

@@ -1,7 +1,7 @@
 class Util {
     static backendIp = 'http://127.0.0.1:3199/';
     static fakeIt = true;
-    static fakeDataDelay = 200; // Define the timeout delay
+    static fakeDataDelay = 1000; // Define the timeout delay
     static CallLogin = null;
     static tempPhoneNumber = '';
     static footerColor = "bg-rose-500";
@@ -65,6 +65,9 @@ class Util {
             }
         ],
         "submitOrder": "success",
+        "cancelOrder": {msg:"Your order has been cancelled successfully."},
+        "changeAddr": {msg:"Your address change has been accepted."},
+        "contDriver": {msg:"Your driver will contact you shortly."},
         "getStock": [
             {
                 ItemName: "Minced Meat",

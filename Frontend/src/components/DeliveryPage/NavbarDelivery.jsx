@@ -1,8 +1,8 @@
 import { useState } from "react";
-import UserProfile from '../Global/UserProfile';
+import UserProfile from '../Global/PopUps/UserProfile.jsx';
 import PropTypes from 'prop-types';
 import Util from "../../Util.js";
-import LoginPopup from "../Global/LoginPopup.jsx";
+import LoginPopup from "../Global/PopUps/LoginPopup.jsx";
 
 export default function NavbarDelivery({activeTab, handleTabClick}) {
     const [showLogin, setShowLogin] = useState(false);

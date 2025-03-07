@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import Util from '../../Util.js';
+import Util from '../../../Util.js';
 import './LoginPopup.css';
-import {EyeIcon, EyeOffIcon} from "./Icons.jsx"; // Import the updated CSS file
+import {EyeIcon, EyeOffIcon} from "../Icons.jsx"; // Import the updated CSS file
 
 const LoginPopup = ({setShowLogin}) => {
     const [username, setUsername] = useState('');
