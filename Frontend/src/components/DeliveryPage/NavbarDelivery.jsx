@@ -7,15 +7,14 @@ import LoginPopup from "../Global/PopUps/LoginPopup.jsx";
 export default function NavbarDelivery({activeTab, handleTabClick}) {
     const [showLogin, setShowLogin] = useState(false);
 
-    Util.footerColor = "bg-gray-800";
     return (
-        <nav className="bg-gray-800 p-4">
+        <nav className="bg-stone-700 p-2">
             <div className="flex justify-between items-center">
                 <div className="flex space-x-4">
                     {['Waiting Orders', 'Taken Orders'].map((tab) => (
                         <button
                             key={tab}
-                            className={`px-4 py-2 text-white rounded ${activeTab === tab ? 'bg-blue-600' : 'hover:bg-gray-700'}`}
+                            className={`px-4 py-2 text-white rounded-lg transition-all ${activeTab === tab ? 'bg-emerald-700 duration-100 ' : 'hover:bg-emerald-600 duration-300'}`}
                             onClick={() => handleTabClick(tab)}
                         >
                             {tab}
@@ -28,7 +27,7 @@ export default function NavbarDelivery({activeTab, handleTabClick}) {
                     <UserProfile/>
                 ) : (
                     <button
-                        className="w-20 h-10 bg-rose-50 text-rose-700 rounded-3xl cursor-pointer transition-all duration-300 hover:bg-red-600 hover:text-white mr-3 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        className="w-20 h-10 bg-emerald-700 text-white rounded-3xl cursor-pointer transition-all duration-300 mr-3 focus:ring-2 hover:bg-emerald-600 hover:text-white focus:ring-red-500 focus:ring-offset-2"
                         onClick={() => setShowLogin(true)}
                     >
                         Login

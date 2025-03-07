@@ -20,6 +20,8 @@ const DeliveryPage = () => {
         if (isDesktop) {
             //keep list bar open on desktop
             setIsListBarOpen(true);
+            if(activeTab === null)
+                setActiveTab("Waiting Orders");
         }
     }, [isDesktop]);
 
@@ -41,6 +43,7 @@ const DeliveryPage = () => {
         if (tab === activeTab && !isDesktop) {
             // Toggle list bar on phone
             setIsListBarOpen(!isListBarOpen);
+            setActiveTab(null);
         } else {
             // Change active tab
             setActiveTab(tab);

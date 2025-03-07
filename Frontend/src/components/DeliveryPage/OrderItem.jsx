@@ -27,7 +27,7 @@ export function OrderItem({
               e.stopPropagation();
               handleTakeOrder(order, 'Taken Orders', currentTab);
             }} 
-            className="w-full flex items-center justify-center bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
+            className="w-full flex items-center justify-center bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition-colors"
           >
             Take Order
           </button>
@@ -40,7 +40,7 @@ export function OrderItem({
                 e.stopPropagation();
                 handleDropOrder(order, 'Waiting Orders', currentTab);
               }} 
-              className="flex-1 flex items-center justify-center bg-red-500 text-white p-2 rounded hover:bg-red-600 transition-colors"
+              className="flex-1 flex items-center justify-center bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition-colors"
             >
               Drop
             </button>
@@ -49,7 +49,7 @@ export function OrderItem({
                 e.stopPropagation();
                 handleComplete(order, currentTab);
               }} 
-              className="flex-1 flex items-center justify-center bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
+              className="flex-1 flex items-center justify-center bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 transition-colors"
             >
               Complete
             </button>
@@ -64,7 +64,7 @@ export function OrderItem({
   return (
     <div 
       className={`
-        border border-gray-300 rounded-lg mb-2 overflow-hidden 
+        border border-gray-300 rounded-xl mb-2 overflow-hidden 
         transition-all duration-300 ease-in-out bg-white
         ${isExpanded ? 'shadow-lg' : 'shadow-sm'}
       `}
@@ -89,16 +89,14 @@ export function OrderItem({
         `}
       >
         {/* Detailed Order Information */}
-        <div className="border-t pt-4 mt-2">
-          <p className="text-gray-700 mb-2"><strong>Order Details</strong></p>
+        <div className="border-t pt-1 mt-2">
           <div className="space-y-1">
-            <p>Total Items: {order.content.length}</p>
-            <p>Total Price: ${order.totalPrice.toFixed(2)}</p>
             <p className="whitespace-pre-line pt-2">
               <strong className="text-gray-700 mb-2">Products</strong> {"\n"}
               {order.content.map(item => `${item}`).join("\n")}
             </p>
           </div>
+          <p className='pt-4'><strong className='text-gray-700 mb-2'>Total Price: </strong>${order.totalPrice.toFixed(2)}</p>
         </div>
 
         {/* Action Buttons */}
