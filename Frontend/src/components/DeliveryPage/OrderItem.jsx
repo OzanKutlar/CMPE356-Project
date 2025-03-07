@@ -40,7 +40,7 @@ export function OrderItem({
                 e.stopPropagation();
                 handleDropOrder(order, 'Waiting Orders', currentTab);
               }} 
-              className="flex-1 flex items-center justify-center bg-gray-300 text-gray-700 p-2 rounded hover:bg-gray-400 transition-colors"
+              className="flex-1 flex items-center justify-center bg-red-500 text-white p-2 rounded hover:bg-red-600 transition-colors"
             >
               Drop
             </button>
