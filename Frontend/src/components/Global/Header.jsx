@@ -8,6 +8,11 @@ const Header = () => {
     const [showLogin, setShowLogin] = useState(false);
     const [showNavbar, setShowNavbar] = useState(false);
 
+    Util.CallLogin = () => {
+        setShowLogin(true);
+    };
+
+
     Util.footerColor = "bg-rose-500";
 
     return (
@@ -27,7 +32,7 @@ const Header = () => {
 
                 {/* Title */}
                 <a
-                    className="transition-all duration-300 text-3xl font-bold text-red-50 text-center flex-grow hover:text-blue-300 mr-6"
+                    className="pl-20 transition-all duration-300 text-3xl font-bold text-red-50 text-center flex-grow hover:text-blue-300 mr-6"
                     target="_blank"
                     onClick={() => Util.navigateTo("home")}
                 >
@@ -38,10 +43,10 @@ const Header = () => {
                     <UserProfile/>
                 ) : (
                     <button
-                        className="w-20 h-10 bg-rose-50 text-rose-700 rounded-3xl cursor-pointer transition-all duration-300 hover:bg-red-600 hover:text-white mr-3 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        className="w-30 h-12 bg-rose-50 text-rose-700 rounded-3xl cursor-pointer transition-all duration-300 hover:bg-red-600 hover:text-white mr-3 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                         onClick={() => setShowLogin(true)}
                     >
-                        Login
+                        Login/Register
                     </button>
                 )}
             </header>

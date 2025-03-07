@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import Util from '../../Util.js';
-import './LoginPopup.css'; // Import the updated CSS file
+import '../Global/LoginPopup.css'
 
-const LoginPopup = ({setShowLogin}) => {
+const LoginOrPhone = ({setShowPopUp}) => {
     const [username, setUsername] = useState('');
     const [showPasswordField, setShowPasswordField] = useState(false);
     const [showConfirmPasswordField, setShowConfirmPasswordField] = useState(false);
@@ -13,6 +13,7 @@ const LoginPopup = ({setShowLogin}) => {
     const [isHovered, setIsHovered] = useState(false);
 
 
+    console.log("Loaded in LoginOrPhone.jsx")
     useEffect(() => {
         const timeout = setTimeout(() => setFadeIn(true), 50);
         return () => {
@@ -55,27 +56,9 @@ const LoginPopup = ({setShowLogin}) => {
     };
 
     const handleLoginClick = async () => {
-        const headers = {
-            username: username,
-            password: document.querySelector('input[placeholder="Password"]').value,
-        };
-
-        if (buttonText === 'Register') {
-            headers.register = document.querySelector('input[placeholder="Confirm Password"]').value;
-        }
-
-        try {
-            const endpoint = buttonText === 'Register' ? "register" : "login";
-            const s = await Util.callBackend(endpoint, headers);
-
-            if (s.message === "Success") {
-                Util.savedUser = s.user;
-                setShowLogin(false);
-            } else {
-                console.error(`Error: ${s.message}`);
-            }
-        } catch (error) {
-            console.error('Error during login/register:', error);
+        setShowPopUp(false);
+        if(Util.CallLogin != null) {
+            Util.CallLogin(true);
         }
     };
 
@@ -86,10 +69,19 @@ const LoginPopup = ({setShowLogin}) => {
     return (
         <div className="login-popup-wrapper">
             {/* Background Overlay */}
-            <div className="login-overlay" onClick={() => setShowLogin(false)}></div>
+            <div className="login-overlay" onClick={() => setShowPopUp(false)}></div>
 
             {/* Popup */}
             <div className={`login-popup ${fadeIn ? 'show' : ''}`}>
+                <button
+                    onClick={handleLoginClick}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                    style={{backgroundColor: isHovered ? '#0056b3' : buttonColor}}
+                    className="w-full px-5 py-3 rounded text-white text-lg cursor-pointer transition-colors duration-300"
+                >
+                    {buttonText}
+                </button>
                 <h2 className="text-2xl font-bold mb-4">{buttonText === 'Login' ? 'Login' : 'Register'}</h2>
                 <input
                     type="text"
@@ -107,15 +99,6 @@ const LoginPopup = ({setShowLogin}) => {
                                className="w-full p-3 mb-4 border rounded"/>
                     )}
                 </div>
-                <button
-                    onClick={handleLoginClick}
-                    onMouseEnter={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}
-                    style={{backgroundColor: isHovered ? '#0056b3' : buttonColor}}
-                    className="w-full px-5 py-3 rounded text-white text-lg cursor-pointer transition-colors duration-300"
-                >
-                    {buttonText}
-                </button>
                 {buttonText === 'Login' && (
                     <button
                         className="forgot-password"
@@ -129,4 +112,4 @@ const LoginPopup = ({setShowLogin}) => {
     );
 };
 
-export default LoginPopup;
+export default LoginOrPhone;

@@ -2,6 +2,8 @@ class Util {
     static backendIp = 'http://127.0.0.1:3199/';
     static fakeIt = true;
     static fakeDataDelay = 200; // Define the timeout delay
+    static CallLogin = null;
+    static tempPhoneNumber = '';
     static footerColor = "bg-rose-500";
     static fakeData = {
         'endpoint2': {data: 'Fake Data for Endpoint 2'},

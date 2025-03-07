@@ -1,12 +1,14 @@
 import React, {useState, useEffect} from 'react';
 import Util from '../../Util.js';
 import OrderForm from "./OrderForm.jsx";
+import LoginOrPhone from "./LoginOrPhonePopup.jsx";
 
 const CartItemsLarge = () => {
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [message, setMessage] = useState(null);
+    const [showLogin, setShowLogin] = useState(false);
 
     const [formData, setFormData] = useState({
         cardNumber: '',
@@ -62,6 +64,10 @@ const CartItemsLarge = () => {
     };
 
     const handleSubmitOrder = async () => {
+        if(Util.savedUser.id === '' && Util.tempPhoneNumber === ''){
+            setShowLogin(true);
+            return;
+        }
         if (cartItems.length === 0) {
             setMessage({
                 type: "error",
@@ -126,6 +132,9 @@ const CartItemsLarge = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold mb-8 text-center">Shopping Cart</h1>
+
+            {/* Login Popup */}
+            {showLogin && <LoginOrPhone setShowPopUp={setShowLogin}/>}
 
             {message && (
                 <div className={`mb-4 p-4 rounded-lg ${
