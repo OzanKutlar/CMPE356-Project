@@ -4,7 +4,9 @@ import './LoginPopup.css';
 import {EyeIcon, EyeOffIcon} from "../Icons.jsx"; // Import the updated CSS file
 
 const ChangePassword = ({setChangePass}) => {
-    const [username, setUsername] = useState('');
+    const [oldPass, setOldPass] = useState('');
+    const [newPass, setNewPass] = useState('');
+    const [newPassConf, setNewPassConf] = useState('');
     const [showPasswordField, setShowPasswordField] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConf, setShowPasswordConf] = useState(false);
@@ -30,50 +32,45 @@ const ChangePassword = ({setChangePass}) => {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            if (username.trim()) {
-                checkUserExistence(username);
+            if (newPass.length >= 4) {
+                setShowConfirmPasswordField(true)
             }
         }, 400);
-        setShowPasswordField(false);
         setShowConfirmPasswordField(false);
         setButtonText('Login');
         setButtonColor('#007bff');
         return () => clearTimeout(timer);
-    }, [username]);
+    }, [newPassConf]);
 
-    const checkUserExistence = async (usernameString) => {
-        try {
-            const data = await Util.callBackend(`check-user`, {username: usernameString});
-            if (data.exists) {
-                setShowPasswordField(true);
-                setShowConfirmPasswordField(false);
-                setButtonText('Login');
-                setButtonColor('#007bff');
-                setButtonDest(data.role);
-            } else {
-                setShowPasswordField(true);
-                setShowConfirmPasswordField(true);
-                setButtonText('Register');
-                setButtonColor('orange');
-            }
-        } catch (error) {
-            console.error('Error checking user existence:', error);
-        }
-    };
 
-    const handlePassword = async (e) => {
+    const handlePassword = (e) => {
         const {name, value} = e.target;
+
+        // Log the name and value of the input
+        console.log(`Input Name: ${name}`);
+        console.log(`Input Value: ${value}`);
+
+        setNewPass(value);
+        setShowConfirmPasswordField(newPass.length >= 4)
+        // Log the new password value
+        console.log(`New Password: ${value}`);
+
         if(value === 'test'){
             setPasswordError("AAAA");
+            // Log the error message
+            console.log("Error: AAAA");
         }
         else{
             setPasswordError('');
+            // Log that there is no error
+            console.log("No error");
         }
     }
 
+
     const handleLoginClick = async () => {
         const headers = {
-            username: username,
+            oldPass: document.querySelector('input[placeholder="Password"]').value,
             password: document.querySelector('input[placeholder="Password"]').value,
         };
 
@@ -111,39 +108,38 @@ const ChangePassword = ({setChangePass}) => {
                     <input
                         type="text"
                         placeholder='Your old password'
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        value={oldPass}
+                        onChange={(e) => setOldPass(e.target.value)}
                         className="w-full p-3 mb-4 border rounded"
                     />
                 )}
 
-                <div className={`password-field-container ${showPasswordField ? 'slide-down' : ''}`}>
-                    {showPasswordField && (
-                        <div>
-                            <div className="relative w-full">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    id="password"
-                                    name="password"
-                                    onChange={handlePassword}
-                                    placeholder="Your password"
-                                    className={`w-full p-3 text-sm border rounded-md focus:ring-1 focus:ring-blue-500 ${
-                                        passwordError !== '' ? 'border-red-500 bg-red-200' : 'border-gray-300'
-                                    }`}
-                                />
-                                <button
-                                    type="button"
-                                    className="fixed-password-toggle absolute inset-y-0 right-0 flex items-center"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                >
-                                    {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                                </button>
-                            </div>
+                <div>
+                    <div className="relative w-full">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            id="password"
+                            name="password"
+                            value={newPass}
+                            onChange={handlePassword}
+                            placeholder="Your password"
+                            className={`w-full p-3 text-sm border rounded-md focus:ring-1 focus:ring-blue-500 ${
+                                passwordError !== '' ? 'border-red-500 bg-red-200' : 'border-gray-300'
+                            }`}
+                        />
+                        <button
+                            type="button"
+                            className="fixed-password-toggle absolute inset-y-0 right-0 flex items-center"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                        </button>
+                    </div>
 
-                            {passwordError !== '' && <p className="text-xs text-red-500">{passwordError}</p>}
-                        </div>
-                        // <input type="password" placeholder="Password" className="w-full p-3 mb-4 border rounded"/>
-                    )}
+                    {passwordError !== '' && <p className="text-xs text-red-500">{passwordError}</p>}
+                </div>
+
+                <div className={`password-field-container ${showConfirmPasswordField ? 'slide-down' : ''}`}>
                     {showConfirmPasswordField && (
                         <div>
                             <div className="relative w-full">
@@ -179,14 +175,6 @@ const ChangePassword = ({setChangePass}) => {
                 >
                     {buttonText}
                 </button>
-                {buttonText === 'Login' && (
-                    <button
-                        className="forgot-password"
-                        onClick={handleForgotPasswordClick}
-                    >
-                        Forgot Password?
-                    </button>
-                )}
             </div>
         </div>
     );

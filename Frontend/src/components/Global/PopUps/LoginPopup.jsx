@@ -78,7 +78,7 @@ const LoginPopup = ({setShowLogin}) => {
         };
 
         if (buttonText === 'Register') {
-            headers.register = document.querySelector('input[placeholder="Confirm Password"]').value;
+            headers.register = document.querySelector('input[placeholder="Confirm your password"]').value;
         }
 
         try {
