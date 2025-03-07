@@ -76,7 +76,7 @@ const OrderForm = ({formData, onFormDataChange}) => {
     return (
         <form className="p-0" onSubmit={handleSubmit}>
             <div className="mb-4">
-                <label htmlFor="cardNumber" className={`block ${isCardValid ? "text-gray-700" : "text-red-700"} font-medium text-xl font-bold mb-2`}>
+                <label htmlFor="cardNumber" className={`block ${isCardValid ? "text-gray-700" : "text-red-700"} text-xl font-bold mb-2`}>
                     {isCardValid ? "Card Number" : "Card Number ( Please enter a valid Card ) "}
                 </label>
                 <input
@@ -91,7 +91,7 @@ const OrderForm = ({formData, onFormDataChange}) => {
                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="expiryDate" className="block text-gray-700 font-medium text-xl font-bold mb-2">
+                <label htmlFor="expiryDate" className="block text-gray-700 text-xl font-bold mb-2">
                     Expiry Date:
                 </label>
                 <input
@@ -106,7 +106,7 @@ const OrderForm = ({formData, onFormDataChange}) => {
                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="cvv" className="block text-gray-700 font-medium text-xl font-bold mb-2">
+                <label htmlFor="cvv" className="block text-gray-700 text-xl font-bold mb-2">
                     CVV:
                 </label>
                 <input
@@ -122,7 +122,7 @@ const OrderForm = ({formData, onFormDataChange}) => {
                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="address" className="block text-gray-700 font-medium text-xl font-bold mb-2">
+                <label htmlFor="address" className="block text-gray-700 text-xl font-bold mb-2">
                     Address:
                 </label>
                 <textarea

@@ -101,3 +101,19 @@
     transform: translateY(0);
     opacity: 1;
 }
+
+.fixed-password-toggle {
+    position: absolute;
+    right: -85%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1001;
+    padding: 10px;
+    font-size: 20px;
+    color: #333;
+}
+
+.fixed-password-toggle:hover {
+    color: #007bff;
+}

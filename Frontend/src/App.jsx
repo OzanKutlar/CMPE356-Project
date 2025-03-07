@@ -99,6 +99,12 @@ export default function App() {
                         <ButcherItemSelector/>
                     </div>
                 );
+            case "register":
+                return (
+                    <div>
+                        <RegistrationPage/>
+                    </div>
+                );
             case "butcher/transactions": // Butcher Add Page
                 return (
                     <div>

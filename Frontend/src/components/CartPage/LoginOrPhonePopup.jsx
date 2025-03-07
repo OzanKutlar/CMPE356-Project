@@ -3,17 +3,17 @@ import Util from '../../Util.js';
 import '../Global/LoginPopup.css'
 
 const LoginOrPhone = ({setShowPopUp}) => {
-    const [username, setUsername] = useState('');
+    const [phoneNo, setPhoneNo] = useState('');
     const [showPasswordField, setShowPasswordField] = useState(false);
-    const [showConfirmPasswordField, setShowConfirmPasswordField] = useState(false);
+    const [showConfirmPasswordField, setShowConfirmPasswordField] = useState(true);
     const [fadeIn, setFadeIn] = useState(false);
     const [buttonText, setButtonText] = useState('Login');
     const [buttonDest, setButtonDest] = useState('home');
     const [buttonColor, setButtonColor] = useState('#007bff');
     const [isHovered, setIsHovered] = useState(false);
+    const [isHoveredPhone, setIsHoveredPhone] = useState(false);
 
 
-    console.log("Loaded in LoginOrPhone.jsx")
     useEffect(() => {
         const timeout = setTimeout(() => setFadeIn(true), 50);
         return () => {
@@ -22,38 +22,40 @@ const LoginOrPhone = ({setShowPopUp}) => {
         };
     }, []);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (username.trim()) {
-                checkUserExistence(username);
-            }
-        }, 400);
-        setShowPasswordField(false);
-        setShowConfirmPasswordField(false);
-        setButtonText('Login');
-        setButtonColor('#007bff');
-        return () => clearTimeout(timer);
-    }, [username]);
+    let lastformat = '';
 
-    const checkUserExistence = async (usernameString) => {
-        try {
-            const data = await Util.callBackend(`check-user`, {username: usernameString});
-            if (data.exists) {
-                setShowPasswordField(true);
-                setShowConfirmPasswordField(false);
-                setButtonText('Login');
-                setButtonColor('#007bff');
-                setButtonDest(data.role);
-            } else {
-                setShowPasswordField(true);
-                setShowConfirmPasswordField(true);
-                setButtonText('Register');
-                setButtonColor('orange');
-            }
-        } catch (error) {
-            console.error('Error checking user existence:', error);
+    function formatPhoneNumber(phone) {
+        if(phone === lastformat){
+            return phone;
         }
-    };
+        let offset = Number(phone.length >= 13);
+
+        if(phone.length >= 2 && !showPasswordField){
+            setShowPasswordField(true)
+        }
+
+        const pattern = [
+            { index: 0, prefix: "+" },
+            { index: 2 + offset, prefix: " (" },
+            { index: 5 + offset, prefix: ") " },
+            { index: 8 + offset, prefix: " " },
+            { index: 10 + offset, prefix: " " }
+        ];
+
+        let formatted = "";
+        for (let i = 0; i < phone.length; i++) {
+            let formatRule = pattern.find(p => p.index === i);
+            if (formatRule) formatted += formatRule.prefix;
+
+            formatted += phone[i];
+        }
+        let formatRule = pattern.find(p => p.index === phone.length);
+        if (formatRule) formatted += formatRule.prefix;
+        return formatted;
+    }
+
+
+
 
     const handleLoginClick = async () => {
         setShowPopUp(false);
@@ -61,6 +63,31 @@ const LoginOrPhone = ({setShowPopUp}) => {
             Util.CallLogin(true);
         }
     };
+
+    const handlePhoneClick = async () => {
+        setShowPopUp(false);
+        Util.tempPhoneNumber = phoneNo;
+    };
+
+    let lastVal = '';
+
+    const handleChange = (e) => {
+        const {name, value} = e.target;
+        let phoneNum;
+        if(lastVal.length > value.length){
+            phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, ""));
+        }
+        else{
+            if(value.replaceAll(/[^0-9]/g, "") === lastVal.replaceAll(/[^0-9]/g, "")){
+                phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, "").slice(0, -1));
+            }
+            else{
+                phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, ""));
+            }
+        }
+        setPhoneNo(phoneNum);
+        lastVal = value;
+    }
 
     const handleForgotPasswordClick = () => {
         Util.navigateTo('forgot');
@@ -73,6 +100,7 @@ const LoginOrPhone = ({setShowPopUp}) => {
 
             {/* Popup */}
             <div className={`login-popup ${fadeIn ? 'show' : ''}`}>
+                <h2 className="text-2xl font-bold mb-4">Oops! We dont know who you are!</h2>
                 <button
                     onClick={handleLoginClick}
                     onMouseEnter={() => setIsHovered(true)}
@@ -80,33 +108,27 @@ const LoginOrPhone = ({setShowPopUp}) => {
                     style={{backgroundColor: isHovered ? '#0056b3' : buttonColor}}
                     className="w-full px-5 py-3 rounded text-white text-lg cursor-pointer transition-colors duration-300"
                 >
-                    {buttonText}
+                    Login/Register
                 </button>
-                <h2 className="text-2xl font-bold mb-4">{buttonText === 'Login' ? 'Login' : 'Register'}</h2>
+                <h2 className="text-xl font-light mb-4">or Provide a Phone Number</h2>
                 <input
                     type="text"
-                    placeholder='Write your username to login/register'
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder='+90 (xxx) xxx xx xx'
+                    value={phoneNo}
+                    onChange={handleChange}
                     className="w-full p-3 mb-4 border rounded"
                 />
                 <div className={`password-field-container ${showPasswordField ? 'slide-down' : ''}`}>
-                    {showPasswordField && (
-                        <input type="password" placeholder="Password" className="w-full p-3 mb-4 border rounded"/>
-                    )}
-                    {showConfirmPasswordField && (
-                        <input type="password" placeholder="Confirm Password"
-                               className="w-full p-3 mb-4 border rounded"/>
-                    )}
-                </div>
-                {buttonText === 'Login' && (
                     <button
-                        className="forgot-password"
-                        onClick={handleForgotPasswordClick}
+                        onClick={handlePhoneClick}
+                        onMouseEnter={() => setIsHoveredPhone(true)}
+                        onMouseLeave={() => setIsHoveredPhone(false)}
+                        style={{backgroundColor: isHoveredPhone ? '#0056b3' : buttonColor}}
+                        className="w-full px-5 py-3 rounded text-white text-lg cursor-pointer transition-colors duration-300"
                     >
-                        Forgot Password?
+                        Continue Without Logging in
                     </button>
-                )}
+                </div>
             </div>
         </div>
     );

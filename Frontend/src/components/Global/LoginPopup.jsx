@@ -1,16 +1,23 @@
 import React, {useState, useEffect} from 'react';
 import Util from '../../Util.js';
-import './LoginPopup.css'; // Import the updated CSS file
+import './LoginPopup.css';
+import {EyeIcon, EyeOffIcon} from "./Icons.jsx"; // Import the updated CSS file
 
 const LoginPopup = ({setShowLogin}) => {
     const [username, setUsername] = useState('');
     const [showPasswordField, setShowPasswordField] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordConf, setShowPasswordConf] = useState(false);
     const [showConfirmPasswordField, setShowConfirmPasswordField] = useState(false);
     const [fadeIn, setFadeIn] = useState(false);
     const [buttonText, setButtonText] = useState('Login');
     const [buttonDest, setButtonDest] = useState('home');
     const [buttonColor, setButtonColor] = useState('#007bff');
     const [isHovered, setIsHovered] = useState(false);
+
+    const [passwordError, setPasswordError] = useState('');
+    const [password, setPassword] = useState('');
+    const [passwordConf, setPasswordConf] = useState('');
 
 
     useEffect(() => {
@@ -53,6 +60,16 @@ const LoginPopup = ({setShowLogin}) => {
             console.error('Error checking user existence:', error);
         }
     };
+
+    const handlePassword = async (e) => {
+        const {name, value} = e.target;
+        if(value === 'test'){
+            setPasswordError("AAAA");
+        }
+        else{
+            setPasswordError('');
+        }
+    }
 
     const handleLoginClick = async () => {
         const headers = {
@@ -100,11 +117,55 @@ const LoginPopup = ({setShowLogin}) => {
                 />
                 <div className={`password-field-container ${showPasswordField ? 'slide-down' : ''}`}>
                     {showPasswordField && (
-                        <input type="password" placeholder="Password" className="w-full p-3 mb-4 border rounded"/>
+                        <div>
+                            <div className="relative w-full">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    id="password"
+                                    name="password"
+                                    onChange={handlePassword}
+                                    placeholder="Your password"
+                                    className={`w-full p-3 text-sm border rounded-md focus:ring-1 focus:ring-blue-500 ${
+                                        passwordError !== '' ? 'border-red-500 bg-red-200' : 'border-gray-300'
+                                    }`}
+                                />
+                                <button
+                                    type="button"
+                                    className="fixed-password-toggle absolute inset-y-0 right-0 flex items-center"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                                </button>
+                            </div>
+
+                            {passwordError !== '' && <p className="text-xs text-red-500">{passwordError}</p>}
+                        </div>
+                        // <input type="password" placeholder="Password" className="w-full p-3 mb-4 border rounded"/>
                     )}
                     {showConfirmPasswordField && (
-                        <input type="password" placeholder="Confirm Password"
-                               className="w-full p-3 mb-4 border rounded"/>
+                        <div>
+                            <div className="relative w-full">
+                                <input
+                                    type={showPasswordConf ? "text" : "password"}
+                                    id="passwordConf"
+                                    name="passwordConf"
+                                    onChange={handlePassword}
+                                    placeholder="Confirm your password"
+                                    className={`w-full p-3 text-sm border rounded-md focus:ring-1 focus:ring-blue-500 ${
+                                        passwordError !== '' ? 'border-red-500 bg-red-200' : 'border-gray-300'
+                                    }`}
+                                />
+                                <button
+                                    type="button"
+                                    className="fixed-password-toggle absolute inset-y-0 right-0 flex items-center"
+                                    onClick={() => setShowPasswordConf(!showPasswordConf)}
+                                >
+                                    {showPasswordConf ? <EyeOffIcon /> : <EyeIcon />}
+                                </button>
+                            </div>
+
+                            {passwordError !== '' && <p className="text-xs text-red-500">{passwordError}</p>}
+                        </div>
                     )}
                 </div>
                 <button
