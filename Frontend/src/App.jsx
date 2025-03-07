@@ -22,6 +22,7 @@ import Footer from "./components/Global/Footer.jsx";
 import { GlobalContext } from "./components/Global/GlobalContext.jsx";
 import RegistrationPage from "./components/RegisterPage/RegisterPage.jsx";
 import OrderList from "./components/HomePage/Orders/OrderList.jsx";
+import ServerMonitor from "./components/AdminPage/ServerMonitor.jsx";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(Util.currentPage);
@@ -90,6 +91,13 @@ export default function App() {
                         <UserList/>
                     </div>
                 );
+            case "admin/backend":
+                return(
+                    <div>
+                        <AdminHeader/>
+                        <ServerMonitor/>
+                    </div>
+                )
             case "butcher": // Butcher Main page
                 return (
                     <div>
