@@ -20,6 +20,7 @@ import ButcherItems from "./components/ButcherPage/Items/ButcherItems.jsx";
 import DeliveryPage from "./components/DeliveryPage/DeliveryPage.jsx";
 import Footer from "./components/Global/Footer.jsx";
 import { GlobalContext } from "./components/Global/GlobalContext.jsx";
+import RegistrationPage from "./components/RegisterPage/RegisterPage.jsx";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(Util.currentPage);
@@ -65,6 +66,12 @@ export default function App() {
                         <Header/>
                         <Slider/>
                         <ItemPicker/>
+                    </div>
+                );
+            case "register":
+                return (
+                    <div>
+                        <RegistrationPage />
                     </div>
                 );
             case "admin/users":
@@ -143,7 +150,7 @@ export default function App() {
             <GlobalContext.Provider value={ currentPage }>
                 {/*<Email />*/}
                 {renderPage()}
-                {currentPage != "delivery" ? <Footer/> : null}
+                {currentPage != "delivery" && currentPage != "register" ? <Footer/> : null}
             </GlobalContext.Provider>
         </div>
     );
