@@ -33,7 +33,7 @@ const Footer = () => {
                     <p className="text-lg">Email: support@meatgo.com</p>
                 </div>
 
-                {/* About Us and FAQ Links */}
+                {/* Info and FAQ Links */}
                 <div className="mb-4">
                     <button
                         className="text-lg transition-all duration-300 hover:text-blue-300 mr-6"
