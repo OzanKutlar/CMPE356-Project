@@ -1,5 +1,7 @@
 import {useState, useRef, useEffect} from 'react';
 import {ChevronDownIcon, EyeIcon, EyeOffIcon} from '../Global/Icons';
+import Util from "../../Util.js";
+import Info from "../Global/PopUps/Info.jsx";
 
 const RegistrationPage = () => {
     const [formData, setFormData] = useState({
@@ -88,14 +90,25 @@ const RegistrationPage = () => {
         return re.test(String(email).toLowerCase());
     };
 
-    const validatePassword = (password) => {
-        if (password.length < 8 || password.length > 30) return false;
+    const [showPopup, setShowPopup] = useState(false);
+    const [popUpText, setPopUpText] = useState('');
+    const [popUpType, setPopUpType] = useState('');
 
-        const hasUpperCase = /[A-Z]/.test(password);
-        const hasLowerCase = /[a-z]/.test(password);
-        const hasNumber = /[0-9]/.test(password);
-
-        return hasUpperCase && hasLowerCase && hasNumber;
+    const handleDeleteAccountClick = (e) => {
+        let response = Util.callBackend("delUser", {userID: Util.savedUser.id})
+        if(response.msg === "success"){
+            setPopUpText("Your account has been successfully deleted.")
+            setPopUpType("Info")
+            setShowPopup(true);
+        }
+        else{
+            setPopUpText("There was an error while deleting your account.")
+            setPopUpType("Error")
+            setShowPopup(true);
+        }
+        setTimeout(() => {
+            Util.navigateTo("home");
+        }, 2000);
     };
 
     const handleSubmit = (e) => {
@@ -114,19 +127,6 @@ const RegistrationPage = () => {
             newErrors.email = 'Invalid email';
         }
 
-        if (!formData.password) {
-            newErrors.password = 'Required';
-        } else if (!validatePassword(formData.password)) {
-            newErrors.password = 'Must be 8-30 chars with uppercase, lowercase & number';
-        }
-
-        if (!formData.confirmPassword) {
-            newErrors.confirmPassword = 'Required';
-        } else if (formData.password !== formData.confirmPassword) {
-            newErrors.password = 'Passwords do not match';
-            newErrors.confirmPassword = 'Passwords do not match';
-        }
-
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
         } else {
@@ -136,6 +136,9 @@ const RegistrationPage = () => {
 
     return (
         <div className="flex h-screen bg-gray-100">
+            {showPopup && (
+                <Info popUpText={popUpText} popUpType={popUpType} setShowPopup={setShowPopup} />
+            )}
             <div className="w-2/3 relative overflow-hidden bg-gray-900 hidden md:block">
                 <div className="h-full w-full flex items-center justify-center">
                     {images.map((img, index) => (
@@ -153,11 +156,8 @@ const RegistrationPage = () => {
                                 <div
                                     className="bg-[rgba(0,0,0,0.5)] h-[150px] w-full flex items-center justify-center text-white">
                                     <div className="text-center">
-                                        <h1 className="text-4xl font-bold mb-2">Join Us Today!</h1>
-                                        <p className="text-lg max-w-lg mx-auto">Purchase premium meat at low cost and
-                                            light-speed delivery</p>
-                                        <p className="text-lg max-w-lg mx-auto">Cook the best meat dishes of your
-                                            life!</p>
+                                        <h1 className="text-4xl font-bold mb-2">You're almost there!</h1>
+                                        <p className="text-lg max-w-lg mx-auto">Fill in your details to complete your registration</p>
                                     </div>
                                 </div>
                             </div>
@@ -191,8 +191,8 @@ const RegistrationPage = () => {
             <div className="w-full md:w-1/3 p-4 flex items-center">
                 <div className="max-w-md mx-auto w-full text-left">
                     <div className="text-center mb-4">
-                        <h2 className="text-2xl font-bold mb-1">Create an Account</h2>
-                        <p className="text-gray-600 text-sm">Fill in your details to get started</p>
+                        <h2 className="text-2xl font-bold mb-1">Customize Your Account</h2>
+                        <p className="text-gray-600 text-sm">Fill in your details to complete your registration</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-3">
@@ -243,21 +243,7 @@ const RegistrationPage = () => {
                             {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
-                            <div>
-                                <label htmlFor="username"
-                                       className="block text-xs px-1 font-medium text-gray-700">Username</label>
-                                <input
-                                    type="text"
-                                    id="username"
-                                    name="username"
-                                    value={formData.username}
-                                    onChange={handleInputChange}
-                                    placeholder="ex: johnb123"
-                                    className={`w-full p-1.5 text-sm border rounded-md focus:ring-1 focus:ring-blue-500 ${errors.username ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                />
-                                {errors.username && <p className="text-xs text-red-500">{errors.username}</p>}
-                            </div>
+                        <div className="grid grid-cols-1 gap-3">
 
                             <div>
                                 <label htmlFor="phoneNumber" className="block text-xs px-1 font-medium text-gray-700">Phone
@@ -312,57 +298,6 @@ const RegistrationPage = () => {
                             </div>
                         </div>
 
-                        <div>
-                            <label htmlFor="password"
-                                   className="block text-xs px-1 font-medium text-gray-700">Password</label>
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    id="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleInputChange}
-                                    placeholder="Your password"
-                                    className={`w-full p-1.5 text-sm border rounded-md focus:ring-1 focus:ring-blue-500 ${errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                />
-                                <button
-                                    type="button"
-                                    className="absolute inset-y-0 right-0 pr-2 flex items-center"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                >
-                                    {showPassword ? <EyeOffIcon/> : <EyeIcon/>}
-                                </button>
-                            </div>
-                            {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
-                            <p className="text-xs px-1 text-gray-500">Password must be longer than 8, shorter than 30
-                                characters.</p>
-                            <p className="text-xs px-1 text-gray-500">Password must contain one upper and lowercase
-                                character, and a number.</p>
-                        </div>
-
-                        <div>
-                            <label htmlFor="confirmPassword" className="block text-xs px-1 font-medium text-gray-700">Confirm
-                                Password</label>
-                            <div className="relative">
-                                <input
-                                    type={showConfirmPassword ? "text" : "password"}
-                                    id="confirmPassword"
-                                    name="confirmPassword"
-                                    value={formData.confirmPassword}
-                                    onChange={handleInputChange}
-                                    placeholder="Confirm your password"
-                                    className={`w-full p-1.5 text-sm border rounded-md focus:ring-1 focus:ring-blue-500 ${errors.confirmPassword ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                />
-                                <button
-                                    type="button"
-                                    className="absolute inset-y-0 right-0 pr-2 flex items-center"
-                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                >
-                                    {showConfirmPassword ? <EyeOffIcon/> : <EyeIcon/>}
-                                </button>
-                            </div>
-                            {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword}</p>}
-                        </div>
 
                         <button
                             type="submit"
@@ -372,9 +307,9 @@ const RegistrationPage = () => {
                         </button>
 
                         <p className="text-center text-xs text-gray-600 mt-1">
-                            Already have an account? {' '}
-                            <a href="#" className="text-blue-600 hover:underline font-medium">
-                                Sign in
+                            Not feeling ready? {' '}
+                            <a href="#" onClick={handleDeleteAccountClick} className="text-blue-600 hover:underline font-medium">
+                                Delete my Account
                             </a>
                         </p>
                     </form>
