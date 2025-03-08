@@ -14,19 +14,19 @@ const AboutUs = () => {
             name: "Çağatay Batuker",
             role: "Head of Frontend",
             bio: "Creating beautiful and intuitive user interfaces that make browsing and purchasing premium meats a pleasure.",
-            image: "/src/assets/face6.jpeg"
+            image: "/src/assets/cagatay.jpg"
         },
         {
             name: "Abdul Hadi Khan",
             role: "Head of Testing",
             bio: "Ensuring every feature works flawlessly so you can order with confidence and receive exactly what you expect.",
-            image: "/src/assets/face6.jpeg"
+            image: "/src/assets/hadi.jpg"
         },
         {
             name: "Zeynep Mutlu",
             role: "Head of Documentation",
             bio: "Crafting clear documentation for both our team and customers, making the MeatGo experience seamless from start to finish.",
-            image: "/src/assets/face6.jpeg"
+            image: "/src/assets/zeynep.png"
         }
     ];
 
@@ -46,7 +46,7 @@ const AboutUs = () => {
                 <h2 className="text-3xl font-bold text-center mb-8">Our Story</h2>
                 <div className="max-w-4xl mx-auto">
                     <p className="text-lg mb-6">
-                        MeatGo was born from a simple idea: what if we made a website for a fake meat delivery service just to finish our homework? Our founders, passionate about meeting deadlines (and maybe food), set out to revolutionize how professors grade assignments.
+                        MeatGo was born from a simple idea: what if we made a website for a fake meat delivery service just to finish our assignment? Our founders, passionate about meeting deadlines (and maybe food), set out to revolutionize how professors grade assignments.
                     </p>
                     <p className="text-lg mb-6">
                         We've built this platform with a focus on looking legit, sounding professional, and making sure we get full credit. Every word is carefully selected, expertly written, and delivered with the utmost care to ensure it looks like a real business.

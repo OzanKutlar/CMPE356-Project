@@ -30,17 +30,6 @@ const ChangePassword = ({setChangePass}) => {
         };
     }, []);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (newPass.length >= 4) {
-                setShowConfirmPasswordField(true)
-            }
-        }, 400);
-        setShowConfirmPasswordField(false);
-        setButtonText('Login');
-        setButtonColor('#007bff');
-        return () => clearTimeout(timer);
-    }, [newPassConf]);
 
 
     const handlePassword = (e) => {
@@ -73,12 +62,12 @@ const ChangePassword = ({setChangePass}) => {
 
     const handleLoginClick = async () => {
         const headers = {
-            oldPass: document.querySelector('input[placeholder="Password"]').value,
-            password: document.querySelector('input[placeholder="Password"]').value,
+            oldPass: document.querySelector('input[placeholder="Your old password"]').value,
+            password: document.querySelector('input[placeholder="Your password"]').value,
         };
 
         if (buttonText === 'Register') {
-            headers.register = document.querySelector('input[placeholder="Confirm Password"]').value;
+            headers.register = document.querySelector('input[placeholder="Confirm your password"]').value;
         }
 
         try {

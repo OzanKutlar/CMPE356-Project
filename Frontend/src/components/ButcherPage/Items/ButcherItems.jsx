@@ -10,6 +10,7 @@ const BestSellerListFullScreen = () => {
     const [purchasing, setPurchasing] = useState(false);
     const [purchaseMessage, setPurchaseMessage] = useState(null);
     const [isClosing, setIsClosing] = useState(false);
+    const [quantity, setQuantity] = useState(false);
 
     const closeModal = () => {
         setIsClosing(true);
@@ -19,11 +20,17 @@ const BestSellerListFullScreen = () => {
         }, 300); // Match this with your animation duration (0.3s = 300ms)
     };
 
+    const countToKG = 50;
+    const multiplier = 1000 / countToKG;
+    const buttonAdd = (100 / countToKG);
+
     const handlePurchase = async () => {
-        if (!selectedItem || quantity < 1) return;
 
         setPurchasing(true);
         setPurchaseMessage(null);
+
+        selectedItem.startStock += quantity - selectedItem.currentStock;
+        selectedItem.currentStock = quantity;
 
         try {
             // Call the backend with the purchase endpoint and headers
@@ -32,7 +39,7 @@ const BestSellerListFullScreen = () => {
                 amount: quantity
             };
 
-            await Util.callBackend("addToCart", headers);
+            await Util.callBackend("updateStock", headers);
             let unit = "";
             let amount = quantity * countToKG;
             if (amount < 1000) unit = "gs"
@@ -43,7 +50,7 @@ const BestSellerListFullScreen = () => {
 
             setPurchaseMessage({
                 type: "success",
-                text: `Added ${amount} ${unit} of ${selectedItem.ItemName} to cart.`
+                text: `Added ${amount} ${unit} of ${selectedItem.ItemName} to your stock.`
             });
         } catch (err) {
             setPurchaseMessage({
@@ -70,6 +77,7 @@ const BestSellerListFullScreen = () => {
 
     const handleItemClick = (item) => {
         setSelectedItem(item);
+        setQuantity(item.currentStock)
 
         // Util.navigateTo("butcher/sales");
     };
@@ -106,10 +114,20 @@ const BestSellerListFullScreen = () => {
                                         {item.ItemName}
                                     </h3>
                                     <p className="text-sm text-gray-500 mt-2">
-                                        Sales:{" "}
+                                        Sold Stock:{" "}
+                                        <span className="font-bold text-green-800">
+                                            {(item.startStock - item.currentStock) * countToKG < 1000
+                                                ? `${(item.startStock - item.currentStock) * countToKG}g`
+                                                : `${((item.startStock - item.currentStock) * countToKG / 1000).toFixed(2)}kg`}
+                                        </span>
+                                    </p>
+                                    <p className="text-sm text-gray-500 mt-2">
+                                        Current Stock:{" "}
                                         <span className="font-bold text-gray-700">
-                      {item.currentStock}
-                    </span>
+                                            {item.currentStock * countToKG < 1000
+                                                ? `${item.currentStock * countToKG}g`
+                                                : `${(item.currentStock * countToKG / 1000).toFixed(2)}kg`}
+                                        </span>
                                     </p>
                                 </div>
                             </div>
@@ -141,11 +159,60 @@ const BestSellerListFullScreen = () => {
 
                                         </div>
                                     </div>
+                                    {/* Purchase message */}
+                                    {purchaseMessage && (
+                                        <div className={`p-3 mb-4 rounded text-center ${
+                                            purchaseMessage.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                                        }`}>
+                                            {purchaseMessage.text}
+                                        </div>
+                                    )}
+                                    <span
+                                        className="mx-4 text-lg font-medium mb-2">Update Stock To : {quantity * countToKG < 1000
+                                        ? `${quantity * countToKG}g`
+                                        : `${(quantity * countToKG / 1000).toFixed(2)}kg`}</span>
 
-                                    {/* Total price calculation */}
-                                    <p className="text-lg font-medium mb-4 text-center">
-                                        Total: {selectedItem.currentStock}
-                                    </p>
+
+                                    <div
+                                        className={`flex ${isMobile ? "flex-col" : "flex-row"} items-center justify-center`}>
+                                        {/* Buttons with adjustments for spacing */}
+                                        <button
+                                            onClick={() => setQuantity((prev) => Math.max(1, prev - multiplier))}
+                                            className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
+                                        >
+                                            -1kg
+                                        </button>
+                                        <button
+                                            onClick={() => setQuantity((prev) => Math.max(1, prev - (multiplier / 10)))}
+                                            className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
+                                        >
+                                            -100g
+                                        </button>
+                                        <button
+                                            onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                                            className="px-4 mr-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
+                                        >
+                                            -{countToKG}g
+                                        </button>
+                                        <button
+                                            onClick={() => setQuantity((prev) => prev + 1)}
+                                            className="px-4 ml-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
+                                        >
+                                            +{countToKG}g
+                                        </button>
+                                        <button
+                                            onClick={() => setQuantity((prev) => prev + (multiplier / 10))}
+                                            className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
+                                        >
+                                            +100g
+                                        </button>
+                                        <button
+                                            onClick={() => setQuantity((prev) => prev + (multiplier))}
+                                            className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
+                                        >
+                                            +1kg
+                                        </button>
+                                    </div>
 
                                     <div className="flex">
                                         <button

@@ -107,6 +107,7 @@ class Util {
                 startStock: 50
             }],
         "addToCart": "success",
+        "updateStock": "success",
         "changeUserRole": "success",
         "shutdown": {msg: "success"},
         "restart": {msg: "success"},
@@ -131,35 +132,35 @@ class Util {
         "getUsers": [
             {
                 id: 1,
-                profilePictureLink: "/src/assets/face1.jpg",
-                Username: "john_doe",
+                profilePictureLink: "/src/assets/ozan.png",
+                Username: "ozan",
                 email: "john.doe@example.com",
                 phone: "+1 (555) 123-4567",
-                role: "delivery"
+                role: "admin"
             },
             {
                 id: 2,
-                profilePictureLink: "/src/assets/face2.jpg",
-                Username: "jane_smith",
+                profilePictureLink: "/src/assets/hadi.jpg",
+                Username: "hadi",
                 email: "jane.smith@example.com",
                 phone: "+1 (555) 234-5678",
-                role: "admin"
+                role: "delivery"
             },
             {
                 id: 3,
-                profilePictureLink: "/src/assets/face3.jpg",
-                Username: "bob_wilson",
+                profilePictureLink: "/src/assets/cagatay.jpg",
+                Username: "cagatay",
                 email: "bob.wilson@example.com",
                 phone: "+1 (555) 345-6789",
-                role: "user"
+                role: "butcher"
             },
             {
                 id: 4,
-                profilePictureLink: "/src/assets/face4.jpg",
-                Username: "alice_brown",
+                profilePictureLink: "/src/assets/zeynep.png",
+                Username: "zeynep",
                 email: "alice.brown@example.com",
                 phone: "+1 (555) 456-7890",
-                role: "admin"
+                role: "user"
             },
             {
                 id: 5,
@@ -218,7 +219,7 @@ class Util {
                 "address": "123 Sample St, New York, NY, 10001",
                 "itemName": "Minced Meat",
                 "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
-                "paymentMethod": "Paypal",
+                "paymentMethod": "Paid with card at door",
                 "paymentID": "#416645453773",
                 "status": "Success",
                 "totalPrice": 119.98
@@ -229,7 +230,7 @@ class Util {
                 "address": "456 Example Rd, San Francisco, CA, 94121",
                 "itemName": "Cubed Meat",
                 "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
-                "paymentMethod": "Apple Pay",
+                "paymentMethod": "Paid Online",
                 "paymentID": "#147784455454",
                 "status": "Canceled",
                 "totalPrice": 69.99
@@ -240,7 +241,7 @@ class Util {
                 "address": "789 Demo Ave, Chicago, IL, 60616",
                 "itemName": "Entrecôte",
                 "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
-                "paymentMethod": "Stripe",
+                "paymentMethod": "Cash",
                 "paymentID": "#147784455454",
                 "status": "Pending",
                 "totalPrice": 360.00
@@ -251,7 +252,7 @@ class Util {
                 "address": "123 Sample St, New York, NY, 10001",
                 "itemName": "Steak",
                 "itemPhoto": "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
-                "paymentMethod": "PayU",
+                "paymentMethod": "Cash",
                 "paymentID": "#147784455454",
                 "status": "Success",
                 "totalPrice": 99.99
@@ -262,7 +263,7 @@ class Util {
                 "address": "12 Market Rd, Austin, TX, 78703",
                 "itemName": "Chopped Meat",
                 "itemPhoto": "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
-                "paymentMethod": "Paytm",
+                "paymentMethod": "Paid with card at door",
                 "paymentID": "#147784455454",
                 "status": "Success",
                 "totalPrice": 66.99
@@ -275,7 +276,7 @@ class Util {
                 "address": "123 Sample St, New York, NY, 10001",
                 "itemName": "Minced Meat",
                 "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
-                "paymentMethod": "Paypal",
+                "paymentMethod": "Paid at door",
                 "paymentID": "#416645453773",
                 "status": "Success",
                 "totalPrice": 119.98
@@ -286,7 +287,7 @@ class Util {
                 "address": "456 Example Rd, San Francisco, CA, 94121",
                 "itemName": "Cubed Meat",
                 "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-kusbasi--478c-.jpg",
-                "paymentMethod": "Apple Pay",
+                "paymentMethod": "Paid Online",
                 "paymentID": "#147784455454",
                 "status": "Canceled",
                 "totalPrice": 69.99
@@ -297,7 +298,7 @@ class Util {
                 "address": "789 Demo Ave, Chicago, IL, 60616",
                 "itemName": "Entrecôte",
                 "itemPhoto": "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/dana-antrikot--8f97-.jpg",
-                "paymentMethod": "Stripe",
+                "paymentMethod": "Cash",
                 "paymentID": "#147784455454",
                 "status": "Pending",
                 "totalPrice": 360.00
@@ -308,7 +309,7 @@ class Util {
                 "address": "123 Sample St, New York, NY, 10001",
                 "itemName": "Steak",
                 "itemPhoto": "https://static.ticimax.cloud/cdn-cgi/image/width=-,quality=85/43437/uploads/urunresimleri/buyuk/dilimli-dana-bonfile-83e53-.jpg",
-                "paymentMethod": "PayU",
+                "paymentMethod": "Cash",
                 "paymentID": "#147784455454",
                 "status": "Success",
                 "totalPrice": 99.99
@@ -319,7 +320,7 @@ class Util {
                 "address": "12 Market Rd, Austin, TX, 78703",
                 "itemName": "Chopped Meat",
                 "itemPhoto": "https://www.eskitadinda.com/cdn-cgi/imagedelivery/iyyOLTStLptbsvCoMH9lkA/188576e7-fcff-46bc-655a-650dadc2a600/700x500",
-                "paymentMethod": "Paytm",
+                "paymentMethod": "Paid with card at door",
                 "paymentID": "#147784455454",
                 "status": "Success",
                 "totalPrice": 66.99

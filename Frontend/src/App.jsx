@@ -152,7 +152,11 @@ export default function App() {
                     </div>
                 );
             case "about":
-                return <AboutUs />;
+                return (
+                    <div>
+                        <AboutUs/>
+                    </div>
+                );
             case "faq":
                 return (
                     <div>

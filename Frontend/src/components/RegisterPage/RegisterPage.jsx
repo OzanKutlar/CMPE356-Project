@@ -106,7 +106,7 @@ const RegistrationPage = () => {
             });
             if(response.msg === "success"){
                 Util.delUser();
-                setPopUpText("Your account has been successfully deleted.")
+                setPopUpText("Your registration has been cancelled.")
                 setPopUpType("Info")
                 setShowPopup(true);
             }
@@ -352,7 +352,7 @@ const RegistrationPage = () => {
                         <p className="text-center text-xs text-gray-600 mt-1">
                             Not feeling ready? {' '}
                             <a href="#" onClick={handleDeleteAccountClick} className={`${disableText ? "text-gray-600" : "text-amber-600"} hover:underline font-medium`}>
-                                Delete my Account
+                                Go Back To Home
                             </a>
                         </p>
                     </form>
