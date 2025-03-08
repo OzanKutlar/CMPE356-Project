@@ -13,7 +13,7 @@ const FullscreenSales = () => {
     let timeOutConst = null;
 
     const showNotification = (message, isError = false) => {
-        if(timeOutConst != null){
+        if (timeOutConst != null) {
             clearTimeout(timeOutConst);
             timeOutConst = null;
         }

@@ -12,7 +12,7 @@ const OrderForm = ({formData, onFormDataChange}) => {
             // Format card number with spaces every 4 digits
             const formattedValue = value.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ');
 
-            if(value.length === 19) setCardValid(isValidCardNumber(formattedValue.replace(/\s+/g, '')));
+            if (value.length === 19) setCardValid(isValidCardNumber(formattedValue.replace(/\s+/g, '')));
 
             onFormDataChange({...formData, [name]: formattedValue});
         } else if (name === 'expiryDate') {
@@ -76,7 +76,8 @@ const OrderForm = ({formData, onFormDataChange}) => {
     return (
         <form className="p-0" onSubmit={handleSubmit}>
             <div className="mb-4">
-                <label htmlFor="cardNumber" className={`block ${isCardValid ? "text-gray-700" : "text-red-700"} text-xl font-bold mb-2`}>
+                <label htmlFor="cardNumber"
+                       className={`block ${isCardValid ? "text-gray-700" : "text-red-700"} text-xl font-bold mb-2`}>
                     {isCardValid ? "Card Number" : "Card Number ( Please enter a valid Card ) "}
                 </label>
                 <input

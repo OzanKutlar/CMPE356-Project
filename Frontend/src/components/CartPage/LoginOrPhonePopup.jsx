@@ -25,21 +25,21 @@ const LoginOrPhone = ({setShowPopUp}) => {
     let lastformat = '';
 
     function formatPhoneNumber(phone) {
-        if(phone === lastformat){
+        if (phone === lastformat) {
             return phone;
         }
         let offset = Number(phone.length >= 13);
 
-        if(phone.length >= 2 && !showPasswordField){
+        if (phone.length >= 2 && !showPasswordField) {
             setShowPasswordField(true)
         }
 
         const pattern = [
-            { index: 0, prefix: "+" },
-            { index: 2 + offset, prefix: " (" },
-            { index: 5 + offset, prefix: ") " },
-            { index: 8 + offset, prefix: " " },
-            { index: 10 + offset, prefix: " " }
+            {index: 0, prefix: "+"},
+            {index: 2 + offset, prefix: " ("},
+            {index: 5 + offset, prefix: ") "},
+            {index: 8 + offset, prefix: " "},
+            {index: 10 + offset, prefix: " "}
         ];
 
         let formatted = "";
@@ -55,11 +55,9 @@ const LoginOrPhone = ({setShowPopUp}) => {
     }
 
 
-
-
     const handleLoginClick = async () => {
         setShowPopUp(false);
-        if(Util.CallLogin != null) {
+        if (Util.CallLogin != null) {
             Util.CallLogin(true);
         }
     };
@@ -74,14 +72,12 @@ const LoginOrPhone = ({setShowPopUp}) => {
     const handleChange = (e) => {
         const {name, value} = e.target;
         let phoneNum;
-        if(lastVal.length > value.length){
+        if (lastVal.length > value.length) {
             phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, ""));
-        }
-        else{
-            if(value.replaceAll(/[^0-9]/g, "") === lastVal.replaceAll(/[^0-9]/g, "")){
+        } else {
+            if (value.replaceAll(/[^0-9]/g, "") === lastVal.replaceAll(/[^0-9]/g, "")) {
                 phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, "").slice(0, -1));
-            }
-            else{
+            } else {
                 phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, ""));
             }
         }

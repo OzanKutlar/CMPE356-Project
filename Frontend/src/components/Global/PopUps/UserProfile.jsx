@@ -1,6 +1,6 @@
 import React, {useContext, useState} from 'react';
 import Util from "../../../Util.js";
-import { GlobalContext } from '../GlobalContext.jsx';
+import {GlobalContext} from '../GlobalContext.jsx';
 
 export default function UserProfile() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -83,43 +83,43 @@ export default function UserProfile() {
                         Change Password
                     </button>
                     {inSpecialistPage(currentPage) ? (
-                        <>
-                        {isAdmin && (
+                            <>
+                                {isAdmin && (
+                                    <button
+                                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                                        onClick={() => handleAction('switchToAdminPanel')}
+                                    >
+                                        Switch to Admin Panel
+                                    </button>
+                                )}
+                                {isDelivery && (
+                                    <button
+                                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                                        onClick={() => handleAction('switchToDeliveryPanel')}
+                                    >
+                                        Switch to Delivery Panel
+                                    </button>
+                                )}
+                                {isButcher && (
+                                    <button
+                                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                                        onClick={() => handleAction('switchToButcher')}
+                                    >
+                                        Switch to Butcher Panel
+                                    </button>
+                                )}
+                            </>
+                        ) :
+                        (
                             <button
                                 className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                                onClick={() => handleAction('switchToAdminPanel')}
-                            >
-                                Switch to Admin Panel
-                            </button>
-                        )}
-                        {isDelivery && (
-                            <button
-                                className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                                onClick={() => handleAction('switchToDeliveryPanel')}
-                            >
-                                Switch to Delivery Panel
-                            </button>
-                        )}
-                        {isButcher && (
-                            <button
-                                className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                                onClick={() => handleAction('switchToButcher')}
-                            >
-                                Switch to Butcher Panel
-                            </button>
-                        )}
-                        </>
-                    ) :
-                    (
-                        <button
-                            className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                                 onClick={() => handleAction('switchToHome')}
                             >
                                 Return to Home Page
-                        </button>
-                    )
+                            </button>
+                        )
                     }
-                    
+
                     <button
                         className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                         onClick={() => handleAction('logout')}

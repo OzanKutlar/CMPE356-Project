@@ -6,7 +6,7 @@ import Util from "../../Util.js";
 export const AboutUs = () => {
     return (
         <div>
-            <Header />
+            <Header/>
             <div className="container mx-auto p-6">
                 <h1 className="text-3xl font-bold mb-4">About Us</h1>
                 <p className="text-lg mb-4">
@@ -27,7 +27,7 @@ export const AboutUs = () => {
 export const FAQ = () => {
     return (
         <div>
-            <Header />
+            <Header/>
             <div className="container mx-auto p-6">
                 <h1 className="text-3xl font-bold mb-4">Frequently Asked Questions</h1>
                 <div className="mb-4">
@@ -43,7 +43,6 @@ export const FAQ = () => {
                     <p>Absolutely! We source only the freshest meat from trusted suppliers.</p>
                 </div>
             </div>
-            <Footer />
         </div>
     );
 };

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
+import {useEffect, useState} from 'react';
+import {Line} from 'react-chartjs-2';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -32,7 +32,7 @@ const ServerMonitor = () => {
     // Simulated backend function for fetching metrics and handling server commands
     const dummyBackend = async (endpoint) => {
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         // Dummy data for serverMetrics endpoint
         if (endpoint === 'serverMetrics') {
             return {
@@ -42,11 +42,11 @@ const ServerMonitor = () => {
                 timestamp: Math.floor(Date.now() / 1000), // Current timestamp in seconds
             };
         }
-        
+
         // Dummy responses for other endpoints
-        if (endpoint === 'shutdown') return { message: 'Server is shutting down...' };
-        if (endpoint === 'restart') return { message: 'Server is restarting...' };
-        
+        if (endpoint === 'shutdown') return {message: 'Server is shutting down...'};
+        if (endpoint === 'restart') return {message: 'Server is restarting...'};
+
         throw new Error(`Endpoint ${endpoint} not found`);
     };
 
@@ -56,8 +56,8 @@ const ServerMonitor = () => {
                 const response = await dummyBackend("serverMetrics"); //Util.callBackend("serverMetrics");
                 console.log('Backend Response:', response); // Log the response for debugging
 
-                const { cpu, gpu, network, timestamp } = response;
-                
+                const {cpu, gpu, network, timestamp} = response;
+
                 // Convert timestamp to milliseconds and format time
                 const timeLabel = new Date(timestamp * 1000).toLocaleTimeString();
 
@@ -109,10 +109,10 @@ const ServerMonitor = () => {
             }
         },
         plugins: {
-            legend: { position: 'top' }, // Position legend at the top
+            legend: {position: 'top'}, // Position legend at the top
         },
         elements: {
-            line: { tension: 0 }, // Sharp lines instead of curves
+            line: {tension: 0}, // Sharp lines instead of curves
         },
     };
 
@@ -136,21 +136,22 @@ const ServerMonitor = () => {
                 <div className="bg-white p-4 shadow-lg rounded-xl">
                     <h2 className="text-xl font-semibold mb-2">CPU Usage</h2>
                     <div className="h-64">
-                        <Line data={generateChartData('CPU Usage (%)', cpuData, '#4CAF50')} options={chartOptions} />
+                        <Line data={generateChartData('CPU Usage (%)', cpuData, '#4CAF50')} options={chartOptions}/>
                     </div>
                 </div>
                 {/* GPU Usage Chart */}
                 <div className="bg-white p-4 shadow-lg rounded-xl">
                     <h2 className="text-xl font-semibold mb-2">GPU Usage</h2>
                     <div className="h-64">
-                        <Line data={generateChartData('GPU Usage (%)', gpuData, '#3B82F6')} options={chartOptions} />
+                        <Line data={generateChartData('GPU Usage (%)', gpuData, '#3B82F6')} options={chartOptions}/>
                     </div>
                 </div>
                 {/* Network Usage Chart */}
                 <div className="bg-white p-4 shadow-lg rounded-xl">
                     <h2 className="text-xl font-semibold mb-2">Network Usage</h2>
                     <div className="h-64">
-                        <Line data={generateChartData('Network Usage (MB)', networkData, '#F59E0B')} options={chartOptions} />
+                        <Line data={generateChartData('Network Usage (MB)', networkData, '#F59E0B')}
+                              options={chartOptions}/>
                     </div>
                 </div>
             </div>

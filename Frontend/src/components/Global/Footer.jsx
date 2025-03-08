@@ -13,7 +13,7 @@ const Footer = () => {
                         rel="noopener noreferrer"
                         className="transition-all duration-300 hover:opacity-75"
                     >
-                        <img src="/src/assets/twitter.png" alt="Twitter" className="w-8 h-8" />
+                        <img src="/src/assets/twitter.png" alt="Twitter" className="w-8 h-8"/>
                     </a>
 
                     <a
@@ -22,7 +22,7 @@ const Footer = () => {
                         rel="noopener noreferrer"
                         className="transition-all duration-300 hover:opacity-75"
                     >
-                        <img src="/src/assets/instagram.png" alt="Instagram" className="w-8 h-8" />
+                        <img src="/src/assets/instagram.png" alt="Instagram" className="w-8 h-8"/>
                     </a>
 
                 </div>

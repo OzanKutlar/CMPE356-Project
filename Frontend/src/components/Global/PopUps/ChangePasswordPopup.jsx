@@ -46,25 +46,28 @@ const ChangePassword = ({setChangePass}) => {
     const handlePassword = (e) => {
         const {name, value} = e.target;
 
-        // Log the name and value of the input
-        console.log(`Input Name: ${name}`);
-        console.log(`Input Value: ${value}`);
+        setShowConfirmPasswordField(newPass.length >= 4)
+
 
         setNewPass(value);
-        setShowConfirmPasswordField(newPass.length >= 4)
-        // Log the new password value
-        console.log(`New Password: ${value}`);
 
-        if(value === 'test'){
-            setPasswordError("AAAA");
-            // Log the error message
-            console.log("Error: AAAA");
+
+
+    }
+
+    const handleConfirmPass = (e) =>{
+        const {name, value} = e.target;
+
+        setNewPassConf(value);
+
+        if(newPassConf.length === newPass.length) {
+            if (newPassConf !== newPass) {
+                setPasswordError("Please Confirm Your Password");
+            } else {
+                setPasswordError("");
+            }
         }
-        else{
-            setPasswordError('');
-            // Log that there is no error
-            console.log("No error");
-        }
+
     }
 
 
@@ -147,7 +150,8 @@ const ChangePassword = ({setChangePass}) => {
                                     type={showPasswordConf ? "text" : "password"}
                                     id="passwordConf"
                                     name="passwordConf"
-                                    onChange={handlePassword}
+                                    value={newPassConf}
+                                    onChange={handleConfirmPass}
                                     placeholder="Confirm your password"
                                     className={`w-full p-3 text-sm border rounded-md focus:ring-1 focus:ring-blue-500 ${
                                         passwordError !== '' ? 'border-red-500 bg-red-200' : 'border-gray-300'

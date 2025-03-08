@@ -63,10 +63,9 @@ const LoginPopup = ({setShowLogin}) => {
 
     const handlePassword = async (e) => {
         const {name, value} = e.target;
-        if(value === 'test'){
+        if (value === 'test') {
             setPasswordError("AAAA");
-        }
-        else{
+        } else {
             setPasswordError('');
         }
     }
@@ -98,7 +97,7 @@ const LoginPopup = ({setShowLogin}) => {
 
     const handleForgotPasswordClick = () => {
         setShowLogin(false);
-        if(Util.CallPasswordReset != null){
+        if (Util.CallPasswordReset != null) {
             Util.forgot = true;
             Util.CallPasswordReset(true);
         }
@@ -138,7 +137,7 @@ const LoginPopup = ({setShowLogin}) => {
                                     className="fixed-password-toggle absolute inset-y-0 right-0 flex items-center"
                                     onClick={() => setShowPassword(!showPassword)}
                                 >
-                                    {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                                    {showPassword ? <EyeOffIcon/> : <EyeIcon/>}
                                 </button>
                             </div>
 
@@ -164,7 +163,7 @@ const LoginPopup = ({setShowLogin}) => {
                                     className="fixed-password-toggle absolute inset-y-0 right-0 flex items-center"
                                     onClick={() => setShowPasswordConf(!showPasswordConf)}
                                 >
-                                    {showPasswordConf ? <EyeOffIcon /> : <EyeIcon />}
+                                    {showPasswordConf ? <EyeOffIcon/> : <EyeIcon/>}
                                 </button>
                             </div>
 

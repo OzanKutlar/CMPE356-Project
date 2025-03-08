@@ -64,7 +64,7 @@ const CartItemsLarge = () => {
     };
 
     const handleSubmitOrder = async () => {
-        if(Util.savedUser.id === '' && Util.tempPhoneNumber === ''){
+        if (Util.savedUser.id === '' && Util.tempPhoneNumber === '') {
             setShowLogin(true);
             return;
         }
@@ -269,4 +269,4 @@ const CartItemsLarge = () => {
     );
 };
 
-            export default CartItemsLarge;
+export default CartItemsLarge;
