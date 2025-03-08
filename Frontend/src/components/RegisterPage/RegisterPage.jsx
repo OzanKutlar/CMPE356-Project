@@ -2,6 +2,7 @@ import {useState, useRef, useEffect} from 'react';
 import {ChevronDownIcon, EyeIcon, EyeOffIcon} from '../Global/Icons';
 import Util from "../../Util.js";
 import Info from "../Global/PopUps/Info.jsx";
+import Utils from "../../Util.js";
 
 const RegistrationPage = () => {
     const [formData, setFormData] = useState({
@@ -19,6 +20,8 @@ const RegistrationPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [disableButton, setDisableButton] = useState(false);
+    const [disableText, setDisableText] = useState(false);
     const dropdownRef = useRef(null);
 
     const countryCodes = [
@@ -94,31 +97,43 @@ const RegistrationPage = () => {
     const [popUpText, setPopUpText] = useState('');
     const [popUpType, setPopUpType] = useState('');
 
-    const handleDeleteAccountClick = (e) => {
-        let response = Util.callBackend("delUser", {userID: Util.savedUser.id})
-        if(response.msg === "success"){
-            setPopUpText("Your account has been successfully deleted.")
-            setPopUpType("Info")
-            setShowPopup(true);
-        }
-        else{
-            setPopUpText("There was an error while deleting your account.")
+    const handleDeleteAccountClick = async (e) => {
+        if(disableText) return;
+        setDisableText(true)
+        try {
+            const response = await Util.callBackend("delUser", {
+                userID: Util.savedUser.id
+            });
+            if(response.msg === "success"){
+                Util.delUser();
+                setPopUpText("Your account has been successfully deleted.")
+                setPopUpType("Info")
+                setShowPopup(true);
+            }
+            else{
+                setPopUpText("Error : " + response.msg)
+                setPopUpType("Error")
+                setShowPopup(true);
+            }
+        } catch (err) {
+            setPopUpText("Error : " + err.error)
             setPopUpType("Error")
             setShowPopup(true);
+            console.error(err);
         }
+        setDisableText(false)
         setTimeout(() => {
             Util.navigateTo("home");
         }, 2000);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
+        setDisableButton(true);
         const newErrors = {};
 
         if (!formData.firstName) newErrors.firstName = 'Required';
         if (!formData.lastName) newErrors.lastName = 'Required';
-        if (!formData.username) newErrors.username = 'Required';
         if (!formData.phoneNumber) newErrors.phoneNumber = 'Required';
 
         if (!formData.email) {
@@ -130,8 +145,35 @@ const RegistrationPage = () => {
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
         } else {
+            try {
+                const response = await Util.callBackend("registerUserFull", {
+                    userID: Util.savedUser.id,
+                    data: formData
+                });
+                if(response.msg === "success" && response.user){
+                    Util.savedUser = response.user;
+                    setPopUpText("Your account has been successfully registered.")
+                    setPopUpType("Info")
+                    setShowPopup(true);
+                    setTimeout(() => {
+                        Util.navigateTo("home");
+                    }, 2000);
+                }
+                else{
+                    setPopUpText("Error : " + response.msg)
+                    setPopUpType("Error")
+                    setShowPopup(true);
+                }
+            } catch (err) {
+                setPopUpText("Error : " + err.error)
+                setPopUpType("Error")
+                setShowPopup(true);
+                console.error(err);
+            }
+
             console.log('Form submitted successfully:', formData);
         }
+        setDisableButton(false);
     };
 
     return (
@@ -207,7 +249,7 @@ const RegistrationPage = () => {
                                     value={formData.firstName}
                                     onChange={handleInputChange}
                                     placeholder="ex: John"
-                                    className={`w-full p-1.5 text-sm border rounded-md focus:ring-1 focus:ring-blue-500 ${errors.firstName ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                    className={`w-full p-1.5 text-sm border rounded-md focus:ring-1 focus:ring-amber-500 ${errors.firstName ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                                 />
                                 {errors.firstName && <p className="text-xs text-red-500">{errors.firstName}</p>}
                             </div>
@@ -222,7 +264,7 @@ const RegistrationPage = () => {
                                     value={formData.lastName}
                                     onChange={handleInputChange}
                                     placeholder="ex: Brown"
-                                    className={`w-full p-1.5 text-sm border rounded-md focus:ring-1 focus:ring-blue-500 ${errors.lastName ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                    className={`w-full p-1.5 text-sm border rounded-md focus:ring-1 focus:ring-amber-500 ${errors.lastName ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                                 />
                                 {errors.lastName && <p className="text-xs text-red-500">{errors.lastName}</p>}
                             </div>
@@ -238,7 +280,7 @@ const RegistrationPage = () => {
                                 value={formData.email}
                                 onChange={handleInputChange}
                                 placeholder="ex: john.brown@example.com"
-                                className={`w-full p-1.5 text-sm border rounded-md focus:ring-1 focus:ring-blue-500 ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                className={`w-full p-1.5 text-sm border rounded-md focus:ring-1 focus:ring-amber-500 ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                             />
                             {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
                         </div>
@@ -291,7 +333,7 @@ const RegistrationPage = () => {
                                         onChange={handleInputChange}
                                         inputMode="numeric"
                                         pattern="[0-9]*"
-                                        className={`w-full p-1.5 text-sm border border-l-0 rounded-r-md focus:ring-1 focus:ring-blue-500 ${errors.phoneNumber ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        className={`w-full p-1.5 text-sm border border-l-0 rounded-r-md focus:ring-1 focus:ring-amber-500 ${errors.phoneNumber ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                                     />
                                 </div>
                                 {errors.phoneNumber && <p className="text-xs text-red-500">{errors.phoneNumber}</p>}
@@ -301,14 +343,15 @@ const RegistrationPage = () => {
 
                         <button
                             type="submit"
-                            className="w-full bg-blue-600 text-white py-1.5 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 transition-colors text-sm"
+                            disabled={disableButton}
+                            className={`w-full ${disableButton ? "bg-gray-600" : "bg-amber-600"} text-white py-1.5 px-4 rounded-md ${disableButton ? "hover:bg-gray-700" : "hover:bg-amber-700"}  focus:outline-none focus:ring-1 focus:ring-amber-500 focus:ring-offset-1 transition-colors text-sm`}
                         >
                             Register Now
                         </button>
 
                         <p className="text-center text-xs text-gray-600 mt-1">
                             Not feeling ready? {' '}
-                            <a href="#" onClick={handleDeleteAccountClick} className="text-blue-600 hover:underline font-medium">
+                            <a href="#" onClick={handleDeleteAccountClick} className={`${disableText ? "text-gray-600" : "text-amber-600"} hover:underline font-medium`}>
                                 Delete my Account
                             </a>
                         </p>

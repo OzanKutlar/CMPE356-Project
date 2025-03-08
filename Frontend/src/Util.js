@@ -108,6 +108,25 @@ class Util {
             }],
         "addToCart": "success",
         "changeUserRole": "success",
+        "shutdown": {msg: "success"},
+        "restart": {msg: "success"},
+        "delUser": {msg: "success"},
+        "registerUserPart": {msg: "success", user:{
+                id: 1,
+                profilePictureLink: "",
+                Username: "",
+                email: "",
+                phone: "",
+                role: ""
+            }},
+        "registerUserFull": {msg: "success", user:{
+                id: 1,
+                profilePictureLink: "/src/assets/face1.jpg",
+                Username: "john_doe",
+                email: "john.doe@example.com",
+                phone: "+1 (555) 123-4567",
+                role: "delivery"
+            }},
         "saveCart": "success",
         "getUsers": [
             {
@@ -534,7 +553,7 @@ class Util {
             if (endpoint === "login") {
                 return new Promise((resolve) => {
                     setTimeout(() => resolve({
-                        message: "Success",
+                        msg: "success",
                         user: this.fakeLogin(headers.username)
                     }), this.fakeDataDelay);
                 });

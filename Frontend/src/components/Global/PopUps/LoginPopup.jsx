@@ -16,6 +16,7 @@ const LoginPopup = ({setShowLogin}) => {
     const [isHovered, setIsHovered] = useState(false);
 
     const [passwordError, setPasswordError] = useState('');
+    const [disableLoginButton, setDisableLoginButton] = useState(false);
     const [password, setPassword] = useState('');
     const [passwordConf, setPasswordConf] = useState('');
 
@@ -37,7 +38,7 @@ const LoginPopup = ({setShowLogin}) => {
         setShowPasswordField(false);
         setShowConfirmPasswordField(false);
         setButtonText('Login');
-        setButtonColor('#007bff');
+        setButtonColor('bg-blue-600');
         return () => clearTimeout(timer);
     }, [username]);
 
@@ -48,13 +49,13 @@ const LoginPopup = ({setShowLogin}) => {
                 setShowPasswordField(true);
                 setShowConfirmPasswordField(false);
                 setButtonText('Login');
-                setButtonColor('#007bff');
+                setButtonColor('bg-blue-600');
                 setButtonDest(data.role);
             } else {
                 setShowPasswordField(true);
                 setShowConfirmPasswordField(true);
                 setButtonText('Register');
-                setButtonColor('orange');
+                setButtonColor('bg-amber-600');
             }
         } catch (error) {
             console.error('Error checking user existence:', error);
@@ -70,22 +71,23 @@ const LoginPopup = ({setShowLogin}) => {
         }
     }
 
+
     const handleLoginClick = async () => {
         const headers = {
             username: username,
             password: document.querySelector('input[placeholder="Your password"]').value,
         };
 
-        if (buttonText === 'Register') {
-            headers.register = document.querySelector('input[placeholder="Confirm your password"]').value;
-        }
-
+        setDisableLoginButton(true);
         try {
-            const endpoint = buttonText === 'Register' ? "register" : "login";
+            const endpoint = buttonText === 'Register' ? "registerUserPart" : "login";
             const s = await Util.callBackend(endpoint, headers);
-
-            if (s.message === "Success") {
+            setDisableLoginButton(false);
+            if (s.msg === "success") {
                 Util.savedUser = s.user;
+                if(buttonText === "Register"){
+                    Util.navigateTo("register");
+                }
                 setShowLogin(false);
             } else {
                 console.error(`Error: ${s.message}`);
@@ -173,10 +175,8 @@ const LoginPopup = ({setShowLogin}) => {
                 </div>
                 <button
                     onClick={handleLoginClick}
-                    onMouseEnter={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}
-                    style={{backgroundColor: isHovered ? '#0056b3' : buttonColor}}
-                    className="w-full px-5 py-3 rounded text-white text-lg cursor-pointer transition-colors duration-300"
+                    disabled={disableLoginButton}
+                    className={`w-full px-5 py-3 rounded text-white ${disableLoginButton ? "bg-gray-600" : buttonColor} text-lg cursor-pointer transition-colors duration-300`}
                 >
                     {buttonText}
                 </button>

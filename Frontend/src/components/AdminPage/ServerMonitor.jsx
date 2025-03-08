@@ -10,6 +10,8 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
+import Info from "../Global/PopUps/Info.jsx";
+import Util from "../../Util.js";
 
 // Register necessary Chart.js components
 ChartJS.register(
@@ -27,18 +29,21 @@ const ServerMonitor = () => {
     const [gpuData, setGpuData] = useState([]);
     const [networkData, setNetworkData] = useState([]);
     const [labels, setLabels] = useState([]);
-    const [showManageOptions, setShowManageOptions] = useState(false);
+    const [showManageOptions, setShowManageOptions] = useState(true);
+    const [showPopup, setShowPopup] = useState(false);
+    const [popUpText, setPopUpText] = useState('');
+    const [popUpType, setPopUpType] = useState('');
 
     // Simulated backend function for fetching metrics and handling server commands
     const dummyBackend = async (endpoint) => {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Dummy data for serverMetrics endpoint
         if (endpoint === 'serverMetrics') {
             return {
-                cpu: Math.random() * 100, // Random CPU usage between 0% and 100%
-                gpu: Math.random() * 100, // Random GPU usage between 0% and 100%
-                network: Math.random() * 100, // Random network usage between 0 MB and 100 MB
+                cpu: (Math.random() * 10) + 60, // Random CPU usage between 0% and 100%
+                gpu: (Math.random() * 10) + 20, // Random GPU usage between 0% and 100%
+                network: Math.random() * 10, // Random network usage between 0 MB and 100 MB
                 timestamp: Math.floor(Date.now() / 1000), // Current timestamp in seconds
             };
         }
@@ -70,27 +75,53 @@ const ServerMonitor = () => {
             }
         };
 
-        const interval = setInterval(fetchData, 5000); // Fetch data every 5 seconds
+        const interval = setInterval(fetchData, 500); // Fetch data every 5 seconds
         return () => clearInterval(interval); // Cleanup interval on unmount
     }, []);
 
     // Handle server shutdown
     const handleShutdown = async () => {
         try {
-            await dummyBackend("shutdown"); //Util.callBackend("shutdown");
-            alert('Server is shutting down...');
-        } catch (error) {
-            console.error('Error shutting down server:', error);
+            let response = await Util.callBackend("shutdown");
+
+            if(response.msg === "success"){
+                setPopUpText("Server is shutting down");
+                setPopUpType("Info")
+                setShowPopup(true);
+            }
+            else{
+                setPopUpText("Error : " + response.msg)
+                setPopUpType("Error")
+                setShowPopup(true);
+            }
+        } catch (err) {
+            setPopUpText("Error : " + err.error)
+            setPopUpType("Error")
+            setShowPopup(true);
+            console.error(err);
         }
     };
 
     // Handle server restart
     const handleRestart = async () => {
         try {
-            await dummyBackend("restart"); //Util.callBackend("restart");
-            alert('Server is restarting...');
-        } catch (error) {
-            console.error('Error restarting server:', error);
+            let response = await Util.callBackend("restart");
+
+            if(response.msg === "success"){
+                setPopUpText("Server is restarting");
+                setPopUpType("Info")
+                setShowPopup(true);
+            }
+            else{
+                setPopUpText("Error : " + response.msg)
+                setPopUpType("Error")
+                setShowPopup(true);
+            }
+        } catch (err) {
+            setPopUpText("Error : " + err.error)
+            setPopUpType("Error")
+            setShowPopup(true);
+            console.error(err);
         }
     };
 
@@ -130,6 +161,9 @@ const ServerMonitor = () => {
 
     return (
         <div className="p-6 max-w-5xl mx-auto">
+            {showPopup && (
+                <Info popUpText={popUpText} popUpType={popUpType} setShowPopup={setShowPopup} />
+            )}
             <h1 className="text-3xl font-bold text-center mb-6">Server Monitor</h1>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 {/* CPU Usage Chart */}
@@ -150,7 +184,7 @@ const ServerMonitor = () => {
                 <div className="bg-white p-4 shadow-lg rounded-xl">
                     <h2 className="text-xl font-semibold mb-2">Network Usage</h2>
                     <div className="h-64">
-                        <Line data={generateChartData('Network Usage (MB)', networkData, '#F59E0B')}
+                        <Line data={generateChartData('Network Usage (MB/s)', networkData, '#F59E0B')}
                               options={chartOptions}/>
                     </div>
                 </div>
@@ -162,7 +196,7 @@ const ServerMonitor = () => {
                     onClick={toggleManageOptions}
                     className="px-4 py-2 bg-gray-700 text-white rounded-lg shadow-md hover:bg-gray-800 transition"
                 >
-                    {showManageOptions ? 'Hide Manage Options' : 'Manage Backend'}
+                    {showManageOptions ? 'Hide Management Options' : 'Show Management Options'}
                 </button>
             </div>
 
