@@ -23,6 +23,7 @@ import { GlobalContext } from "./components/Global/GlobalContext.jsx";
 import RegistrationPage from "./components/RegisterPage/RegisterPage.jsx";
 import OrderList from "./components/HomePage/Orders/OrderList.jsx";
 import ServerMonitor from "./components/AdminPage/ServerMonitor.jsx";
+import { AboutUs, FAQ } from "./components/Global/AboutFaq.jsx";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(Util.currentPage);
@@ -148,8 +149,12 @@ export default function App() {
                     <div>
                         <DeliveryPage/>
                     </div>
-                )
-
+                );
+            case "about":
+                return <AboutUs />;
+            case "faq":
+                return <FAQ />;
+                
             default:
                 return (
                     <div>
