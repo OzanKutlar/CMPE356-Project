@@ -9,17 +9,16 @@ const ChangePassword = ({setChangePass}) => {
     const [newPassConf, setNewPassConf] = useState('');
     const [showPasswordField, setShowPasswordField] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [disableLoginButton, setDisableLoginButton] = useState(true);
     const [showPasswordConf, setShowPasswordConf] = useState(false);
     const [showConfirmPasswordField, setShowConfirmPasswordField] = useState(false);
     const [fadeIn, setFadeIn] = useState(false);
-    const [buttonText, setButtonText] = useState('Login');
+    const [buttonText, setButtonText] = useState('Change Password');
     const [buttonDest, setButtonDest] = useState('home');
-    const [buttonColor, setButtonColor] = useState('#007bff');
+    const [buttonColor, setButtonColor] = useState('bg-blue-600');
     const [isHovered, setIsHovered] = useState(false);
 
     const [passwordError, setPasswordError] = useState('');
-    const [password, setPassword] = useState('');
-    const [passwordConf, setPasswordConf] = useState('');
 
 
     useEffect(() => {
@@ -36,12 +35,7 @@ const ChangePassword = ({setChangePass}) => {
         const {name, value} = e.target;
 
         setShowConfirmPasswordField(newPass.length >= 4)
-
-
         setNewPass(value);
-
-
-
     }
 
     const handleConfirmPass = (e) =>{
@@ -49,10 +43,12 @@ const ChangePassword = ({setChangePass}) => {
 
         setNewPassConf(value);
 
-        if(newPassConf.length === newPass.length) {
-            if (newPassConf !== newPass) {
+        if(value.length >= newPass.length) {
+            if (value !== newPass) {
+                setDisableLoginButton(true);
                 setPasswordError("Please Confirm Your Password");
             } else {
+                setDisableLoginButton(false);
                 setPasswordError("");
             }
         }
@@ -62,17 +58,13 @@ const ChangePassword = ({setChangePass}) => {
 
     const handleLoginClick = async () => {
         const headers = {
-            oldPass: document.querySelector('input[placeholder="Your old password"]').value,
-            password: document.querySelector('input[placeholder="Your password"]').value,
+            oldPass: oldPass,
+            password: newPass,
         };
 
-        if (buttonText === 'Register') {
-            headers.register = document.querySelector('input[placeholder="Confirm your password"]').value;
-        }
 
         try {
-            const endpoint = buttonText === 'Register' ? "register" : "login";
-            const s = await Util.callBackend(endpoint, headers);
+            let s = await Util.callBackend("changePass", headers);
 
             if (s.message === "Success") {
                 Util.savedUser = s.user;
@@ -81,6 +73,7 @@ const ChangePassword = ({setChangePass}) => {
                 console.error(`Error: ${s.message}`);
             }
         } catch (error) {
+            setChangePass(false);
             console.error('Error during login/register:', error);
         }
     };
@@ -155,16 +148,13 @@ const ChangePassword = ({setChangePass}) => {
                                 </button>
                             </div>
 
-                            {passwordError !== '' && <p className="text-xs text-red-500">{passwordError}</p>}
                         </div>
                     )}
                 </div>
                 <button
                     onClick={handleLoginClick}
-                    onMouseEnter={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}
-                    style={{backgroundColor: isHovered ? '#0056b3' : buttonColor}}
-                    className="w-full px-5 py-3 rounded text-white text-lg cursor-pointer transition-colors duration-300"
+                    disabled={disableLoginButton}
+                    className={`w-full px-5 py-3 rounded text-white ${disableLoginButton ? "bg-gray-600" : buttonColor} text-lg cursor-pointer transition-colors duration-300`}
                 >
                     {buttonText}
                 </button>

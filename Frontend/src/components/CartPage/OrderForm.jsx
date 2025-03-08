@@ -35,7 +35,12 @@ const OrderForm = ({formData, onFormDataChange}) => {
                 }
             }
             onFormDataChange({...formData, [name]: formattedValue});
-        } else {
+        }
+        else if(name === "cvv"){
+            let formattedValue = value.replace(/\D/g, '')
+            onFormDataChange({...formData, [name]: formattedValue});
+        }
+        else {
             onFormDataChange({...formData, [name]: value});
         }
     };

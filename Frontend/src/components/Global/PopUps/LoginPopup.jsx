@@ -12,7 +12,7 @@ const LoginPopup = ({setShowLogin}) => {
     const [fadeIn, setFadeIn] = useState(false);
     const [buttonText, setButtonText] = useState('Login');
     const [buttonDest, setButtonDest] = useState('home');
-    const [buttonColor, setButtonColor] = useState('#007bff');
+    const [buttonColor, setButtonColor] = useState('bg-blue-600');
     const [isHovered, setIsHovered] = useState(false);
 
     const [passwordError, setPasswordError] = useState('');
@@ -50,9 +50,11 @@ const LoginPopup = ({setShowLogin}) => {
                 setShowConfirmPasswordField(false);
                 setButtonText('Login');
                 setButtonColor('bg-blue-600');
+                setDisableLoginButton(false);
                 setButtonDest(data.role);
             } else {
                 setShowPasswordField(true);
+                setDisableLoginButton(true);
                 setShowConfirmPasswordField(true);
                 setButtonText('Register');
                 setButtonColor('bg-amber-600');
@@ -64,9 +66,17 @@ const LoginPopup = ({setShowLogin}) => {
 
     const handlePassword = async (e) => {
         const {name, value} = e.target;
-        if (value === 'test') {
-            setPasswordError("AAAA");
+        setPassword(value)
+    }
+
+    const handleConfirmPassword = async (e) =>{
+        const {name, value} = e.target;
+        setPasswordConf(value)
+        if (value !== password) {
+            setPasswordError("Please ensure that you've entered your password correctly.");
+            setDisableLoginButton(true)
         } else {
+            setDisableLoginButton(false)
             setPasswordError('');
         }
     }
@@ -143,7 +153,7 @@ const LoginPopup = ({setShowLogin}) => {
                                 </button>
                             </div>
 
-                            {passwordError !== '' && <p className="text-xs text-red-500">{passwordError}</p>}
+                            {passwordError !== '' && <p className="text-xs mb-1 text-red-500">{passwordError}</p>}
                         </div>
                         // <input type="password" placeholder="Password" className="w-full p-3 mb-4 border rounded"/>
                     )}
@@ -154,7 +164,7 @@ const LoginPopup = ({setShowLogin}) => {
                                     type={showPasswordConf ? "text" : "password"}
                                     id="passwordConf"
                                     name="passwordConf"
-                                    onChange={handlePassword}
+                                    onChange={handleConfirmPassword}
                                     placeholder="Confirm your password"
                                     className={`w-full p-3 text-sm border rounded-md focus:ring-1 focus:ring-blue-500 ${
                                         passwordError !== '' ? 'border-red-500 bg-red-200' : 'border-gray-300'
@@ -169,7 +179,6 @@ const LoginPopup = ({setShowLogin}) => {
                                 </button>
                             </div>
 
-                            {passwordError !== '' && <p className="text-xs text-red-500">{passwordError}</p>}
                         </div>
                     )}
                 </div>
