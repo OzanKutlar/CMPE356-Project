@@ -20,7 +20,6 @@ export const AboutUs = () => {
                     and excellence.
                 </p>
             </div>
-            <Footer />
         </div>
     );
 };
