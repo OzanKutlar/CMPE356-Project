@@ -1,4 +1,4 @@
-package cmpe.project.Project;
+package cmpe.project.Project.Utility;
 
 import java.util.HashMap;
 import java.util.Map;
