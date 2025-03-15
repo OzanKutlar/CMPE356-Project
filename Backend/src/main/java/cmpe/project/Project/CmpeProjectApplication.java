@@ -35,7 +35,7 @@ public class CmpeProjectApplication {
 	@GetMapping("/endpoint2")
 	public ResponseEntity<?> getEndpoint2(@RequestHeader Map<String, String> headers) {
 		// Process all headers
-		headers.forEach((key, value) -> System.out.println(key + ": " + value));
+		logHeaders("endpoint2", headers);
 		return ResponseEntity.ok().body(Map.of("data", "Data for Endpoint 2"));
 	}
 

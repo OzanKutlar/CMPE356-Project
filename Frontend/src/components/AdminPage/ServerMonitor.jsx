@@ -82,7 +82,9 @@ const ServerMonitor = () => {
     // Handle server shutdown
     const handleShutdown = async () => {
         try {
-            let response = await Util.callBackend("shutdown");
+            let response = await Util.callBackend("shutdown", {
+                userID: Util.savedUser.id
+            });
 
             if(response.msg === "success"){
                 setPopUpText("Server is shutting down");
@@ -105,7 +107,9 @@ const ServerMonitor = () => {
     // Handle server restart
     const handleRestart = async () => {
         try {
-            let response = await Util.callBackend("restart");
+            let response = await Util.callBackend("restart", {
+                userID: Util.savedUser.id
+            });
 
             if(response.msg === "success"){
                 setPopUpText("Server is restarting");

@@ -9,7 +9,6 @@ import Util from './Util';
 import "./App.css";
 import CartItemsLarge from "./components/CartPage/CartItemsLarge.jsx";
 import ButcherItemSelector from "./components/ButcherPage/ButcherItem.jsx";
-import ButcherItemPicker from "./components/ButcherPage/ButcherItemPicker.jsx"; // Import styles
 import UserList from "./components/AdminPage/UserList.jsx";
 import AdminHeader from "./components/AdminPage/AdminHeader.jsx";
 import ButcherHeader from "./components/ButcherPage/Global/ButcherHeader.jsx";

@@ -18,9 +18,17 @@ const ButcherItemSelector = () => {
 
     const handleSubmit = async () => {
         try {
+            let response = await Util.callBackend("saveButcher", {
+                userID: Util.savedUser.id,
+                items: items
+            });
 
-            await Util.callBackend("saveButcher", items);
-            alert("Items saved successfully!");
+            if(response.msg === "success"){
+                alert("Items saved successfully!");
+            }
+            else{
+                alert("Error : " + response.msg);
+            }
         } catch (error) {
             console.error("Error saving items:", error);
             alert("Failed to save items. Please try again.");
