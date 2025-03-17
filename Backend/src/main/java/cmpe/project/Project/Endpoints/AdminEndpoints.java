@@ -18,6 +18,7 @@ public class AdminEndpoints {
     @GetMapping("/changeUserRole")
     public ResponseEntity<?> changeUserRole(
             @RequestHeader("userId") String userId,
+            @RequestHeader("adminId") String adminId,
             @RequestHeader("newRole") String newRole) {
         System.out.println("Changing role for user " + userId + " to " + newRole);
         return ResponseEntity.ok().body("success");
