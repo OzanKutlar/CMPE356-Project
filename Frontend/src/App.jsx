@@ -24,6 +24,7 @@ import OrderList from "./components/HomePage/Orders/OrderList.jsx";
 import ServerMonitor from "./components/AdminPage/ServerMonitor.jsx";
 import AboutUs from "./components/Info/AboutUs.jsx";
 import FAQ from "./components/Info/FAQ.jsx";
+import Chatbot from "./components/Chatbot";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(Util.currentPage);
