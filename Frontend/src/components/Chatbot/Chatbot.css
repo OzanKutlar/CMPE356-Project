@@ -1,1 +1,124 @@
+/* Chatbot.css */
 
+/* Animation for the cow jump */
+@keyframes jump {
+    0% {
+      transform: translateY(0);
+    }
+    30% {
+      transform: translateY(-15px);
+    }
+    50% {
+      transform: translateY(0);
+    }
+    70% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  
+  /* Style for the animated cow button */
+  .cowButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #df2d57;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50%;
+    font-size: 30px;
+    cursor: pointer;
+    animation: jump 0.5s ease-in-out infinite;
+  }
+  
+  .cowButton:active {
+    animation: jump 0.3s ease-in-out;
+  }
+  
+  /* Chatbot container styles */
+  .chatContainer {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 300px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Chatbot header styles */
+  .chatHeader {
+    background-color: #df2d57;
+    color: #fff;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .closeButton {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  /* Chat messages styles */
+  .chatBody {
+    padding: 10px;
+    height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .userMessage {
+    align-self: flex-end;
+    background-color: #df2d57;
+    color: #fff;
+    padding: 8px;
+    border-radius: 10px;
+    max-width: 70%;
+  }
+  
+  .botMessage {
+    align-self: flex-start;
+    background-color: #eee;
+    color: #000;
+    padding: 8px;
+    border-radius: 10px;
+    max-width: 70%;
+  }
+  
+  /* Chat input section styles */
+  .chatFooter {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+  }
+  
+  .input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .sendButton {
+    margin-left: 5px;
+    background-color: #df2d57;
+    color: #fff;
+    border: none;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
