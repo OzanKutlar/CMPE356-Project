@@ -182,6 +182,7 @@ export default function App() {
                 {/*<Email />*/}
                 {renderPage()}
                 {currentPage != "delivery" && currentPage != "register" ? <Footer/> : null}
+                <Chatbot />
             </GlobalContext.Provider>
         </div>
     );
