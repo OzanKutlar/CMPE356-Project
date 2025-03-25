@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./Chatbot.css"; // Import the separate CSS file
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,82 +51,38 @@ const Chatbot = () => {
 
   return (
     <div>
-      <button onClick={toggleChat} style={styles.chatButton}>
-        💬
+      <button onClick={toggleChat} className="cowButton">
+        🐄
       </button>
 
       {isOpen && (
-        <div style={styles.chatContainer}>
-          <div style={styles.chatHeader}>
+        <div className="chatContainer">
+          <div className="chatHeader">
             <span>Chatbot</span>
-            <button onClick={toggleChat} style={styles.closeButton}>✖</button>
+            <button onClick={toggleChat} className="closeButton">✖</button>
           </div>
-          <div style={styles.chatBody}>
+          <div className="chatBody">
             {messages.map((msg, index) => (
-              <div key={index} style={msg.sender === "user" ? styles.userMessage : styles.botMessage}>
+              <div key={index} className={msg.sender === "user" ? "userMessage" : "botMessage"}>
                 {msg.text}
               </div>
             ))}
           </div>
-          <div style={styles.chatFooter}>
-            <input 
-              type="text" 
-              value={input} 
-              onChange={(e) => setInput(e.target.value)} 
+          <div className="chatFooter">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
               placeholder="Ask me anything about our meats!"
-              style={styles.input}
+              className="input"
             />
-            <button onClick={handleSendMessage} style={styles.sendButton}>Send</button>
+            <button onClick={handleSendMessage} className="sendButton">Send</button>
           </div>
         </div>
       )}
     </div>
   );
-};
-
-const styles = {
-  chatButton: {
-    position: "fixed", bottom: "20px", right: "20px",
-    backgroundColor: "#007bff", color: "#fff", border: "none",
-    padding: "10px 15px", borderRadius: "50%", fontSize: "18px",
-    cursor: "pointer"
-  },
-  chatContainer: {
-    position: "fixed", bottom: "80px", right: "20px",
-    width: "300px", backgroundColor: "#fff", boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
-    borderRadius: "10px", overflow: "hidden", display: "flex", flexDirection: "column"
-  },
-  chatHeader: {
-    backgroundColor: "#007bff", color: "#fff", padding: "10px",
-    display: "flex", justifyContent: "space-between", alignItems: "center"
-  },
-  closeButton: {
-    background: "none", border: "none", color: "#fff", fontSize: "16px",
-    cursor: "pointer"
-  },
-  chatBody: {
-    padding: "10px", height: "200px", overflowY: "auto",
-    display: "flex", flexDirection: "column", gap: "5px"
-  },
-  userMessage: {
-    alignSelf: "flex-end", backgroundColor: "#007bff", color: "#fff",
-    padding: "8px", borderRadius: "10px", maxWidth: "70%"
-  },
-  botMessage: {
-    alignSelf: "flex-start", backgroundColor: "#eee", color: "#000",
-    padding: "8px", borderRadius: "10px", maxWidth: "70%"
-  },
-  chatFooter: {
-    display: "flex", padding: "10px", borderTop: "1px solid #ddd"
-  },
-  input: {
-    flex: 1, padding: "8px", border: "1px solid #ddd", borderRadius: "5px"
-  },
-  sendButton: {
-    marginLeft: "5px", backgroundColor: "#007bff", color: "#fff",
-    border: "none", padding: "8px", borderRadius: "5px", cursor: "pointer"
-  }
 };
 
 export default Chatbot;
