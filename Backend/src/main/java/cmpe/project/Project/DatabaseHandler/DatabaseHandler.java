@@ -11,16 +11,41 @@ import static cmpe.project.Project.Utility.Logger.*;
 public class DatabaseHandler {
 
 
-    static final String DATABASE_URL = "";
+    static final String DATABASE_URL = "jdbc:mysql://171.22.173.112:3306/ProjectDB";
 
 
     public static Thread DBThread = null;
 
-    public static DatabaseHandler instance;
+    public static DatabaseHandler INSTANCE;
 
-    public ResultSet sendRequest(String requestString){
-        return null;
+    public DatabaseHandler(){
+        DatabaseHandler.INSTANCE = this;
     }
+
+    public ResultSet sendRequest(String requestString, Object[] params) {
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL, "root", "");
+             PreparedStatement stmt = conn.prepareStatement(requestString)) {
+
+            for (int i = 0; i < params.length; i++) {
+                stmt.setObject(i + 1, params[i]);
+            }
+
+            boolean hasResults = stmt.execute();
+            if (hasResults) {
+                ResultSet rs = stmt.getResultSet();
+                CachedRowSet cached = RowSetProvider.newFactory().createCachedRowSet();
+                cached.populate(rs);
+                rs.close();
+                return cached;
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + requestString + ". Error: " + e.getMessage());
+            return null;
+        }
+    }
+
 
     public static boolean checkDatabaseExists(){
         try{

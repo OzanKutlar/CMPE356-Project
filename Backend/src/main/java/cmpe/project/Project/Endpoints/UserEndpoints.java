@@ -1,14 +1,19 @@
 package cmpe.project.Project.Endpoints;
 
+import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import static cmpe.project.Project.Utility.Logger.*;
 
 @RestController
 @RequestMapping("/api/user")
@@ -16,9 +21,23 @@ public class UserEndpoints {
 
     @GetMapping("/check-user")
     public ResponseEntity<?> checkUser(@RequestHeader("username") String username) {
-        // Implementation that uses the username header
         System.out.println("Received check-user request with username: " + username);
-        return ResponseEntity.ok().body(Map.of("exists", true));
+
+        // Check if the username exists in the database
+        String query = "SELECT EXISTS(SELECT 1 FROM users WHERE username = ?)";
+        Object[] params = { username };
+
+        boolean userExists = false;
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(query, params)) {
+            if (rs != null && rs.next()) {
+                userExists = rs.getBoolean(1);
+            }
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + query + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user existence"));
+        }
+
+        return ResponseEntity.ok().body(Map.of("exists", userExists));
     }
 
     @GetMapping("/login")
