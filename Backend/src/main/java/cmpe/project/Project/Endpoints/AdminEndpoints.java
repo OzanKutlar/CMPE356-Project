@@ -28,7 +28,34 @@ public class AdminEndpoints {
             @RequestHeader("adminId") String adminId,
             @RequestHeader("newRole") String newRole) {
         System.out.println("Changing role for user " + userId + " to " + newRole);
-        return ResponseEntity.ok().body("success");
+
+        // Check if the admin exists in the session map
+        String adminIdFromSession = UserEndpoints.sessionMap.get(UUID.fromString(adminId));
+        if (adminIdFromSession == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid admin ID"));
+        }
+
+        String isAdminQuery = "SELECT role FROM users WHERE id = ?";
+        Object[] isAdminParams = { adminIdFromSession };
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isAdminQuery, isAdminParams)) {
+            if (rs == null || !rs.next() || !rs.getString("role").equalsIgnoreCase("admin")) {
+                System.out.println("User with ID " + adminId + " is not authorized to change a user's role");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Admin is not authorized"));
+            }
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + isAdminQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check admin role"));
+        }
+
+        String updateUserRoleQuery = "UPDATE users SET role = ? WHERE id = ?";
+        Object[] updateUserRoleParams = { newRole, userId };
+        try {
+            DatabaseHandler.INSTANCE.executeQuery(updateUserRoleQuery, updateUserRoleParams);
+            return ResponseEntity.ok().body(Map.of("msg", "User role updated successfully"));
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + updateUserRoleQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to update user role"));
+        }
     }
 
     @GetMapping("/delUserAdmin")
@@ -37,13 +64,11 @@ public class AdminEndpoints {
             @RequestHeader("userID") String userID) {
         System.out.println("Admin with ID " + adminID + " is deleting user with ID: " + userID);
 
-        // Check if the admin exists in the session map
         String adminIdFromSession = UserEndpoints.sessionMap.get(UUID.fromString(adminID));
         if (adminIdFromSession == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid admin ID"));
         }
 
-        // Query the database to check if the admin is an admin
         String isAdminQuery = "SELECT role FROM users WHERE id = ?";
         Object[] isAdminParams = { adminIdFromSession };
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isAdminQuery, isAdminParams)) {
@@ -56,7 +81,6 @@ public class AdminEndpoints {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check admin role"));
         }
 
-        // Delete the user from the database
         String deleteUserQuery = "DELETE FROM users WHERE id = ?";
         Object[] deleteUserParams = { userID };
         try {
