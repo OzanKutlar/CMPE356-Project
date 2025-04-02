@@ -46,6 +46,16 @@ public class DatabaseHandler {
         }
     }
 
+    public void executeQuery(String requestString, Object[] params) throws SQLException{
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL, "root", "");
+             PreparedStatement stmt = conn.prepareStatement(requestString)) {
+            for (int i = 0; i < params.length; i++) {
+                stmt.setObject(i + 1, params[i]);
+            }
+            stmt.execute();
+        }
+    }
+
 
     public static boolean checkDatabaseExists(){
         try{

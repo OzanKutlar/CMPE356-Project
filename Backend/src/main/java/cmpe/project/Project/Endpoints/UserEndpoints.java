@@ -13,11 +13,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+
 import static cmpe.project.Project.Utility.Logger.*;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserEndpoints {
+
+    public static HashMap<UUID, String> sessionMap = new HashMap<>();
 
     @GetMapping("/check-user")
     public ResponseEntity<?> checkUser(@RequestHeader("username") String username) {
@@ -45,7 +49,33 @@ public class UserEndpoints {
             @RequestHeader("username") String username,
             @RequestHeader(value = "password", required = false) String password) {
         System.out.println("Received login request for user: " + username);
-        return ResponseEntity.ok().body(Map.of("msg", "success", "user", new Object()));
+
+        String query = "SELECT id, profilePictureLink, email, phone, role FROM users WHERE username = ?";
+        Object[] params = { username };
+        Map<String, Object> user = null;
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(query, params)) {
+            if (rs != null && rs.next()) {
+                user = new HashMap<>();
+                user.put("profilePictureLink", rs.getString("profilePictureLink"));
+                user.put("username", rs.getString("username"));
+                user.put("email", rs.getString("email"));
+                user.put("phone", rs.getString("phone"));
+                user.put("role", rs.getString("role"));
+            }
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + query + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to retrieve user details"));
+        }
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not found"));
+        }
+
+        UUID sessionUUID = UUID.randomUUID();
+        sessionMap.put(sessionUUID, user.get("id").toString());
+        user.put("id", sessionUUID);
+
+        return ResponseEntity.ok().body(Map.of("msg", "success", "user", user));
     }
 
     @GetMapping("/delUser")
@@ -59,8 +89,42 @@ public class UserEndpoints {
             @RequestHeader("username") String username,
             @RequestHeader("email") String email) {
         System.out.println("Partial registration: " + username + ", " + email);
-        return ResponseEntity.ok().body(Map.of("msg", "success", "user", new HashMap<>()));
+
+        // Generate a new UUID for the user ID
+        UUID userId = UUID.randomUUID();
+        String query = "INSERT INTO users (id, username, email) VALUES (?, ?, ?)";
+        Object[] params = { userId.toString(), username, email };
+
+        try {
+            DatabaseHandler.INSTANCE.executeQuery(query, params);
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + query + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to register user partially"));
+        }
+
+        return ResponseEntity.ok().body(Map.of("msg", "success", "user", Map.of("id", userId.toString(), "username", username)));
     }
+
+    @GetMapping("/registerUserFull")
+    public ResponseEntity<?> registerUserFull(
+            @RequestHeader("userID") String id,
+            @RequestHeader("name") String name,
+            @RequestHeader("surname") String surname,
+            @RequestHeader("phone") String phone,
+            @RequestHeader("countryCode") String countryCode,
+            @RequestHeader("email") String email,
+            @RequestHeader("password") String password) {
+        System.out.println("Full registration: " + id + ", " + email + ", " + phone);
+
+
+        String query = "UPDATE users SET name = ?, surname = ?, phone = ?, countryCode = ?, email = ?, password = ? WHERE id = ?";
+        Object[] params = { name, surname, phone, countryCode, email, password, id };
+
+        DatabaseHandler.INSTANCE.sendRequest(query, params);
+
+        return ResponseEntity.ok().body(Map.of("msg", "success", "user", Map.of("id", id, "name", name, "surname", surname)));
+    }
+
 
     @GetMapping("/getOrders")
     public ResponseEntity<?> getOrders(
@@ -80,16 +144,6 @@ public class UserEndpoints {
                 "Taken Orders", new ArrayList<>()));
     }
 
-    @GetMapping("/registerUserFull")
-    public ResponseEntity<?> registerUserFull(
-            @RequestHeader("username") String username,
-            @RequestHeader("email") String email,
-            @RequestHeader("phone") String phone,
-            @RequestHeader("role") String role) {
-        System.out.println("Full registration: " + username + ", " + email +
-                ", " + phone + ", role: " + role);
-        return ResponseEntity.ok().body(Map.of("msg", "success", "user", new HashMap<>()));
-    }
 
 
     @GetMapping("/getUsers")
