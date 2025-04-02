@@ -1,9 +1,11 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from 'react';
 import Util from "../../../Util.js";
-import {GlobalContext} from '../GlobalContext.jsx';
+import { GlobalContext } from '../GlobalContext.jsx';
+import EditProfile from './EditProfile.jsx'; // Import EditProfile component
 
 export default function UserProfile() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [isEditModalOpen, setEditModalOpen] = useState(false); // State to control the edit profile modal
 
     // Assuming Util.savedUser contains user data
     const savedUser = Util.savedUser;
@@ -20,7 +22,7 @@ export default function UserProfile() {
     const handleAction = (action) => {
         switch (action) {
             case 'editProfile':
-                // Add logic for editing profile here
+                setEditModalOpen(true); // Open the EditProfile modal
                 break;
             case 'changePassword':
                 Util.forgot = false;
@@ -126,6 +128,16 @@ export default function UserProfile() {
                     >
                         Log Out
                     </button>
+                </div>
+            )}
+
+            {/* Edit Profile Modal */}
+            {isEditModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-20">
+                    <EditProfile 
+                        user={savedUser} 
+                        onClose={() => setEditModalOpen(false)} // Close modal when done
+                    />
                 </div>
             )}
         </div>
