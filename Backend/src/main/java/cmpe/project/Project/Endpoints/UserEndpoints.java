@@ -76,9 +76,39 @@ public class UserEndpoints {
     }
 
     @GetMapping("/delUser")
-    public ResponseEntity<?> deleteUser(@RequestHeader("userId") String userId) {
-        System.out.println("Deleting user: " + userId);
-        return ResponseEntity.ok().body(Map.of("msg", "success"));
+    public ResponseEntity<?> deleteUser(@RequestHeader("userID") String userID) {
+        System.out.println("Deleting user with ID: " + userID);
+
+        // Check if the user exists in the session map
+        String userIdFromSession = sessionMap.get(UUID.fromString(userID));
+        if (userIdFromSession == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid user ID"));
+        }
+
+        // Query the database to check if the user is an admin
+        String isAdminQuery = "SELECT role FROM users WHERE id = ?";
+        Object[] isAdminParams = { userIdFromSession };
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isAdminQuery, isAdminParams)) {
+            if (rs == null || !rs.next() || !rs.getString("role").equalsIgnoreCase("admin")) {
+                System.out.println("User with ID " + userID + " is not authorized to delete a user");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User is not authorized"));
+            }
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + isAdminQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user role"));
+        }
+
+        // Delete the user from the database
+        String deleteUserQuery = "DELETE FROM users WHERE id = ?";
+        Object[] deleteUserParams = { userIdFromSession };
+        try {
+            DatabaseHandler.INSTANCE.executeQuery(deleteUserQuery, deleteUserParams);
+            sessionMap.remove(UUID.fromString(userID));
+            return ResponseEntity.ok().body(Map.of("msg", "User deleted successfully"));
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + deleteUserQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to delete user"));
+        }
     }
 
     @GetMapping("/registerUserPart")
