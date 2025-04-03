@@ -2,43 +2,110 @@ import { useState } from "react";
 import { User, CreditCard, MapPin, Phone, Camera, Save, Mail, Briefcase, Calendar } from "lucide-react";
 
 export default function EditProfile() {
-    const [profileData, setProfileData] = useState({
-        name: "John Doe",
-        email: "john.doe@example.com",
-        occupation: "Software Engineer",
-        birthdate: "1990-01-15",
-        address: "123 Main Street, New York, NY 10001",
-        phone: "(555) 123-4567",
-        creditCard: {
-            number: "**** **** **** 4321",
-            expiry: "12/25",
-            cvv: "***",
-            name: "John Doe"
-        }
-    });
+    // Split state into separate variables
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [birthdate, setBirthdate] = useState("");
+    const [address, setAddress] = useState("");
+    const [phone, setPhone] = useState("");
 
+    // Credit card details as separate states
+    const [cardNumber, setCardNumber] = useState("");
+    const [cardExpiry, setCardExpiry] = useState("");
+    const [cardCvv, setCardCvv] = useState("");
+    const [cardName, setCardName] = useState("");
+
+    // Profile image and submission state
     const [profileImage, setProfileImage] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-
-        if (name.includes('.')) {
-            const [parent, child] = name.split('.');
-            setProfileData({
-                ...profileData,
-                [parent]: {
-                    ...profileData[parent],
-                    [child]: value
-                }
-            });
+    // Separate handler functions for each input
+    const handleNameChange = (e) => setName(e.target.value);
+    const handleEmailChange = (e) => setEmail(e.target.value);
+    const handleOccupationChange = (e) => setOccupation(e.target.value);
+    const handleBirthdateChange = (e) => setBirthdate(e.target.value);
+    const handleAddressChange = (e) => setAddress(e.target.value);
+    const handlePhoneChange = (e) => {
+        const {name, value} = e.target;
+        let phoneNum;
+        if (lastVal.length > value.length) {
+            phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, ""));
         } else {
-            setProfileData({
-                ...profileData,
-                [name]: value
-            });
+            if (value.replaceAll(/[^0-9]/g, "") === lastVal.replaceAll(/[^0-9]/g, "")) {
+                phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, "").slice(0, -1));
+            } else {
+                phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, ""));
+            }
         }
-    };
+        setPhone(phoneNum);
+        lastVal = value;
+    }
+
+    let lastVal = '';
+    let lastformat = '';
+
+    function formatPhoneNumber(phone) {
+        if (phone === lastformat) {
+            return phone;
+        }
+        let offset = Number(phone.length >= 13);
+
+
+        const pattern = [
+            {index: 0, prefix: "+"},
+            {index: 2 + offset, prefix: " ("},
+            {index: 5 + offset, prefix: ") "},
+            {index: 8 + offset, prefix: " "},
+            {index: 10 + offset, prefix: " "}
+        ];
+
+        let formatted = "";
+        for (let i = 0; i < phone.length; i++) {
+            let formatRule = pattern.find(p => p.index === i);
+            if (formatRule) formatted += formatRule.prefix;
+
+            formatted += phone[i];
+        }
+        let formatRule = pattern.find(p => p.index === phone.length);
+        if (formatRule) formatted += formatRule.prefix;
+        return formatted;
+    }
+
+    const handleCardNumberChange = (e) => {
+        const {name, value} = e.target;
+
+        const formattedValue = value.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ');
+
+        if (value.length > 19) return;
+
+        setCardNumber(formattedValue);
+    }
+    const handleCardExpiryChange = (e) => {
+        const {name, value} = e.target;
+        let formattedValue = value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');
+        if(value.length > 5) return;
+        if (value.length === 2 || value.length === 5) {
+            const [monthStr, yearStr] = value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/').split('/');
+            const month = Number(monthStr);
+            const formattedMonth = month ? Math.min(month, 12).toString().padStart(2, '0') : '01';
+
+            if (value.length === 5) {
+                const year = Number(yearStr);
+                const currentYear = new Date().getFullYear() % 100;
+
+                const formattedYear = year ? Math.max(year, currentYear).toString().slice(-2) : (currentYear + 1).toString().slice(-2);
+                formattedValue = `${formattedMonth}/${formattedYear}`;
+            } else {
+                formattedValue = `${formattedMonth}`;
+            }
+        }
+        setCardExpiry(formattedValue);
+    }
+    const handleCardCvvChange = (e) => {
+        if(e.target.value.length > 3) return;
+        setCardCvv(e.target.value.replace(/\D/g, ''));
+    }
+    const handleCardNameChange = (e) => setCardName(e.target.value);
 
     const handleImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
@@ -50,8 +117,24 @@ export default function EditProfile() {
         e.preventDefault();
         setIsSubmitting(true);
 
+        // Collect all the form data
+        const formData = {
+            name,
+            email,
+            birthdate,
+            address,
+            phone,
+            creditCard: {
+                number: cardNumber,
+                expiry: cardExpiry,
+                cvv: cardCvv,
+                name: cardName
+            }
+        };
+
         // Simulate API call
         setTimeout(() => {
+            console.log("Submitting data:", formData);
             setIsSubmitting(false);
             alert("Profile updated successfully!");
         }, 1000);
@@ -76,10 +159,10 @@ export default function EditProfile() {
                                             {profileImage ? (
                                                 <img src={profileImage} alt="Profile preview" className="h-full w-full object-cover" />
                                             ) : (
-                                                <img src="/api/placeholder/160/160" alt="Profile placeholder" className="h-full w-full object-cover" />
+                                                <img src="/src/assets/ozan.png" alt="Profile placeholder" className="h-full w-full object-cover" />
                                             )}
                                         </div>
-                                        <label htmlFor="profile-image" className="absolute bottom-2 right-2 bg-blue-500 rounded-full p-2 cursor-pointer hover:bg-blue-600 transition-colors">
+                                        <label htmlFor="profile-image" className="absolute bottom-2 right-2 bg-rose-500 rounded-full p-2 cursor-pointer hover:bg-rose-600 transition-colors">
                                             <Camera size={20} className="text-white" />
                                             <input
                                                 type="file"
@@ -90,13 +173,13 @@ export default function EditProfile() {
                                             />
                                         </label>
                                     </div>
-                                    <h2 className="text-xl font-semibold text-gray-900">{profileData.name}</h2>
-                                    <p className="text-sm text-gray-500 mb-4">{profileData.email}</p>
+                                    <h2 className="text-xl font-semibold text-gray-900">{name}</h2>
+                                    <p className="text-sm text-gray-500 mb-4">{email}</p>
 
                                     <div className="text-sm text-gray-500 mt-2 w-full">
                                         <p className="mb-1">Member since: Jan 2023</p>
                                         <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                                            <div className="bg-blue-600 h-2.5 rounded-full w-3/4"></div>
+                                            <div className="bg-rose-600 h-2.5 rounded-full w-3/4"></div>
                                         </div>
                                         <p className="mt-1 text-xs">Profile Completion: 75%</p>
                                     </div>
@@ -120,11 +203,11 @@ export default function EditProfile() {
                                         </label>
                                         <input
                                             type="text"
-                                            name="name"
+                                            placeholder='John Doe'
                                             id="name"
-                                            value={profileData.name}
-                                            onChange={handleInputChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                            value={name}
+                                            onChange={handleNameChange}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
                                         />
                                     </div>
 
@@ -135,28 +218,14 @@ export default function EditProfile() {
                                         </label>
                                         <input
                                             type="email"
-                                            name="email"
+                                            placeholder='exam.ple@example.com'
                                             id="email"
-                                            value={profileData.email}
-                                            onChange={handleInputChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                            value={email}
+                                            onChange={handleEmailChange}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
                                         />
                                     </div>
 
-                                    <div>
-                                        <label htmlFor="occupation" className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                            <Briefcase size={16} className="mr-2" />
-                                            Occupation
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="occupation"
-                                            id="occupation"
-                                            value={profileData.occupation}
-                                            onChange={handleInputChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        />
-                                    </div>
 
                                     <div>
                                         <label htmlFor="birthdate" className="flex items-center text-sm font-medium text-gray-700 mb-1">
@@ -165,11 +234,11 @@ export default function EditProfile() {
                                         </label>
                                         <input
                                             type="date"
-                                            name="birthdate"
                                             id="birthdate"
-                                            value={profileData.birthdate}
-                                            onChange={handleInputChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                            placeholder='28-02-2004'
+                                            value={birthdate}
+                                            onChange={handleBirthdateChange}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
                                         />
                                     </div>
 
@@ -180,11 +249,11 @@ export default function EditProfile() {
                                         </label>
                                         <input
                                             type="tel"
-                                            name="phone"
                                             id="phone"
-                                            value={profileData.phone}
-                                            onChange={handleInputChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                            placeholder='+90 (xxx) xxx xx xx'
+                                            value={phone}
+                                            onChange={handlePhoneChange}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
                                         />
                                     </div>
 
@@ -195,11 +264,11 @@ export default function EditProfile() {
                                         </label>
                                         <textarea
                                             id="address"
-                                            name="address"
+                                            placeholder='123 Main Street, New York, NY 10001'
                                             rows={2}
-                                            value={profileData.address}
-                                            onChange={handleInputChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                            value={address}
+                                            onChange={handleAddressChange}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
                                         />
                                     </div>
 
@@ -214,61 +283,59 @@ export default function EditProfile() {
                                         <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
                                             <div className="grid grid-cols-2 gap-6">
                                                 <div>
-                                                    <label htmlFor="creditCard.name" className="block text-sm font-medium text-gray-700 mb-1">
+                                                    <label htmlFor="cardName" className="block text-sm font-medium text-gray-700 mb-1">
                                                         Name on Card
                                                     </label>
                                                     <input
                                                         type="text"
-                                                        name="creditCard.name"
-                                                        id="creditCard.name"
-                                                        value={profileData.creditCard.name}
-                                                        onChange={handleInputChange}
-                                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                        placeholder='John Doe'
+                                                        id="cardName"
+                                                        value={cardName}
+                                                        onChange={handleCardNameChange}
+                                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
                                                     />
                                                 </div>
 
                                                 <div className="col-span-2 sm:col-span-1">
-                                                    <label htmlFor="creditCard.number" className="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                                    <label htmlFor="cardNumber" className="flex items-center text-sm font-medium text-gray-700 mb-1">
                                                         <CreditCard size={16} className="mr-2" />
                                                         Card Number
                                                     </label>
                                                     <input
                                                         type="text"
-                                                        name="creditCard.number"
-                                                        id="creditCard.number"
-                                                        value={profileData.creditCard.number}
-                                                        onChange={handleInputChange}
-                                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                        placeholder='4242 4242 4242 4242'
+                                                        id="cardNumber"
+                                                        value={cardNumber}
+                                                        onChange={handleCardNumberChange}
+                                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
                                                     />
                                                 </div>
 
                                                 <div>
-                                                    <label htmlFor="creditCard.expiry" className="block text-sm font-medium text-gray-700 mb-1">
+                                                    <label htmlFor="cardExpiry" className="block text-sm font-medium text-gray-700 mb-1">
                                                         Expiry Date
                                                     </label>
                                                     <input
                                                         type="text"
-                                                        name="creditCard.expiry"
-                                                        id="creditCard.expiry"
+                                                        id="cardExpiry"
                                                         placeholder="MM/YY"
-                                                        value={profileData.creditCard.expiry}
-                                                        onChange={handleInputChange}
-                                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                        value={cardExpiry}
+                                                        onChange={handleCardExpiryChange}
+                                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
                                                     />
                                                 </div>
 
                                                 <div>
-                                                    <label htmlFor="creditCard.cvv" className="block text-sm font-medium text-gray-700 mb-1">
+                                                    <label htmlFor="cardCvv" className="block text-sm font-medium text-gray-700 mb-1">
                                                         Security Code (CVV)
                                                     </label>
                                                     <input
                                                         type="text"
-                                                        name="creditCard.cvv"
-                                                        id="creditCard.cvv"
+                                                        id="cardCvv"
                                                         placeholder="CVV"
-                                                        value={profileData.creditCard.cvv}
-                                                        onChange={handleInputChange}
-                                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                        value={cardCvv}
+                                                        onChange={handleCardCvvChange}
+                                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
                                                     />
                                                 </div>
                                             </div>
@@ -287,14 +354,14 @@ export default function EditProfile() {
                                 <div className="flex justify-end pt-8 mt-8 border-t border-gray-200">
                                     <button
                                         type="button"
-                                        className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mr-3"
+                                        className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 mr-3"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="inline-flex justify-center items-center py-2 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                        className="inline-flex justify-center items-center py-2 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
                                     >
                                         {isSubmitting ? (
                                             <span className="flex items-center">
