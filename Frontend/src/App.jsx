@@ -25,6 +25,7 @@ import ServerMonitor from "./components/AdminPage/ServerMonitor.jsx";
 import AboutUs from "./components/Info/AboutUs.jsx";
 import FAQ from "./components/Info/FAQ.jsx";
 import Chatbot from "./components/Chatbot/Chatbot.jsx";
+import EditProfile from "./components/EditProfilePage/EditProfile.jsx";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(Util.currentPage);
@@ -71,6 +72,13 @@ export default function App() {
                         <Slider/>
                         <ItemPicker/>
                     </div>
+                );
+            case "edit":
+                return (
+                  <div>
+                      <Header/>
+                      <EditProfile/>
+                  </div>
                 );
             case "orders":
                 return (
