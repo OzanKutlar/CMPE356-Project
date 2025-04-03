@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { User, CreditCard, MapPin, Phone, Camera, Save, Mail, Briefcase, Calendar } from "lucide-react";
+import Util from "../../Util.js";
 
 export default function EditProfile() {
     // Split state into separate variables
@@ -18,11 +19,12 @@ export default function EditProfile() {
     // Profile image and submission state
     const [profileImage, setProfileImage] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [completionRate, setCompletionRate] = useState(40);
+    const [memberSince, setMemberSince] = useState("Jan 2020");
 
     // Separate handler functions for each input
     const handleNameChange = (e) => setName(e.target.value);
     const handleEmailChange = (e) => setEmail(e.target.value);
-    const handleOccupationChange = (e) => setOccupation(e.target.value);
     const handleBirthdateChange = (e) => setBirthdate(e.target.value);
     const handleAddressChange = (e) => setAddress(e.target.value);
     const handlePhoneChange = (e) => {
@@ -113,7 +115,7 @@ export default function EditProfile() {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
 
@@ -132,12 +134,17 @@ export default function EditProfile() {
             }
         };
 
-        // Simulate API call
-        setTimeout(() => {
+        try {
+            // Simulate API call using callBackend
+            const response = await Util.callBackend("update-profile", { "Content-Type": "application/json" }, JSON.stringify(formData));
             console.log("Submitting data:", formData);
             setIsSubmitting(false);
             alert("Profile updated successfully!");
-        }, 1000);
+        } catch (error) {
+            console.error("Error submitting data:", error);
+            setIsSubmitting(false);
+            alert("Failed to update profile. Please try again.");
+        }
     };
 
     return (
@@ -177,11 +184,11 @@ export default function EditProfile() {
                                     <p className="text-sm text-gray-500 mb-4">{email}</p>
 
                                     <div className="text-sm text-gray-500 mt-2 w-full">
-                                        <p className="mb-1">Member since: Jan 2023</p>
+                                        <p className="mb-1">Member since: {memberSince}</p>
                                         <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                                            <div className="bg-rose-600 h-2.5 rounded-full w-3/4"></div>
+                                            <div className="bg-rose-600 h-2.5 rounded-full" style={{ width: `${completionRate}%` }}></div>
                                         </div>
-                                        <p className="mt-1 text-xs">Profile Completion: 75%</p>
+                                        <p className="mt-1 text-xs">Profile Completion: {completionRate}%</p>
                                     </div>
                                 </div>
                             </div>
