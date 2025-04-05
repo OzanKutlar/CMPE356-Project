@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static cmpe.project.Project.Utility.Util.logHeaders;
@@ -45,9 +46,9 @@ public class ButcherEndpoints {
      * @return
      */
     @GetMapping("/getMostProfits")
-    public ResponseEntity<?> getMostProfits(@RequestHeader Map<String, String> headers) {
-
-        return ResponseEntity.ok().body(new ArrayList<>());
+     public ResponseEntity<?> getMostProfits(@RequestHeader Map<String, String> headers) {
+        logHeaders("getMostProfits", headers);
+        return ResponseEntity.ok().body(new ArrayList<>()); // Stub: Replace with actual logic
     }
 
     /**
@@ -61,20 +62,19 @@ public class ButcherEndpoints {
      */
     @GetMapping("/refundTransaction")
     public ResponseEntity<?> refundTransaction(@RequestHeader Map<String, String> headers) {
-
-        return ResponseEntity.ok().body(new ArrayList<>());
+        logHeaders("refundTransaction", headers);
+        return ResponseEntity.ok().body(Map.of("msg", "success"));
     }
 
     @GetMapping("/banUser")
     public ResponseEntity<?> banUser(@RequestHeader Map<String, String> headers) {
-
-        return ResponseEntity.ok().body(new ArrayList<>());
+        logHeaders("banUser", headers);
+        return ResponseEntity.ok().body(Map.of("msg", "success"));
     }
-
     @GetMapping("/banAddress")
     public ResponseEntity<?> banAddress(@RequestHeader Map<String, String> headers) {
-
-        return ResponseEntity.ok().body(new ArrayList<>());
+        logHeaders("banAddress", headers);
+        return ResponseEntity.ok().body(Map.of("msg", "success"));
     }
 
     /**
@@ -87,19 +87,20 @@ public class ButcherEndpoints {
      */
     @GetMapping("/getTransactions")
     public ResponseEntity<?> getTransactions(@RequestHeader Map<String, String> headers) {
-        return ResponseEntity.ok().body(new ArrayList<>());
+        logHeaders("getTransactions", headers);
+        return ResponseEntity.ok().body(new ArrayList<>()); // Stub: Replace with actual logic
     }
-
 
     @GetMapping("/getRecipes")
     public ResponseEntity<?> getRecipes(@RequestHeader Map<String, String> headers) {
-        return ResponseEntity.ok().body(new ArrayList<>());
+        logHeaders("getRecipes", headers);
+        return ResponseEntity.ok().body(new ArrayList<>()); // Placeholder
     }
 
     @GetMapping("/updateStock")
     public ResponseEntity<?> updateStock(@RequestHeader Map<String, String> headers) {
-
-        return ResponseEntity.ok().body("success");
+        logHeaders("updateStock", headers);
+        return ResponseEntity.ok().body(Map.of("msg", "success"));
     }
 
 
@@ -119,7 +120,18 @@ public class ButcherEndpoints {
      * @return
      */
     @GetMapping("/getStock")
-    public ResponseEntity<?> getStock(@RequestHeader Map<String, String> headers) {
-        return ResponseEntity.ok().body(new ArrayList<>());
+   public ResponseEntity<?> getStock(@RequestHeader Map<String, String> headers) {
+        logHeaders("getStock", headers);
+        List<Map<String, Object>> stockData = new ArrayList<>();
+        // Example mock data structure for testing
+        stockData.add(Map.of(
+            "ItemName", "Minced Meat",
+            "ItemPrice", 59.99,
+            "ItemPhotoLink", "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
+            "currentStock", 12,
+            "startStock", 30
+        ));
+        return ResponseEntity.ok().body(stockData);
     }
 }
+
