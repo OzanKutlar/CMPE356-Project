@@ -22,7 +22,7 @@ public class DatabaseHandler {
         DatabaseHandler.INSTANCE = this;
     }
 
-    public ResultSet sendRequest(String requestString, Object[] params) {
+    public ResultSet sendRequest(String requestString, Object[] params) throws SQLException {
         try (Connection conn = DriverManager.getConnection(DATABASE_URL, "root", "");
              PreparedStatement stmt = conn.prepareStatement(requestString)) {
 
@@ -41,8 +41,7 @@ public class DatabaseHandler {
                 return null;
             }
         } catch (SQLException e) {
-            logError("Error executing SQL request: " + requestString + ". Error: " + e.getMessage());
-            return null;
+            throw e;
         }
     }
 
