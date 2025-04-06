@@ -17,7 +17,7 @@ export default function EditProfile() {
     const [cardName, setCardName] = useState("");
 
     // Profile image and submission state
-    const [profileImage, setProfileImage] = useState(null);
+    const [profileImage, setProfileImage] = useState(Util.savedUser.profilePictureLink);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [completionRate, setCompletionRate] = useState(40);
     const [memberSince, setMemberSince] = useState("Jan 2020");

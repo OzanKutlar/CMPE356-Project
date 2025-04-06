@@ -44,7 +44,7 @@ const LoginPopup = ({setShowLogin}) => {
 
     const checkUserExistence = async (usernameString) => {
         try {
-            const data = await Util.callBackend(`check-user`, {username: usernameString});
+            const data = await Util.callBackend(`user/check-user`, {username: usernameString});
             if (data.exists) {
                 setShowPasswordField(true);
                 setShowConfirmPasswordField(false);
@@ -90,7 +90,7 @@ const LoginPopup = ({setShowLogin}) => {
 
         setDisableLoginButton(true);
         try {
-            const endpoint = buttonText === 'Register' ? "registerUserPart" : "login";
+            const endpoint = "user/" + (buttonText === 'Register' ? "registerUserPart" : "login");
             const s = await Util.callBackend(endpoint, headers);
             setDisableLoginButton(false);
             if (s.msg === "success") {

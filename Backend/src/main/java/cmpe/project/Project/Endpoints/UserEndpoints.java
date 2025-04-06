@@ -45,22 +45,25 @@ public class UserEndpoints {
     public ResponseEntity<?> login(
             @RequestHeader("username") String username,
             @RequestHeader(value = "password", required = false) String password) {
-        System.out.println("Received login request for user: " + username);
 
-        String query = "SELECT id, profilePictureLink, email, phone, role FROM users WHERE username = ?";
-        Object[] params = { username };
+        log("Recieved login request for user %s with password %s", username, password);
+
+        String query = "SELECT id, profilePhotoUrl, username, email, phone, role FROM users WHERE username = ? AND password = ?";
+        Object[] params = { username, password };
         Map<String, Object> user = null;
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(query, params)) {
             if (rs != null && rs.next()) {
                 user = new HashMap<>();
-                user.put("profilePictureLink", rs.getString("profilePictureLink"));
+                user.put("profilePictureLink", rs.getString("profilePhotoUrl"));
                 user.put("username", rs.getString("username"));
                 user.put("email", rs.getString("email"));
                 user.put("phone", rs.getString("phone"));
                 user.put("role", rs.getString("role"));
+                user.put("id", rs.getString("id"));
             }
         } catch (SQLException e) {
             logError("Error executing SQL request: " + query + ". Error: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to retrieve user details"));
         }
 
@@ -76,11 +79,11 @@ public class UserEndpoints {
     }
 
     @GetMapping("/delUser")
-    public ResponseEntity<?> deleteUser(@RequestHeader("userID") String userID) {
-        System.out.println("Deleting user with ID: " + userID);
+    public ResponseEntity<?> deleteUser(@RequestHeader("adminID") String adminID, @RequestHeader("userID") String userID) {
 
         // Check if the user exists in the session map
-        String userIdFromSession = sessionMap.get(UUID.fromString(userID));
+        String userIdFromSession = sessionMap.get(UUID.fromString(adminID));
+        log("User ID %s has requested a deletion of user ID %s", userIdFromSession, userID);
         if (userIdFromSession == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid user ID"));
         }
@@ -90,7 +93,7 @@ public class UserEndpoints {
         Object[] isAdminParams = { userIdFromSession };
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isAdminQuery, isAdminParams)) {
             if (rs == null || !rs.next() || !rs.getString("role").equalsIgnoreCase("admin")) {
-                System.out.println("User with ID " + userID + " is not authorized to delete a user");
+                System.out.println("User with ID " + adminID + " is not authorized to delete a user");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User is not authorized"));
             }
         } catch (SQLException e) {
@@ -103,7 +106,6 @@ public class UserEndpoints {
         Object[] deleteUserParams = { userIdFromSession };
         try {
             DatabaseHandler.INSTANCE.executeQuery(deleteUserQuery, deleteUserParams);
-            sessionMap.remove(UUID.fromString(userID));
             return ResponseEntity.ok().body(Map.of("msg", "User deleted successfully"));
         } catch (SQLException e) {
             logError("Error executing SQL request: " + deleteUserQuery + ". Error: " + e.getMessage());
@@ -193,6 +195,8 @@ public class UserEndpoints {
         System.out.println("Getting users" +
                 (roleFilter != null ? " with role: " + roleFilter : ""));
 
+        log("All User Info Requested by user %s", userID);
+
         String userIdFromSession = sessionMap.get(UUID.fromString(userID));
         if (userIdFromSession == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid user ID"));
@@ -212,7 +216,7 @@ public class UserEndpoints {
         }
 
 
-        String getUsersQuery = "SELECT id, username, email, phone, role FROM users";
+        String getUsersQuery = "SELECT * FROM users";
         Object[] getUsersParams;
         if (roleFilter != null) {
             getUsersQuery += " WHERE role = ?";
@@ -224,11 +228,12 @@ public class UserEndpoints {
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getUsersQuery, getUsersParams)) {
             while (rs != null && rs.next()) {
                 Map<String, Object> user = new HashMap<>();
-                user.put("id", rs.getString("id"));
+                user.put("profilePictureLink", rs.getString("profilePhotoUrl"));
                 user.put("username", rs.getString("username"));
                 user.put("email", rs.getString("email"));
                 user.put("phone", rs.getString("phone"));
                 user.put("role", rs.getString("role"));
+                user.put("id", rs.getString("id"));
                 usersList.add(user);
             }
         } catch (SQLException e) {
