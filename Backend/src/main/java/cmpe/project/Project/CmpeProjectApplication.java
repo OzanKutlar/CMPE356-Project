@@ -1,6 +1,7 @@
 package cmpe.project.Project;
 
 import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
+import cmpe.project.Project.Utility.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -27,11 +28,9 @@ public class CmpeProjectApplication {
 	public static void main(String[] args) {
 		DatabaseHandler.createInstance();
 		try {
-			// Send a request to check if the 'cmpe356' database exists
 			ResultSet rs = DatabaseHandler.INSTANCE.sendRequest("SHOW DATABASES LIKE 'cmpe356'", null);
 
-			// Check if the result set is not empty
-			if (rs.next()) {
+			if (rs != null) {
 				System.out.println("Database 'cmpe356' exists.");
 			} else {
 				System.out.println("Database 'cmpe356' does not exist.");
@@ -44,6 +43,7 @@ public class CmpeProjectApplication {
 
 	@GetMapping("/hello")
 	public String sayHello() {
+		Logger.log("Test Endpoint Triggered.");
 		return "Hello, Haratres!";
 	}
 
