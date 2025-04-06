@@ -135,8 +135,18 @@ export default function EditProfile() {
         };
 
         try {
-            // Simulate API call using callBackend
-            const response = await Util.callBackend("update-profile", { "Content-Type": "application/json" }, JSON.stringify(formData));
+            const response = await Util.callBackend("user/editUser", {
+                userID: Util.savedUser.id,
+                name:name,
+                email:email,
+                dob:birthdate,
+                adress:address,
+                phone:phone.replace(" ", ""),
+                ccnumber: cardNumber,
+                ccexpiry: cardExpiry,
+                cccvv: cardCvv,
+                ccname: cardName
+            });
             console.log("Submitting data:", formData);
             setIsSubmitting(false);
             alert("Profile updated successfully!");

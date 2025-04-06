@@ -1,12 +1,10 @@
 package cmpe.project.Project.Endpoints;
 
 import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
+import cmpe.project.Project.Utility.Util;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -79,29 +77,16 @@ public class UserEndpoints {
     }
 
     @GetMapping("/delUser")
-    public ResponseEntity<?> deleteUser(@RequestHeader("adminID") String adminID, @RequestHeader("userID") String userID) {
+    public ResponseEntity<?> deleteUser(@RequestHeader("userID") String userID) {
 
         // Check if the user exists in the session map
-        String userIdFromSession = sessionMap.get(UUID.fromString(adminID));
-        log("User ID %s has requested a deletion of user ID %s", userIdFromSession, userID);
+        String userIdFromSession = sessionMap.get(Util.getUuidOrNull(userID));
+        log("User ID %s has requested a deletion themselves", userIdFromSession);
         if (userIdFromSession == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid user ID"));
         }
 
-        // Query the database to check if the user is an admin
-        String isAdminQuery = "SELECT role FROM users WHERE id = ?";
-        Object[] isAdminParams = { userIdFromSession };
-        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isAdminQuery, isAdminParams)) {
-            if (rs == null || !rs.next() || !rs.getString("role").equalsIgnoreCase("admin")) {
-                System.out.println("User with ID " + adminID + " is not authorized to delete a user");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User is not authorized"));
-            }
-        } catch (SQLException e) {
-            logError("Error executing SQL request: " + isAdminQuery + ". Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user role"));
-        }
 
-        // Delete the user from the database
         String deleteUserQuery = "DELETE FROM users WHERE id = ?";
         Object[] deleteUserParams = { userIdFromSession };
         try {
@@ -145,7 +130,7 @@ public class UserEndpoints {
             @RequestHeader("country") String country,
             @RequestHeader("email") String email) {
 
-        String id = sessionMap.get(UUID.fromString(userID));
+        String id = sessionMap.get(Util.getUuidOrNull(userID));
         System.out.println("Full registration: " + id + ", " + email + ", " + phone);
         String query = "UPDATE users SET name = ?, surname = ?, phone = ?, country = ?, email = ? WHERE id = ?";
         Object[] params = { name, surname, phone, country, email, id };
@@ -164,6 +149,47 @@ public class UserEndpoints {
                         "phone", phone,
                         "role", "user"
                 )
+        ));
+    }
+
+    @GetMapping("/editUser")
+    public ResponseEntity<?> editUser(@RequestHeader Map<String, Object> headers) {
+        String name = (String) headers.get("name");
+        String email = (String) headers.get("email");
+        String dob = (String) headers.get("dob");
+        String address = (String) headers.get("address");
+        String phone = (String) headers.get("phone");
+        String cardNumber = (String) headers.get("ccnumber");
+        String cardExpiry = (String) headers.get("ccexpiry");
+        String cardCvv = (String) headers.get("cccvv");
+        String cardName = (String) headers.get("ccname");
+        String userID = (String) headers.get("userid");
+        String id = sessionMap.get(Util.getUuidOrNull(userID));
+
+        System.out.println("User Modification: " + id + ", " + email + ", " + phone);
+
+        String userQuery = "UPDATE users SET name = ?, email = ?, date_of_birth = ?, address = ?, phone = ? WHERE id = ?";
+        Object[] userParams = {name, email, dob, address, phone, id};
+        try {
+            DatabaseHandler.INSTANCE.executeQuery(userQuery, userParams);
+        } catch (SQLException e) {
+            logError("Error executing user SQL request: " + userQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to update user information"));
+        }
+
+        if (cardName != null) {
+            String cardQuery = "INSERT INTO credit_cards ( cardNumber, expirationDate, CVV, CardName, userID) VALUES (?, ?, ?, ?, ?)";
+            Object[] cardParams = {cardNumber, cardExpiry, cardCvv, cardName, id};
+            try {
+                DatabaseHandler.INSTANCE.executeQuery(cardQuery, cardParams);
+            } catch (SQLException e) {
+                logError("Error executing card SQL request: " + cardQuery + ". Error: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to update credit card information"));
+            }
+        }
+
+        return ResponseEntity.ok().body(Map.of(
+                "msg", "success"
         ));
     }
 
@@ -187,61 +213,5 @@ public class UserEndpoints {
     }
 
 
-
-    @GetMapping("/getUsers")
-    public ResponseEntity<?> getUsers(
-            @RequestHeader("userID") String userID,
-            @RequestHeader(value = "roleFilter", required = false) String roleFilter) {
-        System.out.println("Getting users" +
-                (roleFilter != null ? " with role: " + roleFilter : ""));
-
-        log("All User Info Requested by user %s", userID);
-
-        String userIdFromSession = sessionMap.get(UUID.fromString(userID));
-        if (userIdFromSession == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid user ID"));
-        }
-
-
-        String isAdminQuery = "SELECT role FROM users WHERE id = ?";
-        Object[] isAdminParams = { userIdFromSession };
-        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isAdminQuery, isAdminParams)) {
-            if (rs == null || !rs.next() || !rs.getString("role").equalsIgnoreCase("admin")) {
-                System.out.println("User with ID " + userID + " is not authorized to get users list");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User is not authorized"));
-            }
-        } catch (SQLException e) {
-            logError("Error executing SQL request: " + isAdminQuery + ". Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user role"));
-        }
-
-
-        String getUsersQuery = "SELECT * FROM users";
-        Object[] getUsersParams;
-        if (roleFilter != null) {
-            getUsersQuery += " WHERE role = ?";
-            getUsersParams = new Object[] { roleFilter };
-        } else {
-            getUsersParams = new Object[] {};
-        }
-        List<Map<String, Object>> usersList = new ArrayList<>();
-        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getUsersQuery, getUsersParams)) {
-            while (rs != null && rs.next()) {
-                Map<String, Object> user = new HashMap<>();
-                user.put("profilePictureLink", rs.getString("profilePhotoUrl"));
-                user.put("username", rs.getString("username"));
-                user.put("email", rs.getString("email"));
-                user.put("phone", rs.getString("phone"));
-                user.put("role", rs.getString("role"));
-                user.put("id", rs.getString("id"));
-                usersList.add(user);
-            }
-        } catch (SQLException e) {
-            logError("Error executing SQL request: " + getUsersQuery + ". Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to retrieve users list"));
-        }
-
-        return ResponseEntity.ok().body(usersList);
-    }
 
 }

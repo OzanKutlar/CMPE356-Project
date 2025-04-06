@@ -108,61 +108,10 @@ class Util {
             }],
         "addToCart": "success",
         "updateStock": "success",
-        "changeUserRole": "success",
         "shutdown": {msg: "success"},
         "restart": {msg: "success"},
         "delUser": {msg: "success"},
         "saveCart": "success",
-        "getUsers": [
-            {
-                id: 1,
-                profilePictureLink: "/src/assets/ozan.png",
-                Username: "ozan",
-                email: "john.doe@example.com",
-                phone: "+1 (555) 123-4567",
-                role: "admin"
-            },
-            {
-                id: 2,
-                profilePictureLink: "/src/assets/hadi.jpg",
-                Username: "hadi",
-                email: "jane.smith@example.com",
-                phone: "+1 (555) 234-5678",
-                role: "delivery"
-            },
-            {
-                id: 3,
-                profilePictureLink: "/src/assets/cagatay.jpg",
-                Username: "cagatay",
-                email: "bob.wilson@example.com",
-                phone: "+1 (555) 345-6789",
-                role: "butcher"
-            },
-            {
-                id: 4,
-                profilePictureLink: "/src/assets/zeynep.png",
-                Username: "zeynep",
-                email: "alice.brown@example.com",
-                phone: "+1 (555) 456-7890",
-                role: "user"
-            },
-            {
-                id: 5,
-                profilePictureLink: "/src/assets/face5.jpg",
-                Username: "tom_harris",
-                email: "tom.harris@example.com",
-                phone: "+1 (555) 567-8901",
-                role: "admin"
-            },
-            {
-                id: 6,
-                profilePictureLink: "/src/assets/face6.jpeg",
-                Username: "emir_ozen",
-                email: "tom.harris@example.com",
-                phone: "+1 (555) 567-8901",
-                role: "butcher"
-            }
-        ],
         "saveButcher": "success",
         "getMostProfits": [ // Returns the top 5 profiting items
             {

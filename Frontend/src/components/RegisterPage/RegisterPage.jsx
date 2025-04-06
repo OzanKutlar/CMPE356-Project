@@ -96,7 +96,7 @@ const RegistrationPage = () => {
         if(disableText) return;
         setDisableText(true)
         try {
-            const response = await Util.callBackend("delUser", {
+            const response = await Util.callBackend("user/delUser", {
                 userID: Util.savedUser.id
             });
             if(response.msg === "success"){

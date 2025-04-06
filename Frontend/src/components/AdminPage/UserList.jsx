@@ -1,4 +1,4 @@
-import Utils from "../../Util.js";
+import Util from "../../Util.js";
 import React, {useState, useEffect} from 'react';
 
 const UserList = () => {
@@ -18,7 +18,7 @@ const UserList = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await Utils.callBackend('getUsers', 'GET');
+            const response = await Util.callBackend('admin/getUsers', {userID: Util.savedUser.id});
             setUsers(response);
         } catch (err) {
             setError('Error fetching users');
@@ -30,7 +30,7 @@ const UserList = () => {
     const deleteUser = async (userId) => {
         setNotification({message: '', isLoading: true, isError: false});
         try {
-            await Utils.callBackend(`deleteUser`, {ID: userId});
+            await Util.callBackend(`admin/delUserAdmin`, {userID: userId, adminID: Util.savedUser.id});
             setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
             if (selectedUser && selectedUser.id === userId) {
                 setSelectedUser(null);
@@ -44,7 +44,7 @@ const UserList = () => {
     const changeUserRole = async (userId, newRole) => {
         setNotification({message: '', isLoading: true, isError: false});
         try {
-            await Utils.callBackend(`changeUserRole`, {ID: userId, role: newRole});
+            await Util.callBackend(`admin/changeUserRole`, {userID: userId, newRole: newRole, adminID: Util.savedUser.id});
             setUsers((prevUsers) =>
                 prevUsers.map((user) =>
                     user.id === userId ? {...user, role: newRole} : user
@@ -81,10 +81,10 @@ const UserList = () => {
                         >
                             <img
                                 src={user.profilePictureLink}
-                                alt={user.Username}
+                                alt={user.username}
                                 className="w-12 h-12 rounded-full mr-4"
                             />
-                            <span className="text-gray-700 font-semibold">{user.Username}</span>
+                            <span className="text-gray-700 font-semibold">{user.username}</span>
                         </li>
                     ))}
                 </ul>
@@ -94,11 +94,11 @@ const UserList = () => {
                     <div className="text-center">
                         <img
                             src={selectedUser.profilePictureLink}
-                            alt={selectedUser.Username}
+                            alt={selectedUser.username}
                             className="w-24 h-24 rounded-full mx-auto mb-4"
                         />
                         <h2 className="text-2xl font-bold mb-4 text-gray-800">
-                            {selectedUser.Username}
+                            {selectedUser.username}
                         </h2>
                         <p className="text-gray-700 mb-2"><strong>Email: </strong>{selectedUser.email}</p>
                         <p className="text-gray-700 mb-2"><strong>Phone: </strong>{selectedUser.phone}</p>
