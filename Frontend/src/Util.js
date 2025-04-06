@@ -1,6 +1,6 @@
 class Util {
-    static backendIp = 'http://127.0.0.1:3199/';
-    static fakeIt = true;
+    static backendIp = 'http://127.0.0.1:33000/api';
+    static fakeIt = false;
     static fakeDataDelay = 1000; // Define the timeout delay
     static CallLogin = null;
     static CallPasswordReset = null;
@@ -570,7 +570,7 @@ class Util {
                 });
             }
         }
-        const url = `${Util.backendIp}${endpoint}`;
+        const url = `${Util.backendIp}/${endpoint}`;
         try {
             const response = await fetch(url, {
                 method: 'GET',
@@ -584,7 +584,31 @@ class Util {
             return responseData;
         } catch (error) {
             console.error(`Backend request failed: ${error.message}`);
-            return {error: error.message};
+            if (endpoint === "check-user") {
+                const userData = this.checkUser(headers.username);
+                console.log(`Simulated response: ${JSON.stringify(userData)}`);
+                return new Promise((resolve) => {
+                    setTimeout(() => resolve(userData), this.fakeDataDelay);
+                });
+            }
+            if (endpoint === "login") {
+                return new Promise((resolve) => {
+                    setTimeout(() => resolve({
+                        msg: "success",
+                        user: this.fakeLogin(headers.username)
+                    }), this.fakeDataDelay);
+                });
+            }
+            if (Util.fakeData[endpoint]) {
+                console.log(`Simulated response: ${JSON.stringify(Util.fakeData[endpoint])}`);
+                return new Promise((resolve) => {
+                    setTimeout(() => resolve(Util.fakeData[endpoint]), this.fakeDataDelay);
+                });
+            } else {
+                return new Promise((_, reject) => {
+                    setTimeout(() => reject({error: 'Fake endpoint not found'}), this.fakeDataDelay);
+                });
+            }
         }
     }
 }

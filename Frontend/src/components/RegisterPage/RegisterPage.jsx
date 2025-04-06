@@ -8,17 +8,12 @@ const RegistrationPage = () => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
-        username: '',
         phoneNumber: '',
-        countryCode: '+90',
-        email: '',
-        password: '',
-        confirmPassword: ''
+        countryCode: {code: '+90', country: 'Turkey'},
+        email: ''
     });
 
     const [errors, setErrors] = useState({});
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [disableButton, setDisableButton] = useState(false);
     const [disableText, setDisableText] = useState(false);
@@ -146,9 +141,13 @@ const RegistrationPage = () => {
             setErrors(newErrors);
         } else {
             try {
-                const response = await Util.callBackend("registerUserFull", {
+                const response = await Util.callBackend("user/registerUserFull", {
                     userID: Util.savedUser.id,
-                    data: formData
+                    name: formData.firstName,
+                    surname: formData.lastName,
+                    phone: formData.countryCode.code + " " + formData.phoneNumber,
+                    email: formData.email,
+                    country: formData.countryCode.country
                 });
                 if(response.msg === "success" && response.user){
                     Util.savedUser = response.user;
@@ -297,7 +296,7 @@ const RegistrationPage = () => {
                                             className="flex items-center justify-between w-14 p-1.5 text-sm font-medium border border-gray-300 rounded-l-md bg-gray-50"
                                             onClick={() => setDropdownOpen(!dropdownOpen)}
                                         >
-                                            <span className="text-left">{formData.countryCode}</span>
+                                            <span className="text-left">{formData.countryCode.code}</span>
                                             <ChevronDownIcon/>
                                         </button>
 
@@ -313,7 +312,7 @@ const RegistrationPage = () => {
                                                         onClick={() => {
                                                             setFormData({
                                                                 ...formData,
-                                                                countryCode: country.code
+                                                                countryCode: country
                                                             });
                                                             setDropdownOpen(false);
                                                         }}

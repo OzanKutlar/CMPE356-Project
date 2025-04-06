@@ -116,15 +116,18 @@ public class UserEndpoints {
             @RequestHeader("username") String username,
             @RequestHeader("password") String password) {
         System.out.println("Partial registration: " + username + ", " + password);
-
         String query = "INSERT INTO users (username, password) VALUES (?, ?) RETURNING id";
         Object[] params = { username, password };
         try {
             ResultSet newUser = DatabaseHandler.INSTANCE.sendRequest(query, params);
-            UUID newID = UUID.randomUUID();
-            String generatedId = newUser.getString("id");
-            sessionMap.put(newID, generatedId);
-            return ResponseEntity.ok().body(Map.of("msg", "success", "user", Map.of("id", newID.toString(), "username", username)));
+            if (newUser.next()) { // Move the cursor to the first row
+                UUID newID = UUID.randomUUID();
+                String generatedId = newUser.getString("id");
+                sessionMap.put(newID, generatedId);
+                return ResponseEntity.ok().body(Map.of("msg", "success", "user", Map.of("id", newID.toString(), "username", username)));
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to register user partially"));
+            }
         } catch (SQLException e) {
             logError("Error executing SQL request: " + query + ". Error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to register user partially"));
@@ -137,21 +140,29 @@ public class UserEndpoints {
             @RequestHeader("name") String name,
             @RequestHeader("surname") String surname,
             @RequestHeader("phone") String phone,
-            @RequestHeader("countryCode") String countryCode,
-            @RequestHeader("email") String email,
-            @RequestHeader("password") String password) {
+            @RequestHeader("country") String country,
+            @RequestHeader("email") String email) {
 
         String id = sessionMap.get(UUID.fromString(userID));
         System.out.println("Full registration: " + id + ", " + email + ", " + phone);
-        String query = "UPDATE users SET name = ?, surname = ?, phone = ?, countryCode = ?, email = ?, password = ? WHERE id = ?";
-        Object[] params = { name, surname, phone, countryCode, email, password, id };
+        String query = "UPDATE users SET name = ?, surname = ?, phone = ?, country = ?, email = ? WHERE id = ?";
+        Object[] params = { name, surname, phone, country, email, id };
         try {
             DatabaseHandler.INSTANCE.executeQuery(query, params);
         } catch (SQLException e) {
             logError("Error executing SQL request: " + query + ". Error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to update user information"));
         }
-        return ResponseEntity.ok().body(Map.of("msg", "success", "user", Map.of("id", userID, "name", name, "surname", surname)));
+        return ResponseEntity.ok().body(Map.of(
+                "msg", "success",
+                "user", Map.of(
+                        "id", userID,
+                        "profilePictureLink", "/src/assets/face1.jpg",
+                        "email", email,
+                        "phone", phone,
+                        "role", "user"
+                )
+        ));
     }
 
 
