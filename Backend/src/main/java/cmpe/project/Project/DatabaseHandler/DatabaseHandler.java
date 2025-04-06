@@ -11,23 +11,27 @@ import static cmpe.project.Project.Utility.Logger.*;
 public class DatabaseHandler {
 
 
-    static final String DATABASE_URL = "jdbc:mysql://171.22.173.112:3306/ProjectDB";
+    static final String DATABASE_URL = "jdbc:mariadb://171.22.173.112:3306/cmpe356";
 
 
     public static Thread DBThread = null;
 
     public static DatabaseHandler INSTANCE;
 
-    public DatabaseHandler(){
-        DatabaseHandler.INSTANCE = this;
+    public static void createInstance(){
+        if(INSTANCE == null){
+            DatabaseHandler.INSTANCE = new DatabaseHandler();
+        }
     }
 
     public ResultSet sendRequest(String requestString, Object[] params) throws SQLException {
-        try (Connection conn = DriverManager.getConnection(DATABASE_URL, "root", "");
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL, "dbAgent", "12345");
              PreparedStatement stmt = conn.prepareStatement(requestString)) {
 
-            for (int i = 0; i < params.length; i++) {
-                stmt.setObject(i + 1, params[i]);
+            if(params != null) {
+                for (int i = 0; i < params.length; i++) {
+                    stmt.setObject(i + 1, params[i]);
+                }
             }
 
             boolean hasResults = stmt.execute();

@@ -1,5 +1,6 @@
 package cmpe.project.Project;
 
+import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +25,21 @@ import static cmpe.project.Project.Utility.Util.logHeaders;
 public class CmpeProjectApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CmpeProjectApplication.class, args);
+		DatabaseHandler.createInstance();
+		try {
+			// Send a request to check if the 'cmpe356' database exists
+			ResultSet rs = DatabaseHandler.INSTANCE.sendRequest("SHOW DATABASES LIKE 'cmpe356'", null);
+
+			// Check if the result set is not empty
+			if (rs.next()) {
+				System.out.println("Database 'cmpe356' exists.");
+			} else {
+				System.out.println("Database 'cmpe356' does not exist.");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		SpringApplication.run(CmpeProjectApplication.class, "--server.port=33000");
 	}
 
 	@GetMapping("/hello")
