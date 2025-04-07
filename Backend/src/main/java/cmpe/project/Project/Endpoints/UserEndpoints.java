@@ -204,7 +204,36 @@ public class UserEndpoints {
 
 
 
-        return ResponseEntity.ok().body(new ArrayList<>());
+
+        String userIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID));
+        if (userIdFromSession == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid user ID"));
+        }
+
+
+        String getOrdersQuery = "SELECT * FROM userOrders WHERE id = ? LIMIT ?, ?";
+        Object[] queryParams = { userIdFromSession, pos, limit };
+        List<Map<String, Object>> ordersList = new ArrayList<>();
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getOrdersQuery, queryParams)) {
+            while (rs != null && rs.next()) {
+                Map<String, Object> order = new HashMap<>();
+                order.put("id", rs.getString("id"));
+                order.put("address", rs.getString("address"));
+                order.put("itemName", rs.getString("itemName"));
+                order.put("itemPhoto", rs.getString("itemPhoto"));
+                order.put("paymentMethod", rs.getString("paymentMethod"));
+                order.put("paymentID", rs.getString("paymentID"));
+                order.put("status", rs.getString("status"));
+                order.put("totalPrice", rs.getString("totalPrice"));
+                ordersList.add(order);
+            }
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + getOrdersQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user role"));
+        }
+
+
+        return ResponseEntity.ok().body(ordersList);
     }
 
 
