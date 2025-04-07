@@ -131,9 +131,9 @@ public class UserEndpoints {
             @RequestHeader("email") String email) {
 
         String id = sessionMap.get(Util.getUuidOrNull(userID));
-        System.out.println("Full registration: " + id + ", " + email + ", " + phone);
+        System.out.println("Full registration: " + id + ", " + email + ", " + phone.replaceAll("[^0-9+]", ""));
         String query = "UPDATE users SET name = ?, surname = ?, phone = ?, country = ?, email = ? WHERE id = ?";
-        Object[] params = { name, surname, phone, country, email, id };
+        Object[] params = { name, surname, phone.replaceAll("[^0-9+]", ""), country, email, id };
         try {
             DatabaseHandler.INSTANCE.executeQuery(query, params);
         } catch (SQLException e) {
@@ -196,21 +196,18 @@ public class UserEndpoints {
 
     @GetMapping("/getOrders")
     public ResponseEntity<?> getOrders(
-            @RequestHeader(value = "status", required = false) String status) {
-        System.out.println("Getting orders" +
-                (status != null ? " with status: " + status : ""));
+            @RequestHeader("userID") String userID,
+            @RequestHeader("limit") int limit,
+            @RequestHeader("pos") int pos) {
+
+        log("User %s requested their orders. From %s to %s", userID, pos, pos + limit);
+
+
+
         return ResponseEntity.ok().body(new ArrayList<>());
     }
 
 
-    @GetMapping("/orders")
-    public ResponseEntity<?> getAllOrders(
-            @RequestHeader(value = "filterBy", required = false) String filterBy) {
-        System.out.println("Getting all orders" +
-                (filterBy != null ? " filtered by: " + filterBy : ""));
-        return ResponseEntity.ok().body(Map.of("Waiting Orders", new ArrayList<>(),
-                "Taken Orders", new ArrayList<>()));
-    }
 
 
 
