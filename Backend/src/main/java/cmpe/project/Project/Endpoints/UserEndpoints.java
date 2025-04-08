@@ -194,6 +194,22 @@ public class UserEndpoints {
     }
 
 
+    @GetMapping("/cancelOrder")
+    public ResponseEntity<?> cancelOrder(
+            @RequestHeader("userID") String userID,
+            @RequestHeader("transactionID") String transactionID) {
+
+
+
+        return ResponseEntity.ok().body(Map.of("msg", "Your order has been cancelled successfully."));
+    }
+
+    public boolean checkUserTransaction(String userID, String transactionID){
+
+        return true;
+    }
+
+
     @GetMapping("/getOrders")
     public ResponseEntity<?> getOrders(
             @RequestHeader("userID") String userID,

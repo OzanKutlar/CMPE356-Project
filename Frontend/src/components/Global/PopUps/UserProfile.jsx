@@ -11,7 +11,7 @@ export default function UserProfile() {
     const savedUser = Util.savedUser;
     const profilePictureURL = savedUser.profilePictureLink || '/default-profile.png'; // Fallback to a default image
     const isAdmin = savedUser.role === 'admin';
-    const isDelivery = savedUser.role === 'delivery';
+    const isDelivery = savedUser.role === 'delivery driver';
     const isButcher = savedUser.role === 'butcher';
     const currentPage = useContext(GlobalContext);
 

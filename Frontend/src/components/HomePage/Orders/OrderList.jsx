@@ -25,7 +25,7 @@ const FullscreenSales = () => {
         const fetchLatestSales = async () => {
             try {
                 setLoading(true);
-                const response = await Util.callBackend("getOrders", {
+                const response = await Util.callBackend("user/getOrders", {
                     userID: Util.savedUser.id,
                     limit: 50,
                     pos: 0
