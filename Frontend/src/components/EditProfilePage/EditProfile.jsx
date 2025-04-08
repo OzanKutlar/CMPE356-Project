@@ -30,6 +30,7 @@ export default function EditProfile() {
     const handlePhoneChange = (e) => {
         const {name, value} = e.target;
         let phoneNum;
+        if(value.length > 20) return;
         if (lastVal.length > value.length) {
             phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, ""));
         } else {

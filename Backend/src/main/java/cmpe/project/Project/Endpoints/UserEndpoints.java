@@ -200,8 +200,6 @@ public class UserEndpoints {
             @RequestHeader("limit") int limit,
             @RequestHeader("pos") int pos) {
 
-        log("User %s requested their orders. From %s to %s", userID, pos, pos + limit);
-
 
 
 
@@ -210,24 +208,32 @@ public class UserEndpoints {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid user ID"));
         }
 
+        log("User %s requested their orders. From %s to %s", userIdFromSession, pos, pos + limit);
 
-        String getOrdersQuery = "SELECT * FROM userOrders WHERE id = ? LIMIT ?, ?";
+
+        String getOrdersQuery = "SELECT * FROM userOrders WHERE userID = ? LIMIT ?, ?";
         Object[] queryParams = { userIdFromSession, pos, limit };
         List<Map<String, Object>> ordersList = new ArrayList<>();
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getOrdersQuery, queryParams)) {
             while (rs != null && rs.next()) {
                 Map<String, Object> order = new HashMap<>();
-                order.put("id", rs.getString("id"));
+                order.put("id", rs.getString("order_id"));
                 order.put("address", rs.getString("address"));
                 order.put("itemName", rs.getString("itemName"));
                 order.put("itemPhoto", rs.getString("itemPhoto"));
                 order.put("paymentMethod", rs.getString("paymentMethod"));
                 order.put("paymentID", rs.getString("paymentID"));
                 order.put("status", rs.getString("status"));
-                order.put("totalPrice", rs.getString("totalPrice"));
+                try{
+                    order.put("totalPrice", Double.parseDouble(rs.getString("totalPrice")));
+                }
+                catch(Exception e){
+                    order.put("totalPrice", 0.00d);
+                }
                 ordersList.add(order);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             logError("Error executing SQL request: " + getOrdersQuery + ". Error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user role"));
         }

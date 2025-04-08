@@ -59,14 +59,53 @@ const RegistrationPage = () => {
         return () => clearInterval(timer);
     }, []);
 
+    let lastVal = '';
+    let lastformat = '';
+
+    function formatPhoneNumber(phone) {
+        if (phone === lastformat) {
+            return phone;
+        }
+        let offset = Number(phone.length >= 13);
+
+
+        const pattern = [
+            {index: 0, prefix: " ("},
+            {index: 3, prefix: ") "},
+            {index: 6, prefix: " "},
+            {index: 8, prefix: " "}
+        ];
+
+        let formatted = "";
+        for (let i = 0; i < phone.length; i++) {
+            let formatRule = pattern.find(p => p.index === i);
+            if (formatRule) formatted += formatRule.prefix;
+
+            formatted += phone[i];
+        }
+        let formatRule = pattern.find(p => p.index === phone.length);
+        if (formatRule) formatted += formatRule.prefix;
+        return formatted;
+    }
+
     const handleInputChange = (e) => {
         const {name, value} = e.target;
 
         if (name === 'phoneNumber') {
-            const numericValue = value.replace(/\D/g, '');
+            let phoneNum;
+            if(value.length > 16) return;
+            if (lastVal.length > value.length) {
+                phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, ""));
+            } else {
+                if (value.replaceAll(/[^0-9]/g, "") === lastVal.replaceAll(/[^0-9]/g, "")) {
+                    phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, "").slice(0, -1));
+                } else {
+                    phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, ""));
+                }
+            }
             setFormData({
                 ...formData,
-                [name]: numericValue
+                [name]: phoneNum
             });
         } else {
             setFormData({
@@ -325,13 +364,10 @@ const RegistrationPage = () => {
                                     </div>
 
                                     <input
-                                        type="tel"
                                         id="phoneNumber"
                                         name="phoneNumber"
                                         value={formData.phoneNumber}
                                         onChange={handleInputChange}
-                                        inputMode="numeric"
-                                        pattern="[0-9]*"
                                         className={`w-full p-1.5 text-sm border border-l-0 rounded-r-md focus:ring-1 focus:ring-amber-500 ${errors.phoneNumber ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                                     />
                                 </div>
