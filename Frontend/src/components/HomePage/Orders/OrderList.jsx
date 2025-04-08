@@ -20,24 +20,25 @@ const FullscreenSales = () => {
         setNotification({message, isLoading: false, isError});
         timeOutConst = setTimeout(() => setNotification({message: '', isLoading: false, isError: false}), 3000);
     };
+	
+	const fetchLatestSales = async () => {
+		try {
+			setLoading(true);
+			const response = await Util.callBackend("user/getOrders", {
+				userID: Util.savedUser.id,
+				limit: 50,
+				pos: 0
+			});
+			setLoading(false);
+			setSales(response);
+		} catch (err) {
+			setLoading(false);
+			setError("Failed to fetch latest sales data");
+			console.error(err);
+		}
+	};
 
     useEffect(() => {
-        const fetchLatestSales = async () => {
-            try {
-                setLoading(true);
-                const response = await Util.callBackend("user/getOrders", {
-                    userID: Util.savedUser.id,
-                    limit: 50,
-                    pos: 0
-                });
-                setLoading(false);
-                setSales(response);
-            } catch (err) {
-                setLoading(false);
-                setError("Failed to fetch latest sales data");
-                console.error(err);
-            }
-        };
         fetchLatestSales();
     }, []);
 
@@ -54,6 +55,7 @@ const FullscreenSales = () => {
                 transactionID: orderID,
             });
             showNotification(returnEd.msg);
+			fetchLatestSales();
         } catch (err) {
             console.error(err);
             showNotification('Action failed', true);
@@ -128,10 +130,12 @@ const FullscreenSales = () => {
                                     <td className="p-3">
                                         <span
                                             className={`px-2 py-1 text-xs font-medium rounded-md ${
-                                                sale.status === "Success"
+                                                sale.status === "Complete"
                                                     ? "bg-green-100 text-green-600"
-                                                    : sale.status === "Canceled"
+                                                    : sale.status === "Cancelled"
                                                         ? "bg-red-100 text-red-600"
+                                                        : sale.status === "In Delivery"
+                                                        ? "bg-purple-100 text-purple-600"
                                                         : "bg-yellow-100 text-yellow-600"
                                             }`}
                                         >
@@ -155,7 +159,7 @@ const FullscreenSales = () => {
                                                                 ? "bg-gray-400 cursor-not-allowed"
                                                                 : "bg-red-500 hover:bg-red-600"
                                                         }`}
-                                                        onClick={() => handleAction("cancelOrder", sale.id)}
+                                                        onClick={() => handleAction("user/cancelOrder", sale.id)}
                                                         disabled={disabledButtons["cancelOrder" + sale.id]}
                                                     >
                                                         Cancel Order
