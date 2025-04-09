@@ -2,12 +2,12 @@ package cmpe.project.Project.Endpoints;
 
 import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
 import cmpe.project.Project.Utility.Util;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -166,12 +166,23 @@ public class CartEndpoints {
         return ResponseEntity.ok().body("success");
     }
 
+
     @GetMapping("/saveCart")
     public ResponseEntity<?> saveCart(
-            @RequestHeader("userId") String userId,
-            @RequestHeader("cartData") String cartData) {
-        System.out.println("Saving cart for user: " + userId);
-        System.out.println("Cart data: " + cartData);
-        return ResponseEntity.ok().body("success");
+            @RequestHeader("items") String cartItemsJson) {
+        log("Cart saved");
+        try{
+            ObjectMapper objectMapper = new ObjectMapper();
+            ArrayList<Map<String, Object>> cartItems = objectMapper.readValue(cartItemsJson, new TypeReference<>() {});
+            for (Map<String, Object> cartItem : cartItems) {
+                log("Cart has %s amount of %s", cartItem.get("buyAmount"), cartItem.get("ItemName"));
+            }
+
+            return ResponseEntity.ok().body(Map.of("msg", "success"));
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to cancel the order"));
+        }
     }
 }
