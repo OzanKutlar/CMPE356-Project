@@ -194,48 +194,6 @@ public class UserEndpoints {
     }
 
 
-    @GetMapping("/cancelOrder")
-    public ResponseEntity<?> cancelOrder(
-            @RequestHeader("userID") String id,
-            @RequestHeader("transactionID") String transactionID) {
-        String userID = sessionMap.get(Util.getUuidOrNull(id));
-        log("User %s has requested their order no %s to be cancelled", userID, transactionID);
-        if (!checkUserTransaction(userID, transactionID)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Invalid user or transaction ID"));
-        }
-
-        String cancelOrderQuery = "UPDATE userOrders SET status = 'Cancelled' WHERE userID = ? AND order_id = ?";
-        Object[] cancelParams = {userID, transactionID};
-
-        try {
-            ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(cancelOrderQuery, cancelParams);
-            return ResponseEntity.ok().body(Map.of("msg", "Your order has been cancelled successfully."));
-        } catch (SQLException e) {
-            e.printStackTrace();
-            logError("Error executing cancel order SQL request: " + cancelOrderQuery + ". Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to cancel the order"));
-        }
-    }
-
-    public boolean checkUserTransaction(String userID, String transactionID) {
-        // Example logic to check if the transaction and user are valid
-        String checkTransactionQuery = "SELECT COUNT(*) FROM userOrders WHERE userID = ? AND order_id = ?";
-        Object[] queryParams = {userID, transactionID};
-
-        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(checkTransactionQuery, queryParams)) {
-            if (rs != null && rs.next()) {
-                int count = rs.getInt(1);
-                return count > 0;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            logError("Error checking user transaction: " + checkTransactionQuery + ". Error: " + e.getMessage());
-        }
-
-        return false;
-    }
-
-
 
     @GetMapping("/getOrders")
     public ResponseEntity<?> getOrders(

@@ -1,16 +1,23 @@
 package cmpe.project.Project.Endpoints;
 
+import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
+import cmpe.project.Project.Utility.Util;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static cmpe.project.Project.Utility.Logger.log;
+import static cmpe.project.Project.Utility.Logger.logError;
 import static cmpe.project.Project.Utility.Util.logHeaders;
 
 @RestController
@@ -63,11 +70,43 @@ public class CartEndpoints {
 
     @GetMapping("/cancelOrder")
     public ResponseEntity<?> cancelOrder(
-            @RequestHeader("orderId") String orderId,
-            @RequestHeader(value = "reason", required = false) String reason) {
-        System.out.println("Cancelling order: " + orderId +
-                (reason != null ? ", reason: " + reason : ""));
-        return ResponseEntity.ok().body(Map.of("msg", "Your order has been cancelled successfully."));
+            @RequestHeader("userID") String id,
+            @RequestHeader("transactionID") String transactionID) {
+        String userID = UserEndpoints.sessionMap.get(Util.getUuidOrNull(id));
+        log("User %s has requested their order no %s to be cancelled", userID, transactionID);
+        if (!checkUserTransaction(userID, transactionID)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Invalid user or transaction ID"));
+        }
+
+        String cancelOrderQuery = "UPDATE userOrders SET status = 'Cancelled' WHERE userID = ? AND order_id = ?";
+        Object[] cancelParams = {userID, transactionID};
+
+        try {
+            ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(cancelOrderQuery, cancelParams);
+            return ResponseEntity.ok().body(Map.of("msg", "Your order has been cancelled successfully."));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            logError("Error executing cancel order SQL request: " + cancelOrderQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to cancel the order"));
+        }
+    }
+
+    public boolean checkUserTransaction(String userID, String transactionID) {
+        // Example logic to check if the transaction and user are valid
+        String checkTransactionQuery = "SELECT COUNT(*) FROM userOrders WHERE userID = ? AND order_id = ?";
+        Object[] queryParams = {userID, transactionID};
+
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(checkTransactionQuery, queryParams)) {
+            if (rs != null && rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            logError("Error checking user transaction: " + checkTransactionQuery + ". Error: " + e.getMessage());
+        }
+
+        return false;
     }
 
     @GetMapping("/changeAddr")
