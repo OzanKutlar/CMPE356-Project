@@ -10,7 +10,10 @@ import cmpe.project.Project.DTOs.CustomerOrderDTO;
 import cmpe.project.Project.DTOs.DeliveryOrderDTO;
 import cmpe.project.Project.DTOs.SplitOrderDTO;
 import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
+import org.springframework.stereotype.Repository;
 
+
+@Repository
 public class OrderRepository {
 
     public void OrderDrop(long splitId, long driverId) throws SQLException {

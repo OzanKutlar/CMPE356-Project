@@ -22,7 +22,7 @@ import static cmpe.project.Project.Utility.Util.logHeaders;
 @SpringBootApplication
 @RestController
 @RequestMapping("/api")
-@ComponentScan(basePackages = {"cmpe.project.Project", "cmpe.project.Project.Endpoints"})
+@ComponentScan(basePackages = {"cmpe.project.Project", "cmpe.project.Project.Endpoints", "cmpe.project.Project.Repositories"})
 public class CmpeProjectApplication {
 
 	public static void main(String[] args) {
