@@ -416,6 +416,7 @@ class Util {
     // Navigation system
     static currentPage = 'home';
     static pageChangeListeners = [];
+    static cartUpdateListeners = [];
     static savedUser = {
         id: '',
         username: '',
@@ -463,6 +464,17 @@ class Util {
         return () => {
 // Return function to remove listener
             this.pageChangeListeners = this.pageChangeListeners.filter(cb => cb !== callback);
+        };
+    }
+
+    static triggerCartUpdate() {
+        this.cartUpdateListeners.forEach(listener => listener());
+    }
+
+    static registerCartUpdate(callback) {
+        this.cartUpdateListeners.push(callback);
+        return () => {
+            this.cartUpdateListeners = this.cartUpdateListeners.filter(cb => cb !== callback);
         };
     }
 

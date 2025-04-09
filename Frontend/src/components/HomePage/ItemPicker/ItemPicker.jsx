@@ -24,18 +24,24 @@ const ItemPicker = () => {
     }, [cart]);
 
     const addItemToCart = (newItem) => {
+        setCart(() => {
+            const storedCart = localStorage.getItem('cart');
+            return storedCart ? JSON.parse(storedCart) : {};
+        });
         setCart((prevCart) => {
             const newCart = {...prevCart};
             const newItemId = newItem.id;
 
             if (newCart[newItemId]) {
-                newCart[newItemId].buyAmount = newCart[newItemId].buyAmount + newItem.buyAmount;
+                newCart[newItemId].buyAmount = newCart[newItemId].buyAmount + newItem.buyAmount/2;
+                newCart[newItemId].buyAmount = Math.min(newCart[newItemId].buyAmount, newCart[newItemId].currentStock)
             } else {
                 newCart[newItemId] = newItem;
             }
 
             return newCart;
         });
+        Util.triggerCartUpdate();
     };
 
 
@@ -85,9 +91,9 @@ const ItemPicker = () => {
         try {
             let unit = "";
             let amount = quantity * countToKG;
-            if (amount < 1000) unit = "gs"
+            if (amount < 1000) unit = "g's"
             else if (amount === 1000) unit = "kg"
-            else unit = "kgs";
+            else unit = "kg's";
 
             if (selectedItem.currentStock < amount) {
                 let unitStock = "";
@@ -111,7 +117,7 @@ const ItemPicker = () => {
 
             setPurchaseMessage({
                 type: "success",
-                text: `Added ${amount} ${unit} of ${selectedItem.ItemName} to cart.`
+                text: `Added ${amount}${unit} of ${selectedItem.ItemName} to cart.`
             });
         } catch (err) {
             setPurchaseMessage({

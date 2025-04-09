@@ -6,29 +6,16 @@ const CartBar = ({showNavbar, setShowNavbar}) => {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
-    const [cart, setCart] = useState(() => {
+
+    const cart = () =>{
         const storedCart = localStorage.getItem('cart');
         return storedCart ? JSON.parse(storedCart) : {};
-    });
+    }
 
-    useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cart));
-    }, [cart]);
+    const setCart = (newCart) =>{
+        localStorage.setItem('cart', JSON.stringify(newCart));
+    }
 
-    const addItemToCart = (newItem) => {
-        setCart((prevCart) => {
-            const newCart = {...prevCart};
-            const newItemId = newItem.id;
-
-            if (newCart[newItemId]) {
-                newCart[newItemId].buyAmount = newCart[newItemId].buyAmount + newItem.buyAmount;
-            } else {
-                newCart[newItemId] = newItem;
-            }
-
-            return newCart;
-        });
-    };
 
     useEffect(() => {
         if (showNavbar) {
@@ -37,13 +24,13 @@ const CartBar = ({showNavbar, setShowNavbar}) => {
     }, [showNavbar]);
 
     const countToKG = 50;
-    const multiplier = 1000 / countToKG;
-    const buttonAdd = (100 / countToKG);
+    const multiplier = 1000;
+    const buttonAdd = (100);
 
     const fetchCartItems = async () => {
         setLoading(true);
         try {
-            setCartItems(cart);
+            setCartItems(Object.values(cart()));
         } catch (error) {
             console.error("Error fetching cart items:", error);
         } finally {
@@ -51,15 +38,32 @@ const CartBar = ({showNavbar, setShowNavbar}) => {
         }
     };
 
+    Util.registerCartUpdate(() => {
+        setLoading(true);
+
+        setTimeout(() => {
+            setCartItems(Object.values(cart()));
+            setLoading(false);
+        }, 300);
+    });
+
     const updateItemCount = (index, increment) => {
         const updatedItems = [...cartItems];
-        updatedItems[index].ItemCount = Math.max(0, updatedItems[index].ItemCount + increment);
+        updatedItems[index].buyAmount = Math.max(0, updatedItems[index].buyAmount + increment);
+        updatedItems[index].buyAmount = Math.min(updatedItems[index].buyAmount, updatedItems[index].currentStock)
         setCartItems(updatedItems);
+        const newCart = cart();
+
+        updatedItems.forEach((newItem) =>{
+            const newItemId = newItem.id;
+            newCart[newItemId] = newItem;
+        })
+        setCart(newCart);
     };
 
     const calculateTotalPrice = () => {
         return cartItems.reduce((total, item) => {
-            return total + (item.ItemCount / multiplier * item.ItemPrice);
+            return total + (item.buyAmount / multiplier * item.ItemPrice);
         }, 0).toFixed(2);
     };
 
@@ -132,9 +136,9 @@ const CartBar = ({showNavbar, setShowNavbar}) => {
                                             -
                                         </button>
                                         <span className="mx-2">
-                      {item.ItemCount * countToKG < 1000
-                          ? `${item.ItemCount * countToKG}g`
-                          : `${(item.ItemCount * countToKG / 1000).toFixed(2)}kg`}
+                      {item.buyAmount < 1000
+                          ? `${item.buyAmount}g`
+                          : `${(item.buyAmount / 1000).toFixed(2)}kg`}
                     </span>
                                         <button
                                             className="bg-red-500 text-white px-3 py-1 rounded-md"
@@ -145,7 +149,7 @@ const CartBar = ({showNavbar, setShowNavbar}) => {
                                     </div>
 
                                     <p className="text-sm mt-2">
-                                        Subtotal: ${((item.ItemCount / multiplier) * item.ItemPrice).toFixed(2)}
+                                        Subtotal: ${((item.buyAmount / multiplier) * item.ItemPrice).toFixed(2)}
                                     </p>
                                 </div>
                             </div>
