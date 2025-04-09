@@ -8,7 +8,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/chatbot")
-public class ChatbotEndpoints {
+public class ChatbotEndPoints {
 
     @PostMapping("/ask")
     public ResponseEntity<?> handleChat(@RequestBody Map<String, String> body) {

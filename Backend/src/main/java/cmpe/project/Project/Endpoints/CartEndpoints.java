@@ -28,22 +28,29 @@ public class CartEndpoints {
 
     @GetMapping("/items")
     public ResponseEntity<?> getItems(@RequestHeader Map<String, String> headers) {
-        logHeaders("items", headers);
-
         List<Map<String, Object>> items = new ArrayList<>();
 
-        Map<String, Object> item1 = new HashMap<>();
-        item1.put("itemId", "101");
-        item1.put("name", "Beef Cubes");
-        item1.put("price", 249.99);
+        String getOrdersQuery = "SELECT * FROM products WHERE currentStock > 0";
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getOrdersQuery, null)) {
+            while (rs != null && rs.next()) {
+                Map<String, Object> item = new HashMap<>();
+                item.put("ItemName", rs.getString("name"));
+                item.put("ItemPhotoLink", rs.getString("photo"));
+                item.put("currentStock", rs.getString("currentStock"));
+                try{
+                    item.put("ItemPrice", Double.parseDouble(rs.getString("price_per_kg")));
+                }
+                catch(Exception e){
+                    item.put("totalPrice", 0.00d);
+                }
+                items.add(item);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            logError("Error executing SQL request: " + getOrdersQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user role"));
+        }
 
-        Map<String, Object> item2 = new HashMap<>();
-        item2.put("itemId", "102");
-        item2.put("name", "Lamb Chops");
-        item2.put("price", 329.99);
-
-        items.add(item1);
-        items.add(item2);
 
         return ResponseEntity.ok().body(items);
     }
