@@ -6,6 +6,30 @@ const CartBar = ({showNavbar, setShowNavbar}) => {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
+    const [cart, setCart] = useState(() => {
+        const storedCart = localStorage.getItem('cart');
+        return storedCart ? JSON.parse(storedCart) : {};
+    });
+
+    useEffect(() => {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }, [cart]);
+
+    const addItemToCart = (newItem) => {
+        setCart((prevCart) => {
+            const newCart = {...prevCart};
+            const newItemId = newItem.id;
+
+            if (newCart[newItemId]) {
+                newCart[newItemId].buyAmount = newCart[newItemId].buyAmount + newItem.buyAmount;
+            } else {
+                newCart[newItemId] = newItem;
+            }
+
+            return newCart;
+        });
+    };
+
     useEffect(() => {
         if (showNavbar) {
             fetchCartItems();
@@ -19,8 +43,7 @@ const CartBar = ({showNavbar, setShowNavbar}) => {
     const fetchCartItems = async () => {
         setLoading(true);
         try {
-            const items = await Util.callBackend("cart");
-            setCartItems(items);
+            setCartItems(cart);
         } catch (error) {
             console.error("Error fetching cart items:", error);
         } finally {

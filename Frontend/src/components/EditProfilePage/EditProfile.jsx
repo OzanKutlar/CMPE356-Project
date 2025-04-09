@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { User, CreditCard, MapPin, Phone, Camera, Save, Mail, Briefcase, Calendar } from "lucide-react";
+import {useState} from "react";
+import {User, CreditCard, MapPin, Phone, Camera, Save, Mail, Briefcase, Calendar} from "lucide-react";
 import Util from "../../Util.js";
 
 export default function EditProfile() {
@@ -30,7 +30,7 @@ export default function EditProfile() {
     const handlePhoneChange = (e) => {
         const {name, value} = e.target;
         let phoneNum;
-        if(value.length > 20) return;
+        if (value.length > 20) return;
         if (lastVal.length > value.length) {
             phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, ""));
         } else {
@@ -86,7 +86,7 @@ export default function EditProfile() {
     const handleCardExpiryChange = (e) => {
         const {name, value} = e.target;
         let formattedValue = value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');
-        if(value.length > 5) return;
+        if (value.length > 5) return;
         if (value.length === 2 || value.length === 5) {
             const [monthStr, yearStr] = value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/').split('/');
             const month = Number(monthStr);
@@ -105,7 +105,7 @@ export default function EditProfile() {
         setCardExpiry(formattedValue);
     }
     const handleCardCvvChange = (e) => {
-        if(e.target.value.length > 3) return;
+        if (e.target.value.length > 3) return;
         setCardCvv(e.target.value.replace(/\D/g, ''));
     }
     const handleCardNameChange = (e) => setCardName(e.target.value);
@@ -138,11 +138,11 @@ export default function EditProfile() {
         try {
             const response = await Util.callBackend("user/editUser", {
                 userID: Util.savedUser.id,
-                name:name,
-                email:email,
-                dob:birthdate,
-                adress:address,
-                phone:phone.replace(" ", ""),
+                name: name,
+                email: email,
+                dob: birthdate,
+                adress: address,
+                phone: phone.replace(" ", ""),
                 ccnumber: cardNumber,
                 ccexpiry: cardExpiry,
                 cccvv: cardCvv,
@@ -173,15 +173,19 @@ export default function EditProfile() {
                             <div className="col-span-3 bg-gray-50 p-6 border-r border-gray-200">
                                 <div className="flex flex-col items-center">
                                     <div className="relative mb-4">
-                                        <div className="h-40 w-40 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                                        <div
+                                            className="h-40 w-40 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
                                             {profileImage ? (
-                                                <img src={profileImage} alt="Profile preview" className="h-full w-full object-cover" />
+                                                <img src={profileImage} alt="Profile preview"
+                                                     className="h-full w-full object-cover"/>
                                             ) : (
-                                                <img src="/src/assets/ozan.png" alt="Profile placeholder" className="h-full w-full object-cover" />
+                                                <img src="/src/assets/ozan.png" alt="Profile placeholder"
+                                                     className="h-full w-full object-cover"/>
                                             )}
                                         </div>
-                                        <label htmlFor="profile-image" className="absolute bottom-2 right-2 bg-rose-500 rounded-full p-2 cursor-pointer hover:bg-rose-600 transition-colors">
-                                            <Camera size={20} className="text-white" />
+                                        <label htmlFor="profile-image"
+                                               className="absolute bottom-2 right-2 bg-rose-500 rounded-full p-2 cursor-pointer hover:bg-rose-600 transition-colors">
+                                            <Camera size={20} className="text-white"/>
                                             <input
                                                 type="file"
                                                 id="profile-image"
@@ -197,7 +201,8 @@ export default function EditProfile() {
                                     <div className="text-sm text-gray-500 mt-2 w-full">
                                         <p className="mb-1">Member since: {memberSince}</p>
                                         <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                                            <div className="bg-rose-600 h-2.5 rounded-full" style={{ width: `${completionRate}%` }}></div>
+                                            <div className="bg-rose-600 h-2.5 rounded-full"
+                                                 style={{width: `${completionRate}%`}}></div>
                                         </div>
                                         <p className="mt-1 text-xs">Profile Completion: {completionRate}%</p>
                                     </div>
@@ -215,8 +220,9 @@ export default function EditProfile() {
                                     </div>
 
                                     <div>
-                                        <label htmlFor="name" className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                            <User size={16} className="mr-2" />
+                                        <label htmlFor="name"
+                                               className="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                            <User size={16} className="mr-2"/>
                                             Full Name
                                         </label>
                                         <input
@@ -230,8 +236,9 @@ export default function EditProfile() {
                                     </div>
 
                                     <div>
-                                        <label htmlFor="email" className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                            <Mail size={16} className="mr-2" />
+                                        <label htmlFor="email"
+                                               className="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                            <Mail size={16} className="mr-2"/>
                                             Email Address
                                         </label>
                                         <input
@@ -246,8 +253,9 @@ export default function EditProfile() {
 
 
                                     <div>
-                                        <label htmlFor="birthdate" className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                            <Calendar size={16} className="mr-2" />
+                                        <label htmlFor="birthdate"
+                                               className="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                            <Calendar size={16} className="mr-2"/>
                                             Date of Birth
                                         </label>
                                         <input
@@ -261,8 +269,9 @@ export default function EditProfile() {
                                     </div>
 
                                     <div>
-                                        <label htmlFor="phone" className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                            <Phone size={16} className="mr-2" />
+                                        <label htmlFor="phone"
+                                               className="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                            <Phone size={16} className="mr-2"/>
                                             Phone Number
                                         </label>
                                         <input
@@ -276,8 +285,9 @@ export default function EditProfile() {
                                     </div>
 
                                     <div className="col-span-2">
-                                        <label htmlFor="address" className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                            <MapPin size={16} className="mr-2" />
+                                        <label htmlFor="address"
+                                               className="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                            <MapPin size={16} className="mr-2"/>
                                             Delivery Address
                                         </label>
                                         <textarea
@@ -301,7 +311,8 @@ export default function EditProfile() {
                                         <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
                                             <div className="grid grid-cols-2 gap-6">
                                                 <div>
-                                                    <label htmlFor="cardName" className="block text-sm font-medium text-gray-700 mb-1">
+                                                    <label htmlFor="cardName"
+                                                           className="block text-sm font-medium text-gray-700 mb-1">
                                                         Name on Card
                                                     </label>
                                                     <input
@@ -315,8 +326,9 @@ export default function EditProfile() {
                                                 </div>
 
                                                 <div className="col-span-2 sm:col-span-1">
-                                                    <label htmlFor="cardNumber" className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                                        <CreditCard size={16} className="mr-2" />
+                                                    <label htmlFor="cardNumber"
+                                                           className="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                                        <CreditCard size={16} className="mr-2"/>
                                                         Card Number
                                                     </label>
                                                     <input
@@ -330,7 +342,8 @@ export default function EditProfile() {
                                                 </div>
 
                                                 <div>
-                                                    <label htmlFor="cardExpiry" className="block text-sm font-medium text-gray-700 mb-1">
+                                                    <label htmlFor="cardExpiry"
+                                                           className="block text-sm font-medium text-gray-700 mb-1">
                                                         Expiry Date
                                                     </label>
                                                     <input
@@ -344,7 +357,8 @@ export default function EditProfile() {
                                                 </div>
 
                                                 <div>
-                                                    <label htmlFor="cardCvv" className="block text-sm font-medium text-gray-700 mb-1">
+                                                    <label htmlFor="cardCvv"
+                                                           className="block text-sm font-medium text-gray-700 mb-1">
                                                         Security Code (CVV)
                                                     </label>
                                                     <input
@@ -359,8 +373,12 @@ export default function EditProfile() {
                                             </div>
 
                                             <div className="mt-4 flex items-center text-sm text-gray-500">
-                                                <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-green-400"
+                                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                     fill="currentColor">
+                                                    <path fillRule="evenodd"
+                                                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                          clipRule="evenodd"/>
                                                 </svg>
                                                 Your payment information is securely stored
                                             </div>
@@ -383,15 +401,18 @@ export default function EditProfile() {
                                     >
                                         {isSubmitting ? (
                                             <span className="flex items-center">
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg"
+                             fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                  strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                         Saving Changes...
                       </span>
                                         ) : (
                                             <span className="flex items-center">
-                        <Save size={16} className="mr-2" />
+                        <Save size={16} className="mr-2"/>
                         Save Changes
                       </span>
                                         )}

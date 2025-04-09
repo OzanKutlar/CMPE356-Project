@@ -35,6 +35,7 @@ public class CartEndpoints {
             while (rs != null && rs.next()) {
                 Map<String, Object> item = new HashMap<>();
                 item.put("ItemName", rs.getString("name"));
+                item.put("id", rs.getString("product_id"));
                 item.put("ItemPhotoLink", rs.getString("photo"));
                 item.put("currentStock", rs.getString("currentStock"));
                 try{

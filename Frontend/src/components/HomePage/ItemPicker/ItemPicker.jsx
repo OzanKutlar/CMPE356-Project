@@ -14,6 +14,30 @@ const ItemPicker = () => {
     const [purchaseMessage, setPurchaseMessage] = useState(null);
     const [isClosing, setIsClosing] = useState(false);
 
+    const [cart, setCart] = useState(() => {
+        const storedCart = localStorage.getItem('cart');
+        return storedCart ? JSON.parse(storedCart) : {};
+    });
+
+    useEffect(() => {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }, [cart]);
+
+    const addItemToCart = (newItem) => {
+        setCart((prevCart) => {
+            const newCart = {...prevCart};
+            const newItemId = newItem.id;
+
+            if (newCart[newItemId]) {
+                newCart[newItemId].buyAmount = newCart[newItemId].buyAmount + newItem.buyAmount;
+            } else {
+                newCart[newItemId] = newItem;
+            }
+
+            return newCart;
+        });
+    };
+
 
     const countToKG = 50;
     const multiplier = 1000 / countToKG;
@@ -36,8 +60,8 @@ const ItemPicker = () => {
 
     const handleItemClick = (item) => {
         setSelectedItem(item);
-        setQuantity(1); // Reset quantity when a new item is selected
-        setPurchaseMessage(null); // Clear any previous purchase messages
+        setQuantity(1);
+        setPurchaseMessage(null);
     };
 
     const closeModal = () => {
@@ -59,20 +83,31 @@ const ItemPicker = () => {
         setPurchaseMessage(null);
 
         try {
-            // Call the backend with the purchase endpoint and headers
-            const headers = {
-                itemName: selectedItem.ItemName,
-                amount: quantity
-            };
-
-            await Util.callBackend("addToCart", headers);
             let unit = "";
             let amount = quantity * countToKG;
             if (amount < 1000) unit = "gs"
-            else if (amount == 1000) unit = "kg"
+            else if (amount === 1000) unit = "kg"
             else unit = "kgs";
 
-            if (unit.at(0) == 'k') amount = amount / 1000
+            if (selectedItem.currentStock < amount) {
+                let unitStock = "";
+                let stock = selectedItem.currentStock;
+                if (stock < 1000) unitStock = "g's"
+                else if (stock === 1000) unitStock = "kg"
+                else unitStock = "kg's";
+
+                if (unitStock.at(0) === 'k') stock = stock / 1000
+                setPurchaseMessage({
+                    type: "error",
+                    text: "Unfortunately, we only have " + stock + "" + unitStock + " of " + selectedItem.ItemName + " available."
+                });
+                return
+            }
+
+            selectedItem.buyAmount = amount;
+            if (unit.at(0) === 'k') amount = amount / 1000
+
+            addItemToCart(selectedItem)
 
             setPurchaseMessage({
                 type: "success",
