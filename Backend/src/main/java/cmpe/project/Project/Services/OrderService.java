@@ -39,7 +39,7 @@ public class OrderService {
         List<BigDecimal> splitCosts = new ArrayList<>();
         BigDecimal totalCost = orderRepository.CalculateTotalCost(splits, splitCosts);
 
-        if(paymentMethod.equals("Credit Card")) { // CHECK IF CREDIT CARD TRANSACTION SUCCEEDS BEFORE USING TOTAL COST CALCULATION
+        if(paymentMethod.equals("Credit Card")) {
             if(creditCardService.HandleTransaction(order.getCardCredentials(), totalCost))
                 throw new RuntimeException("Transaction failed, retry later");
             paymentId = orderRepository.insertPayment(paymentMethod, totalCost, "completed");
@@ -88,7 +88,8 @@ public class OrderService {
         orderRepository.UpdateBySplitId(splitId, "driver_id = ?, status = ?", "status = ?", (Long) null, "assigned", "unassigned");
         DeliveryOrderDTO dto = orderRepository.GetListByFilter("os.splitId = ? ", splitId).get(0);
 
-        messagingTemplate.convertAndSend("/topic/unassigned-add", dto);
+        Object[] arr = { dto };
+        messagingTemplate.convertAndSend("/topic/unassigned-add", arr);
     }
 
     public List<DeliveryOrderDTO> GetUnassignedOrders() throws SQLException {
