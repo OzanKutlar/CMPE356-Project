@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -200,6 +201,22 @@ public class UserEndpoints {
 
     public static HashMap<String, String> verificationCodes = new HashMap<>();
 
+    @GetMapping("/verify-code")
+    public ResponseEntity<?> verifyCode(@RequestHeader("phoneNo") String phoneNo,
+                                        @RequestHeader("code") String code) {
+        log("Code verification requested for phone number : %s with code %s", phoneNo, code);
+
+
+        String codeWeHave = verificationCodes.get(phoneNo);
+        if(codeWeHave == null || !codeWeHave.equals(code)){
+            log("The code does not match, %s != %s", codeWeHave, code);
+            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Wrong Code. Please Try Again."));
+        }
+
+        log("The code matches.");
+        return ResponseEntity.ok().body(Map.of("msg", "success"));
+    }
+
     @GetMapping("/verify-phone")
     public ResponseEntity<?> verifyPhone(@RequestHeader("phoneNo") String phoneNo) {
         System.out.println("Phone verification requested for phone number : " + phoneNo);
@@ -208,41 +225,51 @@ public class UserEndpoints {
 
         verificationCodes.put(phoneNo, verificationCode);
 
-        sendSMS(phoneNo, verificationCode);
+        try{
+            sendSMS(phoneNo, verificationCode);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "There was an error sending the phone number : " + e.getMessage()));
+        }
 
-        return ResponseEntity.ok().body(Map.of("msg", "Verification code sent. Please check your phone."));
+
+        return ResponseEntity.ok().body(Map.of("msg", "success"));
     }
 
     private String generateVerificationCode() {
         return String.format("%06d", (int) (Math.random() * 900000) + 100000);
     }
 
-    private void sendSMS(String phoneNumber, String verificationCode) {
+    private void sendSMS(String phoneNumber, String verificationCode) throws Exception {
         phoneNumber = phoneNumber.replaceAll("[^0-9+]", "");
-        String command = "ssh -t phonePush 'termux-sms-send -n \"" + phoneNumber + "\" \"Your new code is " + verificationCode + "\"'";
+        String remoteCmd = "bash -c 'termux-sms-send -n \"" + phoneNumber + "\" \"Your new code is " + verificationCode + "\"'";
+        String command = "ssh phonePush \"" + remoteCmd + "\"";
+
         System.out.println("Sending SMS: " + command);
 
-        try {
-            Process process = Runtime.getRuntime().exec(command);
 
-            // Read standard output
-            BufferedReader stdOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = stdOut.readLine()) != null) {
-                System.out.println("[STDOUT] " + line);
-            }
+        Process process = Runtime.getRuntime().exec(command);
 
-            // Read error output
-            BufferedReader stdErr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            while ((line = stdErr.readLine()) != null) {
-                System.err.println("[STDERR] " + line);
-            }
-
-            process.waitFor();
-
-        } catch (Exception e) {
-            System.err.println("Error sending SMS: " + e.getMessage());
+        // Read standard output
+        BufferedReader stdOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        while ((line = stdOut.readLine()) != null) {
+            System.out.println("[STDOUT] " + line);
         }
+
+        // Read error output
+        StringBuilder errorMessage = new StringBuilder();
+        BufferedReader stdErr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        while ((line = stdErr.readLine()) != null) {
+            errorMessage.append("[STDERR] ").append(line).append("\n");
+        }
+
+        if(!errorMessage.isEmpty()){
+            throw new Exception(errorMessage.toString());
+        }
+
+        process.waitFor();
     }
 
 

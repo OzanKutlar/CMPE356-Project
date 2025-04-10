@@ -75,7 +75,7 @@ const CartItemsLarge = () => {
 
     const calculateTotalPrice = () => {
         return cartItems.reduce((total, item) => {
-            return total + (item.ItemCount / multiplier * item.ItemPrice);
+            return total + (item.buyAmount / multiplier * item.ItemPrice);
         }, 0).toFixed(2);
     };
 
@@ -253,9 +253,9 @@ const CartItemsLarge = () => {
                             <div className="space-y-2 mb-4">
                                 <div className="flex justify-between text-lg">
                                     <span>Total Weight:</span>
-                                    <span>{cartItems.reduce((sum, item) => sum + item.ItemCount, 0) * countToKG < 1000
-                                        ? `${cartItems.reduce((sum, item) => sum + item.ItemCount, 0) * countToKG}g`
-                                        : `${(cartItems.reduce((sum, item) => sum + item.ItemCount, 0) * countToKG / 1000).toFixed(2)}kg`}</span>
+                                    <span>{cartItems.reduce((sum, item) => sum + item.buyAmount, 0) < 1000
+                                        ? `${cartItems.reduce((sum, item) => sum + item.buyAmount, 0)}g`
+                                        : `${(cartItems.reduce((sum, item) => sum + item.buyAmount, 0) / 1000).toFixed(2)}kg`}</span>
                                 </div>
                                 <div className="flex justify-between text-lg">
                                     <span>Total Price:</span>

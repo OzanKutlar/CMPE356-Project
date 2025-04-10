@@ -111,11 +111,10 @@ const PhoneVerification = ({ setShowPopUp, initialPhoneNumber = '' }) => {
 
             const response = await Util.callBackend("user/verify-phone", {phoneNo: cleanPhone})
 
-            if (!response.msg === "success") {
+            if (response.msg === "error") {
                 throw new Error(response.message || 'Failed to send verification code');
             }
 
-            // Show the verification code field
             setShowCodeField(true);
             setIsResendDisabled(true);
 
@@ -144,33 +143,16 @@ const PhoneVerification = ({ setShowPopUp, initialPhoneNumber = '' }) => {
         try {
             setIsLoading(true);
 
-            // Send verification code to your backend
-            // Replace this with your actual API endpoint and method
-            const response = await fetch('/api/verify-code', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    phoneNumber: phoneNo.replaceAll(/[^0-9]/g, ""),
-                    code: verificationCode
-                }),
-            });
+            const response = await Util.callBackend("user/verify-code", {phoneNo: phoneNo.replaceAll(/[^0-9+]/g, ""), code: verificationCode})
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Invalid verification code');
+            if (response.msg === "error") {
+                throw new Error(response.message || 'Invalid verification code');
             }
 
-            Util.tempPhoneNumber = '';
+            Util.tempPhoneNumber = phoneNo;
 
             setShowPopUp(false);
 
-            // You might want to navigate to another page or update user state here
-            if (Util.CallVerified) {
-                Util.CallVerified(phoneNo);
-            }
 
         } catch (error) {
             setErrorMessage(error.message || 'An error occurred. Please try again.');
