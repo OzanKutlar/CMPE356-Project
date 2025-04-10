@@ -70,7 +70,7 @@ public class UserEndpoints {
         }
 
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not found"));
+            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "User Not Found."));
         }
 
         UUID sessionUUID = UUID.randomUUID();

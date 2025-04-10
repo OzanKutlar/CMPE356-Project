@@ -490,11 +490,7 @@ class Util {
 
 
     static getImageFromBackend(filename){
-        return this.backendIp + "image/get/" + filename
-    }
-
-    static uploadFile(fileName){
-
+        return this.backendIp + "/image/get/" + filename
     }
 
     static async callBackend(endpoint, headers = {}) {

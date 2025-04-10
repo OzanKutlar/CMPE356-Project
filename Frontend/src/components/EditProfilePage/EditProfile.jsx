@@ -125,24 +125,25 @@ export default function EditProfile() {
                 const userID = Util.savedUser.id
 
                 // Make the upload request
-                fetch('/upload', {
-                    method: 'GET',
+                fetch(Util.backendIp + '/image/upload', {
+                    method: 'POST', // Changed to POST to send data in body
                     headers: {
-                        'userID': userID,
-                        'pictureData': base64Data,
-                        'fileName': fileType
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userID: userID,
+                        pictureData: base64Data,
+                        fileName: fileType
+                    })
+                }).then(response => response.json()).then(data => {
+                    if (data.msg === "success") {
+                        setProfileImage(Util.getImageFromBackend(data.url.substring(8)));
+
+                        console.log("Image uploaded successfully:", data.url);
+                    } else {
+                        console.error(data.message);
                     }
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.msg === "success") {
-                            setProfileImage(data.url);
-
-                            console.log("Image uploaded successfully:", data.url);
-                        } else {
-                            console.error("Upload failed");
-                        }
-                    })
                     .catch(error => {
                         console.error("Error uploading image:", error);
                     });
@@ -179,12 +180,16 @@ export default function EditProfile() {
                 photourl: profileImage,
                 dob: birthdate,
                 adress: address,
-                phone: phone.replace(" ", ""),
+                phone: phone.replaceAll(/[^0-9+]/g, ""),
                 ccnumber: cardNumber,
                 ccexpiry: cardExpiry,
                 cccvv: cardCvv,
                 ccname: cardName
             });
+            Util.savedUser.phone = phone;
+            Util.savedUser.profilePictureLink = profileImage;
+            Util.savedUser.address = address;
+            Util.savedUser.email = email;
             console.log("Submitting data:", formData);
             setIsSubmitting(false);
             alert("Profile updated successfully!");
