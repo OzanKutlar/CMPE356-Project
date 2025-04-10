@@ -1,10 +1,17 @@
 package cmpe.project.Project.Endpoints;
 
+import cmpe.project.Project.DTOs.CustomerOrderDTO;
+import cmpe.project.Project.DTOs.SplitOrderDTO;
 import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
+import cmpe.project.Project.Services.CreditCardService;
+import cmpe.project.Project.Services.OrderService;
 import cmpe.project.Project.Utility.Util;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +30,12 @@ import static cmpe.project.Project.Utility.Util.logHeaders;
 @RestController
 @RequestMapping("/api/cart")
 public class CartEndpoints {
+
+    @Autowired
+    private OrderService orderService;
+    
+    @Autowired
+    private CreditCardService creditCardService;
 
     private static final Map<String, List<Map<String, Object>>> carts = new HashMap<>();
 
@@ -65,15 +78,19 @@ public class CartEndpoints {
     }
 
     @GetMapping("/submitOrder")
-    public ResponseEntity<?> submitOrder(
+    public ResponseEntity<?> submitOrder( // ADD PROPER ORDER SUBMISSION
             @RequestHeader("userId") String userId,
-            @RequestHeader(value = "orderDetails", required = false) String orderDetails) {
+            @RequestBody CustomerOrderDTO request) {
         System.out.println("Order submitted by user: " + userId);
-        if (orderDetails != null) {
-            System.out.println("Order details: " + orderDetails);
+        
+        try {
+            orderService.SubmitOrder(request);
+        } catch (Exception e) {
+            // TODO: handle exception
         }
+
         carts.remove(userId);
-        return ResponseEntity.ok().body("success");
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/cancelOrder")
