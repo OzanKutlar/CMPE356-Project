@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { wsService } from './WebSocketService';
 class Util {
     static backendIp = 'http://127.0.0.1:33000/api';
     static fakeIt = false;
@@ -563,6 +564,27 @@ class Util {
             }
         }
     }
+
+
+    static initializeWebSocket(serverUrl = 'http://localhost:8080') {
+        wsService.connect(serverUrl);
+    }
+    
+    // Subscribe to a STOMP topic
+    static subscribeToTopic(topic, callback) {
+        wsService.subscribe(topic, callback);
+    }
+    
+    // Unsubscribe from a STOMP topic
+    static unsubscribeFromTopic(topic) {
+        wsService.unsubscribe(topic);
+    }
+    
+    // Disconnect from STOMP server
+    static disconnectWebSocket() {
+        wsService.disconnect();
+    }
+
 }
 
 export default Util;
