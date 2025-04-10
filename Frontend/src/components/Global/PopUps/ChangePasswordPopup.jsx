@@ -151,13 +151,12 @@ const ChangePasswordPopup = ({ setShowPopUp }) => {
         // Clear any previous errors
         setErrorMessage('');
 
-        // Validate inputs
         if (newPassword !== confirmPassword) {
             setErrorMessage('Passwords do not match');
             return;
         }
 
-        if (newPassword.length < 8) {
+        if (newPassword.length < 4) {
             setErrorMessage('Password must be at least 8 characters long');
             return;
         }
@@ -181,8 +180,7 @@ const ChangePasswordPopup = ({ setShowPopUp }) => {
                 throw new Error(response.message || 'Failed to change password');
             }
 
-            // Success, close the popup
-            setShowPopUp(false);
+            handleCancel();
 
         } catch (error) {
             setErrorMessage(error.message || 'An error occurred. Please try again.');

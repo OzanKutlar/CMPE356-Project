@@ -166,6 +166,7 @@ public class UserEndpoints {
         String dob = (String) headers.get("dob");
         String address = (String) headers.get("address");
         String phone = (String) headers.get("phone");
+        String photoURL = (String) headers.get("photourl");
         String cardNumber = (String) headers.get("ccnumber");
         String cardExpiry = (String) headers.get("ccexpiry");
         String cardCvv = (String) headers.get("cccvv");
@@ -175,8 +176,8 @@ public class UserEndpoints {
 
         System.out.println("User Modification: " + id + ", " + email + ", " + phone);
 
-        String userQuery = "UPDATE users SET name = ?, email = ?, date_of_birth = ?, address = ?, phone = ? WHERE id = ?";
-        Object[] userParams = {name, email, dob, address, phone, id};
+        String userQuery = "UPDATE users SET name = ?, email = ?, date_of_birth = ?, address = ?, phone = ?, profilePhotoUrl = ? WHERE id = ?";
+        Object[] userParams = {name, email, dob, address, phone, photoURL, id};
         try {
             DatabaseHandler.INSTANCE.executeQuery(userQuery, userParams);
         } catch (SQLException e) {

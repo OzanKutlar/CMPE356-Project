@@ -22,7 +22,7 @@ export default function UserProfile() {
     const handleAction = (action) => {
         switch (action) {
             case 'editProfile':
-                setEditModalOpen(true); // Open the EditProfile modal
+                Util.navigateTo("edit");
                 break;
             case 'changePassword':
                 Util.forgot = false;

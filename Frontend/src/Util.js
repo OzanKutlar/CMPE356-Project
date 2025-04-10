@@ -1,3 +1,4 @@
+import axios from 'axios';
 class Util {
     static backendIp = 'http://127.0.0.1:33000/api';
     static fakeIt = false;
@@ -485,6 +486,15 @@ class Util {
             return {exists: true};
         }
         return {exists: false};
+    }
+
+
+    static getImageFromBackend(filename){
+        return this.backendIp + "image/get/" + filename
+    }
+
+    static uploadFile(fileName){
+
     }
 
     static async callBackend(endpoint, headers = {}) {

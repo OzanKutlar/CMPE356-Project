@@ -68,7 +68,7 @@ const Header = () => {
             {/* Login Popup */}
             {showLogin && <LoginPopup setShowLogin={setShowLogin}/>}
 
-            {showPassReset && <ChangePassword setChangePass={setPassReset}/>}
+            {showPassReset && <ChangePassword setShowPopUp={setPassReset}/>}
 
             {showVerification && <PhoneVerification setShowPopUp={setShowVerfication}/>}
         </>

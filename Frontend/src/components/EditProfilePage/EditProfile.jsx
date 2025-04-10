@@ -112,7 +112,43 @@ export default function EditProfile() {
 
     const handleImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
-            setProfileImage(URL.createObjectURL(e.target.files[0]));
+            const file = e.target.files[0];
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+                setProfileImage(URL.createObjectURL(file));
+
+                const base64Data = reader.result.split(',')[1];
+
+                const fileType = file.name.split('.').pop();
+
+                const userID = Util.savedUser.id
+
+                // Make the upload request
+                fetch('/upload', {
+                    method: 'GET',
+                    headers: {
+                        'userID': userID,
+                        'pictureData': base64Data,
+                        'fileName': fileType
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.msg === "success") {
+                            setProfileImage(data.url);
+
+                            console.log("Image uploaded successfully:", data.url);
+                        } else {
+                            console.error("Upload failed");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error uploading image:", error);
+                    });
+            };
+
+            reader.readAsDataURL(file);
         }
     };
 
@@ -140,6 +176,7 @@ export default function EditProfile() {
                 userID: Util.savedUser.id,
                 name: name,
                 email: email,
+                photourl: profileImage,
                 dob: birthdate,
                 adress: address,
                 phone: phone.replace(" ", ""),
