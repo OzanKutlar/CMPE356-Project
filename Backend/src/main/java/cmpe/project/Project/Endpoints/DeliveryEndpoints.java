@@ -1,19 +1,14 @@
 package cmpe.project.Project.Endpoints;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import cmpe.project.Project.Services.OrderService;
-
-import java.util.ArrayList;
-import java.util.Map;
-
 
 @RestController
 @RequestMapping("/api/delivery")
@@ -48,6 +43,9 @@ public class DeliveryEndpoints {
         try {
             orderService.AssignOrder(splitId, userId);
             return ResponseEntity.noContent().build();
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to assign order: " + e.getMessage());
         }

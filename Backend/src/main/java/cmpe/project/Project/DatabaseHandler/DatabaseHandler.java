@@ -3,9 +3,6 @@ package cmpe.project.Project.DatabaseHandler;
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.UUID;
 import static cmpe.project.Project.Utility.Logger.*;
 
 public class DatabaseHandler {
@@ -85,14 +82,15 @@ public class DatabaseHandler {
         }
     }
 
-    public void executeQuery(String requestString, Object[] params) throws SQLException {
+    public int executeQuery(String requestString, Object[] params) throws SQLException {
+        int rowsUpdated;
         try {
             connect();
             try (PreparedStatement stmt = connection.prepareStatement(requestString)) {
                 for (int i = 0; i < params.length; i++) {
                     stmt.setObject(i + 1, params[i]);
                 }
-                stmt.execute();
+                rowsUpdated = stmt.executeUpdate();
             }
         } catch (SQLException e) {
             logError("Database error: " + e.getMessage());
@@ -103,12 +101,13 @@ public class DatabaseHandler {
                     for (int i = 0; i < params.length; i++) {
                         stmt.setObject(i + 1, params[i]);
                     }
-                    stmt.execute();
+                    rowsUpdated = stmt.executeUpdate();
                 }
             } catch (SQLException ex) {
                 throw ex;
             }
         }
+        return rowsUpdated;
     }
 
     public static boolean checkDatabaseExists() {

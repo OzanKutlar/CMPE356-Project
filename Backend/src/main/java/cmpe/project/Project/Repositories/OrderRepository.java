@@ -18,30 +18,25 @@ import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
 @Repository
 public class OrderRepository {
 
-    public void OrderDrop(long splitId, long driverId) throws SQLException {
-        String query = 
-        "UPDATE order_splits " +
-        "SET status = 'unassigned', driver_id = null" +
-        "WHERE split_id = ? AND driver_id = ?";
-
-        Object[] params = { splitId, driverId };
-        DatabaseHandler.INSTANCE.executeQuery(query, params);
-    }
-
-    public void UpdateBySplitId(long splitId, String columns, Object... columnData) throws SQLException {
+    public void UpdateBySplitId(long splitId, String columns, String filter, Object... data) throws SQLException {
         String query =
         "UPDATE order_splits " +
         "SET " + columns +
         "WHERE split_id = ?";
 
+        if(filter != null)
+            query += " AND " + filter;
+
         List<Object> params = new ArrayList<>();
-        if(columnData.length > 0) {
-            for(Object cd : columnData)
+        if(data.length > 0) {
+            for(Object cd : data)
                 params.add(cd);
         }
         params.add(splitId);
 
-        DatabaseHandler.INSTANCE.executeQuery(query, params.toArray());
+        int rowsUpdated = DatabaseHandler.INSTANCE.executeQuery(query, params.toArray());
+        if(rowsUpdated == 0)
+            throw new RuntimeException("This order is already assigned!");
     }
 
     public List<DeliveryOrderDTO> GetListByFilter(String filter, Object... filterParams) throws SQLException {

@@ -58,11 +58,11 @@ public class OrderService {
     }
 
     public void CompleteOrder (long splitId) throws SQLException {
-        orderRepository.UpdateBySplitId(splitId, "status = ? ", "completed");
+        orderRepository.UpdateBySplitId(splitId, null, "status = ? ", "completed");
     }
 
     public void CancelOrder (long splitId) throws SQLException {
-        orderRepository.UpdateBySplitId(splitId, "status = ? ", "canceled");
+        orderRepository.UpdateBySplitId(splitId, null, "status = ? ", "canceled");
         
         String message = "Order #" + splitId + " canceled successfully";
         Map<String, Object> payload = new HashMap<>();
@@ -73,7 +73,7 @@ public class OrderService {
     }
 
     public void AssignOrder(long splitId, long driverId) throws SQLException {
-        orderRepository.UpdateBySplitId(splitId, "driver_id = ? ", driverId);
+        orderRepository.UpdateBySplitId(splitId, "driver_id = ?, status = ?", "status = ?", driverId, "assigned", "unassigned");
 
         String message = "Order #" + splitId + " has been assigned to driver: " + driverId;
         Map<String, Object> payload = new HashMap<>();
@@ -85,7 +85,7 @@ public class OrderService {
     }
 
     public void DropOrder(long splitId) throws SQLException {
-        orderRepository.UpdateBySplitId(splitId, "driver_id = ? ", (Long) null);
+        orderRepository.UpdateBySplitId(splitId, "driver_id = ?, status = ?", "status = ?", (Long) null, "assigned", "unassigned");
         DeliveryOrderDTO dto = orderRepository.GetListByFilter("os.splitId = ? ", splitId).get(0);
 
         messagingTemplate.convertAndSend("/topic/unassigned-add", dto);

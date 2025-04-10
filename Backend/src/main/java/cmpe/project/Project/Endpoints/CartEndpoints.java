@@ -1,19 +1,15 @@
 package cmpe.project.Project.Endpoints;
 
 import cmpe.project.Project.DTOs.CustomerOrderDTO;
-import cmpe.project.Project.DTOs.SplitOrderDTO;
 import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
-import cmpe.project.Project.Services.CreditCardService;
 import cmpe.project.Project.Services.OrderService;
 import cmpe.project.Project.Utility.Util;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -26,7 +22,6 @@ import java.util.*;
 
 import static cmpe.project.Project.Utility.Logger.log;
 import static cmpe.project.Project.Utility.Logger.logError;
-import static cmpe.project.Project.Utility.Util.logHeaders;
 
 @RestController
 @RequestMapping("/api/cart")
@@ -34,9 +29,6 @@ public class CartEndpoints {
 
     @Autowired
     private OrderService orderService;
-
-    @Autowired
-    private CreditCardService creditCardService;
 
     private static final Map<String, List<Map<String, Object>>> carts = new HashMap<>();
 
@@ -86,12 +78,13 @@ public class CartEndpoints {
 
         try {
             orderService.SubmitOrder(request);
+            carts.remove(userId);
+            return ResponseEntity.noContent().build();
+
         } catch (Exception e) {
-            // TODO: handle exception
+            return ResponseEntity.badRequest().build();
         }
 
-        carts.remove(userId);
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/cancelOrder")
