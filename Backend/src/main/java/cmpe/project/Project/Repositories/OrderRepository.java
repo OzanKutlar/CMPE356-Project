@@ -1,17 +1,19 @@
 package cmpe.project.Project.Repositories;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
+
+import org.springframework.stereotype.Repository;
 
 import cmpe.project.Project.DTOs.CustomerOrderDTO;
 import cmpe.project.Project.DTOs.DeliveryOrderDTO;
 import cmpe.project.Project.DTOs.SplitOrderDTO;
 import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
-import org.springframework.stereotype.Repository;
-
 
 @Repository
 public class OrderRepository {
@@ -45,7 +47,7 @@ public class OrderRepository {
     public List<DeliveryOrderDTO> GetListByFilter(String filter, Object... filterParams) throws SQLException {
         String query =
         "SELECT o.order_id, os.split_id, o.address AS customer_address, " +
-        "o.payment_method, s.name AS store_name, s.address AS store_address, " +
+        "pa.payment_method, s.name AS store_name, s.address AS store_address, " +
         "GROUP_CONCAT(p.name) AS product_names " +
         "GROUP_CONCAT(oi.amount) AS product_amounts, " +
         "SUM(oi.price) AS total_price, " +
@@ -54,6 +56,7 @@ public class OrderRepository {
         "JOIN stores s ON os.store_id = s.store_id " +
         "JOIN order_items oi ON os.split_id = oi.split_id " +
         "JOIN products p ON oi.product_id = p.product_id " +
+        "JOIN payments pa ON os.payment_id = pa.payment_id" +
         "WHERE " + filter +
         "GROUP BY o.order_id, os.split_id, s.store_id " +
         "ORDER BY o.order_id, os.split_id, s.store_id";
@@ -87,8 +90,8 @@ public class OrderRepository {
     }
 
     public long insertOrder(CustomerOrderDTO order) throws SQLException {
-        String query = "INSERT INTO orders (customer_id, address, payment_method) VALUES (?, ?, ?)";
-        Object[] params = {order.getCustomerId(), order.getAddress(), order.getPaymentMethod()};
+        String query = "INSERT INTO orders (customer_id, address) VALUES (?, ?)";
+        Object[] params = {order.getCustomerId(), order.getAddress()};
         
         // Execute the query and get the generated keys
         DatabaseHandler.INSTANCE.executeQuery(query, params);
@@ -101,9 +104,22 @@ public class OrderRepository {
         throw new SQLException("Failed to retrieve order ID");
     }
     
-    public long insertOrderSplit(long orderId, SplitOrderDTO split) throws SQLException {
-        String query = "INSERT INTO order_splits (order_id, store_name) VALUES (?, ?)";
-        Object[] params = {orderId, split.getStoreName()};
+    public long insertPayment(String paymentMethod, BigDecimal cost, String status) throws SQLException {
+        String query = "INSERT INTO payments (payment_method, amount, status) VALUES (?, ?, ?)";
+        Object[] params = { paymentMethod, cost, status };
+
+        DatabaseHandler.INSTANCE.executeQuery(query, params);
+
+        ResultSet rs = DatabaseHandler.INSTANCE.sendRequest("SELECT LAST_INSERT_ID()", null);
+        if(rs != null && rs.next()) {
+            return rs.getLong(1);
+        }
+        throw new SQLException("Failed to retrieve payment ID");
+    }
+
+    public long insertOrderSplit(long orderId, String storeName, long paymentId) throws SQLException {
+        String query = "INSERT INTO order_splits (order_id, store_name, payment_id) VALUES (?, ?, ?)";
+        Object[] params = {orderId, storeName, paymentId};
         
         DatabaseHandler.INSTANCE.executeQuery(query, params);
         
@@ -124,12 +140,53 @@ public class OrderRepository {
             throw new IllegalArgumentException("Products and amounts lists must have the same size");
         }
         
-        String sql = "INSERT INTO order_items (split_id, product_id, amount) VALUES (?, ?, ?)";
+        String query = "INSERT INTO order_items (split_id, product_id, amount) VALUES (?, ?, ?)";
         
         for (int i = 0; i < products.size(); i++) {
             Object[] params = {splitId, products.get(i), amounts.get(i)};
-            DatabaseHandler.INSTANCE.executeQuery(sql, params);
+            DatabaseHandler.INSTANCE.executeQuery(query, params);
         }
+    }
+
+    public BigDecimal CalculateTotalCost(List<SplitOrderDTO> splits, List<BigDecimal> splitCosts) throws SQLException {
+        BigDecimal sum = BigDecimal.ZERO;
+
+        for(SplitOrderDTO split : splits){
+            List<Long> products = split.getProducts();
+            List<BigDecimal> amounts = split.getAmounts();
+
+            if (products.size() != amounts.size())
+                throw new IllegalArgumentException("Products and amounts lists must have the same size");
+
+            List<Object> params = new ArrayList<>();
+            StringBuilder sb = new StringBuilder();
+            StringJoiner sj = new StringJoiner(",");
+            
+            for(Long p : products){
+                sj.add("?");
+                params.add(p);
+            }
+            
+            String str = sj.toString();
+            sb.append("SELECT price_per_kg FROM products WHERE product_id IN (");
+            sb.append(str);
+            sb.append(") ORDER BY FIELD(product_id,");
+            sb.append(str);
+            sb.append(")");
+
+            ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(sb.toString(), params.toArray());
+            BigDecimal splitCost = BigDecimal.ZERO;
+            int i = 0;
+            while (rs.next()) {
+                splitCost = splitCost.add(amounts.get(i).multiply(rs.getBigDecimal("price_per_kg")));
+                if(splitCost.scale() > 2)
+                    splitCost.setScale(2, RoundingMode.HALF_UP);
+                i++;
+            }
+            sum.add(splitCost);
+            splitCosts.add(splitCost);
+        }
+        return sum;
     }
     
 }

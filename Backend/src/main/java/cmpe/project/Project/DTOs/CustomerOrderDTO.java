@@ -7,7 +7,7 @@ public class CustomerOrderDTO {
     private String address;
     private ArrayList<SplitOrderDTO> splits;
     private String paymentMethod;
-    //private CreditCardDTO cardCredentials;
+    private CreditCardDTO cardCredentials;
     
     // Getter and Setter for customerId
     public long getCustomerId() {
@@ -45,13 +45,13 @@ public class CustomerOrderDTO {
         this.paymentMethod = paymentMethod;
     }
 
-    // // Getter and Setter for cardCredentials
-    // public CreditCardDTO getCardCredentials() {
-    //     return cardCredentials;
-    // }
+    // Getter and Setter for cardCredentials
+    public CreditCardDTO getCardCredentials() {
+        return cardCredentials;
+    }
 
-    // public void setCardCredentials(CreditCardDTO cardCredentials) {
-    //     this.cardCredentials = cardCredentials;
-    // }
+    public void setCardCredentials(CreditCardDTO cardCredentials) {
+        this.cardCredentials = cardCredentials;
+    }
 
 }
