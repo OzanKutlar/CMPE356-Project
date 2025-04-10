@@ -4,11 +4,13 @@ import LoginPopup from "./PopUps/LoginPopup.jsx";
 import Util from "../../Util.js";
 import UserProfile from "./PopUps/UserProfile.jsx";
 import ChangePassword from "./PopUps/ChangePasswordPopup.jsx";
+import PhoneVerification from "./PopUps/PhoneVerificationPopUp.jsx";
 
 const Header = () => {
     const [showLogin, setShowLogin] = useState(false);
     const [showPassReset, setPassReset] = useState(false);
     const [showNavbar, setShowNavbar] = useState(false);
+    const [showVerification, setShowVerfication] = useState(false);
 
     Util.CallLogin = () => {
         setShowLogin(true);
@@ -16,6 +18,10 @@ const Header = () => {
 
     Util.CallPasswordReset = () => {
         setPassReset(true);
+    };
+
+    Util.CallVerification = () => {
+        setShowVerfication(true);
     };
 
 
@@ -63,6 +69,8 @@ const Header = () => {
             {showLogin && <LoginPopup setShowLogin={setShowLogin}/>}
 
             {showPassReset && <ChangePassword setChangePass={setPassReset}/>}
+
+            {showVerification && <PhoneVerification setShowPopUp={setShowVerfication}/>}
         </>
     );
 };

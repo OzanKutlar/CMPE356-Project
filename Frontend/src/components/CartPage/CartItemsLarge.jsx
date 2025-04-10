@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import Util from '../../Util.js';
 import OrderForm from "./OrderForm.jsx";
 import LoginOrPhone from "./LoginOrPhonePopup.jsx";
+import PhoneVerification from "../Global/PopUps/PhoneVerificationPopUp.jsx";
 
 const CartItemsLarge = () => {
     const [cartItems, setCartItems] = useState([]);
@@ -9,6 +10,15 @@ const CartItemsLarge = () => {
     const [submitting, setSubmitting] = useState(false);
     const [message, setMessage] = useState(null);
     const [showLogin, setShowLogin] = useState(false);
+
+    const cart = () =>{
+        const storedCart = localStorage.getItem('cart');
+        return storedCart ? JSON.parse(storedCart) : {};
+    }
+
+    const setCart = (newCart) =>{
+        localStorage.setItem('cart', JSON.stringify(newCart));
+    }
 
     const [formData, setFormData] = useState({
         cardNumber: '',
@@ -21,7 +31,7 @@ const CartItemsLarge = () => {
         setFormData(newFormData);
     };
 
-    const countToKG = 50;
+    const countToKG = 1;
     const multiplier = 1000 / countToKG;
     const buttonAdd = (100 / countToKG);
 
@@ -32,14 +42,9 @@ const CartItemsLarge = () => {
     const fetchCartItems = async () => {
         setLoading(true);
         try {
-            const items = await Util.callBackend("cart");
-            setCartItems(items);
+            setCartItems(Object.values(cart()));
         } catch (error) {
             console.error("Error fetching cart items:", error);
-            setMessage({
-                type: "error",
-                text: "Failed to load cart items. Please try again later."
-            });
         } finally {
             setLoading(false);
         }
@@ -47,15 +52,26 @@ const CartItemsLarge = () => {
 
     const updateItemCount = async (index, increment) => {
         const updatedItems = [...cartItems];
-        const newCount = Math.max(0, updatedItems[index].ItemCount + increment);
-        updatedItems[index].ItemCount = newCount;
+        updatedItems[index].buyAmount = Math.max(0, updatedItems[index].buyAmount + increment);
+        updatedItems[index].buyAmount = Math.min(updatedItems[index].buyAmount, updatedItems[index].currentStock)
+        setCartItems(updatedItems);
+        const newCart = cart();
 
-        if (newCount === 0) {
+
+        updatedItems.forEach((newItem) =>{
+            const newItemId = newItem.id;
+            newCart[newItemId] = newItem;
+        })
+
+        if (updatedItems[index].buyAmount === 0) {
+            delete newCart[updatedItems[index].id];
             updatedItems.splice(index, 1);
         }
 
-        setCartItems(updatedItems);
+        setCart(newCart);
+
     };
+
 
     const calculateTotalPrice = () => {
         return cartItems.reduce((total, item) => {
@@ -178,48 +194,48 @@ const CartItemsLarge = () => {
                                             className="flex flex-col sm:flex-row justify-between items-center mt-4 space-y-4 sm:space-y-0">
                                             <button
                                                 className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors w-full sm:w-auto"
-                                                onClick={() => updateItemCount(index, -20)}
+                                                onClick={() => updateItemCount(index, -1000)}
                                             >
                                                 -1kg
                                             </button>
                                             <button
                                                 className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors w-full sm:w-auto"
-                                                onClick={() => updateItemCount(index, -2)}
+                                                onClick={() => updateItemCount(index, -100)}
                                             >
                                                 -100g
                                             </button>
                                             <button
                                                 className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors w-full sm:w-auto"
-                                                onClick={() => updateItemCount(index, -1)}
+                                                onClick={() => updateItemCount(index, -50)}
                                             >
                                                 -50g
                                             </button>
                                             <span className="text-xl font-medium w-full sm:w-auto text-center">
-                                            {item.ItemCount * countToKG < 1000
-                                                ? `${item.ItemCount * countToKG}g`
-                                                : `${(item.ItemCount * countToKG / 1000).toFixed(2)}kg`}
+                                            {item.buyAmount < 1000
+                                                ? `${item.buyAmount}g`
+                                                : `${(item.buyAmount / 1000).toFixed(2)}kg`}
                                         </span>
                                             <button
                                                 className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors w-full sm:w-auto"
-                                                onClick={() => updateItemCount(index, 1)}
+                                                onClick={() => updateItemCount(index, 50)}
                                             >
                                                 +50g
                                             </button>
                                             <button
                                                 className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors w-full sm:w-auto"
-                                                onClick={() => updateItemCount(index, 2)}
+                                                onClick={() => updateItemCount(index, 100)}
                                             >
                                                 +100g
                                             </button>
                                             <button
                                                 className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors w-full sm:w-auto"
-                                                onClick={() => updateItemCount(index, 20)}
+                                                onClick={() => updateItemCount(index, 1000)}
                                             >
                                                 +1kg
                                             </button>
                                         </div>
                                         <p className="mt-2 font-medium">
-                                            Subtotal: ${((item.ItemCount / multiplier) * item.ItemPrice).toFixed(2)}
+                                            Subtotal: ${((item.buyAmount / multiplier) * item.ItemPrice).toFixed(2)}
                                         </p>
                                     </div>
                                 </div>

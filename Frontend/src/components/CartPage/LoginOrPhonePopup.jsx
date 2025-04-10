@@ -65,6 +65,9 @@ const LoginOrPhone = ({setShowPopUp}) => {
     const handlePhoneClick = async () => {
         setShowPopUp(false);
         Util.tempPhoneNumber = phoneNo;
+        if (Util.CallVerification != null) {
+            Util.CallVerification(true);
+        }
     };
 
     let lastVal = '';
