@@ -15,6 +15,13 @@ public class Logger {
         System.out.println(prefix + s);
     }
 
+    public static String format(String s, Object... objects){
+        for (Object object : objects) {
+            s = s.replaceFirst("%s", object.toString());
+        }
+        return s;
+    }
+
     public static void debugLog(String debugType, String s, Object... objects) {
         boolean shouldPrint = DEBUG[0].equalsIgnoreCase("all");
         if (!shouldPrint) {

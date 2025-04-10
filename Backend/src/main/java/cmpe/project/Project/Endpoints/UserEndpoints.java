@@ -1,5 +1,6 @@
 package cmpe.project.Project.Endpoints;
 
+import ch.qos.logback.core.joran.sanity.Pair;
 import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
 import cmpe.project.Project.Utility.Util;
 import org.springframework.http.HttpStatus;
@@ -124,6 +125,9 @@ public class UserEndpoints {
         }
     }
 
+
+
+
     @GetMapping("/registerUserFull")
     public ResponseEntity<?> registerUserFull(
             @RequestHeader("userID") String userID,
@@ -196,10 +200,86 @@ public class UserEndpoints {
         ));
     }
 
+    @GetMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestHeader("phoneNo") String phoneNo,
+                                           @RequestHeader("username") String username,
+                                           @RequestHeader("code") String code,
+                                           @RequestHeader("newPassword") String password) {
+        log("Pass reset requested for phone number : %s with code %s", phoneNo, code);
 
 
+        PasswordVerificationCode codeClass = passVerificationCodes.get(phoneNo);
+        if(codeClass == null){
+            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Wrong Code. Please Try Again."));
+        }
+        String codeWeHave = codeClass.code;
+        if(codeWeHave == null || !codeWeHave.equals(code)){
+            log("The code does not match, %s != %s", codeWeHave, code);
+            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Wrong Code. Please Try Again."));
+        }
+
+        String userQuery = "UPDATE users SET password = ? WHERE phone = ? AND username = ?";
+        Object[] userParams = {password, codeClass.phoneNo, codeClass.username};
+        try {
+            DatabaseHandler.INSTANCE.executeQuery(userQuery, userParams);
+        } catch (SQLException e) {
+            logError("Error executing user SQL request: " + userQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to update user information"));
+        }
+
+        log("The code matches.");
+        return ResponseEntity.ok().body(Map.of("msg", "success"));
+    }
+
+    @GetMapping("/password-reset-request")
+    public ResponseEntity<?> passResetCode(@RequestHeader("username") String username,
+                                        @RequestHeader("phoneNo") String phoneNo) {
+
+        log("Password reset requested for user %s", username);
+
+        String query = "SELECT * FROM users WHERE username = ? AND phone = ?";
+        Object[] params = { username, phoneNo.replaceAll("[^0-9+]", "") };
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(query, params)) {
+            if (rs == null || !rs.next()) {
+                return ResponseEntity.ok().body(Map.of("msg", "error", "message", "The username/phone number you provided was incorrect."));
+            }
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + query + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "There was an internal server error, please try again later."));
+        }
+
+        String verificationCode = generateVerificationCode();
+
+        passVerificationCodes.put(phoneNo, new PasswordVerificationCode(verificationCode, username, phoneNo));
+
+        try{
+            sendSMS(phoneNo, format("Your account %s has requested a password reset. Your Code is : %s", username.replaceAll("[^a-zA-Z0-9]",""), verificationCode));
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "There was an error sending the phone number : " + e.getMessage()));
+        }
+
+
+        return ResponseEntity.ok().body(Map.of("msg", "success"));
+    }
+
+
+
+    private class PasswordVerificationCode{
+        public String code;
+        public String username;
+        public String phoneNo;
+
+        public PasswordVerificationCode(String code, String username, String phoneNo) {
+            this.code = code;
+            this.username = username;
+            this.phoneNo = phoneNo;
+        }
+    }
 
     public static HashMap<String, String> verificationCodes = new HashMap<>();
+    public static HashMap<String, PasswordVerificationCode> passVerificationCodes = new HashMap<>();
 
     @GetMapping("/verify-code")
     public ResponseEntity<?> verifyCode(@RequestHeader("phoneNo") String phoneNo,
@@ -226,11 +306,11 @@ public class UserEndpoints {
         verificationCodes.put(phoneNo, verificationCode);
 
         try{
-            sendSMS(phoneNo, verificationCode);
+            sendSMS(phoneNo, "Your new code is " + verificationCode);
         }
         catch(Exception e){
             e.printStackTrace();
-            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "There was an error sending the phone number : " + e.getMessage()));
+            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "There was an error sending to your phone number : " + e.getMessage()));
         }
 
 
@@ -241,9 +321,9 @@ public class UserEndpoints {
         return String.format("%06d", (int) (Math.random() * 900000) + 100000);
     }
 
-    private void sendSMS(String phoneNumber, String verificationCode) throws Exception {
+    private void sendSMS(String phoneNumber, String message) throws Exception {
         phoneNumber = phoneNumber.replaceAll("[^0-9+]", "");
-        String remoteCmd = "bash -c 'termux-sms-send -n \"" + phoneNumber + "\" \"Your new code is " + verificationCode + "\"'";
+        String remoteCmd = "bash -c 'termux-sms-send -n \"" + phoneNumber + "\" \"" + message + "\"'";
         String command = "ssh phonePush \"" + remoteCmd + "\"";
 
         System.out.println("Sending SMS: " + command);

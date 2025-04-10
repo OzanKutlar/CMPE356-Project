@@ -1,25 +1,21 @@
-import React, {useState, useEffect} from 'react';
-import Util from '../../../Util.js';
+import React, { useState, useEffect } from 'react';
 import './LoginPopup.css';
-import {EyeIcon, EyeOffIcon} from "../Icons.jsx"; // Import the updated CSS file
+import Util from "../../../Util.js";
 
-const ChangePassword = ({setChangePass}) => {
-    const [oldPass, setOldPass] = useState('');
-    const [newPass, setNewPass] = useState('');
-    const [newPassConf, setNewPassConf] = useState('');
-    const [showPasswordField, setShowPasswordField] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-    const [disableLoginButton, setDisableLoginButton] = useState(true);
-    const [showPasswordConf, setShowPasswordConf] = useState(false);
-    const [showConfirmPasswordField, setShowConfirmPasswordField] = useState(false);
+const ChangePasswordPopup = ({ setShowPopUp }) => {
+    const [username, setUsername] = useState('');
+    const [phoneNo, setPhoneNo] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [verificationCode, setVerificationCode] = useState('');
+    const [showCodeField, setShowCodeField] = useState(false);
     const [fadeIn, setFadeIn] = useState(false);
-    const [buttonText, setButtonText] = useState('Change Password');
-    const [buttonDest, setButtonDest] = useState('home');
-    const [buttonColor, setButtonColor] = useState('bg-blue-600');
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [buttonColor, setButtonColor] = useState('#007bff');
     const [isHovered, setIsHovered] = useState(false);
-
-    const [passwordError, setPasswordError] = useState('');
-
+    const [isResendDisabled, setIsResendDisabled] = useState(false);
+    const [resendTimer, setResendTimer] = useState(60);
 
     useEffect(() => {
         const timeout = setTimeout(() => setFadeIn(true), 50);
@@ -29,138 +25,291 @@ const ChangePassword = ({setChangePass}) => {
         };
     }, []);
 
+    useEffect(() => {
+        let interval;
+        if (isResendDisabled && resendTimer > 0) {
+            interval = setInterval(() => {
+                setResendTimer(prev => prev - 1);
+            }, 1000);
+        } else if (resendTimer === 0) {
+            setIsResendDisabled(false);
+            setResendTimer(60);
+        }
+        return () => clearInterval(interval);
+    }, [isResendDisabled, resendTimer]);
 
+    let lastformat = '';
 
-    const handlePassword = (e) => {
-        const {name, value} = e.target;
+    function formatPhoneNumber(phone) {
+        if (phone === lastformat) {
+            return phone;
+        }
+        let offset = Number(phone.length >= 13);
 
-        setShowConfirmPasswordField(newPass.length >= 4)
-        setNewPass(value);
+        const pattern = [
+            {index: 0, prefix: "+"},
+            {index: 2 + offset, prefix: " ("},
+            {index: 5 + offset, prefix: ") "},
+            {index: 8 + offset, prefix: " "},
+            {index: 10 + offset, prefix: " "}
+        ];
+
+        let formatted = "";
+        for (let i = 0; i < phone.length; i++) {
+            let formatRule = pattern.find(p => p.index === i);
+            if (formatRule) formatted += formatRule.prefix;
+
+            formatted += phone[i];
+        }
+        let formatRule = pattern.find(p => p.index === phone.length);
+        if (formatRule) formatted += formatRule.prefix;
+        return formatted;
     }
 
-    const handleConfirmPass = (e) =>{
-        const {name, value} = e.target;
+    let lastVal = '';
 
-        setNewPassConf(value);
+    const handlePhoneChange = (e) => {
+        const { value } = e.target;
+        if(value.length > 20) return;
 
-        if(value.length >= newPass.length) {
-            if (value !== newPass) {
-                setDisableLoginButton(true);
-                setPasswordError("Please Confirm Your Password");
+        let phoneNum;
+        if (lastVal.length > value.length) {
+            phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, ""));
+        } else {
+            if (value.replaceAll(/[^0-9]/g, "") === lastVal.replaceAll(/[^0-9]/g, "")) {
+                phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, "").slice(0, -1));
             } else {
-                setDisableLoginButton(false);
-                setPasswordError("");
+                phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, ""));
             }
         }
+        setPhoneNo(phoneNum);
+        lastVal = value;
+    };
 
-    }
+    const handleUsernameChange = (e) => {
+        setUsername(e.target.value);
+    };
 
+    const handleNewPasswordChange = (e) => {
+        setNewPassword(e.target.value);
+    };
 
-    const handleLoginClick = async () => {
-        const headers = {
-            oldPass: oldPass,
-            password: newPass,
-        };
+    const handleConfirmPasswordChange = (e) => {
+        setConfirmPassword(e.target.value);
+    };
 
-
-        try {
-            let s = await Util.callBackend("changePass", headers);
-
-            if (s.message === "Success") {
-                Util.savedUser = s.user;
-                setChangePass(false);
-            } else {
-                console.error(`Error: ${s.message}`);
-            }
-        } catch (error) {
-            setChangePass(false);
-            console.error('Error during login/register:', error);
+    const handleCodeChange = (e) => {
+        const { value } = e.target;
+        // Only allow numbers and limit to 6 digits
+        if (/^\d*$/.test(value) && value.length <= 6) {
+            setVerificationCode(value);
         }
     };
 
-    const handleForgotPasswordClick = () => {
-        Util.navigateTo('forgot');
+    const handleSendCode = async () => {
+        setErrorMessage('');
+
+        if (!username.trim()) {
+            setErrorMessage('Please enter your username');
+            return;
+        }
+
+        const cleanPhone = phoneNo.replaceAll(/[^0-9+]/g, "");
+        if (cleanPhone.length < 10) {
+            setErrorMessage('Please enter a valid phone number');
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+
+            const response = await Util.callBackend("user/password-reset-request", {
+                username: username,
+                phoneNo: cleanPhone
+            });
+
+            if (response.msg === "error") {
+                throw new Error(response.message || 'Failed to send verification code');
+            }
+
+            setShowCodeField(true);
+            setIsResendDisabled(true);
+
+        } catch (error) {
+            setErrorMessage(error.message || 'An error occurred. Please try again.');
+            console.error('Error sending verification code:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleResendCode = async () => {
+        await handleSendCode();
+    };
+
+    const handleChangePassword = async () => {
+        // Clear any previous errors
+        setErrorMessage('');
+
+        // Validate inputs
+        if (newPassword !== confirmPassword) {
+            setErrorMessage('Passwords do not match');
+            return;
+        }
+
+        if (newPassword.length < 8) {
+            setErrorMessage('Password must be at least 8 characters long');
+            return;
+        }
+
+        if (verificationCode.length !== 6) {
+            setErrorMessage('Please enter a valid 6-digit code');
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+
+            const response = await Util.callBackend("user/reset-password", {
+                username: username,
+                phoneNo: phoneNo.replaceAll(/[^0-9+]/g, ""),
+                code: verificationCode,
+                newPassword: newPassword
+            });
+
+            if (response.msg === "error") {
+                throw new Error(response.message || 'Failed to change password');
+            }
+
+            // Success, close the popup
+            setShowPopUp(false);
+
+        } catch (error) {
+            setErrorMessage(error.message || 'An error occurred. Please try again.');
+            console.error('Error changing password:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleCancel = () => {
+        setShowPopUp(false);
     };
 
     return (
         <div className="login-popup-wrapper">
             {/* Background Overlay */}
-            <div className="login-overlay" onClick={() => setChangePass(false)}></div>
+            <div className="login-overlay" onClick={handleCancel}></div>
 
             {/* Popup */}
             <div className={`login-popup ${fadeIn ? 'show' : ''}`}>
-                {!Util.forgot && (
-                    <input
-                        type="text"
-                        placeholder='Your old password'
-                        value={oldPass}
-                        onChange={(e) => setOldPass(e.target.value)}
-                        className="w-full p-3 mb-4 border rounded"
-                    />
-                )}
+                <h2 className="text-2xl font-bold mb-4">Change Password</h2>
 
-                <div>
-                    <div className="relative w-full">
+                {!showCodeField ? (
+                    <>
+                        <p className="mb-4">Please enter your username and the phone number associated with your account.</p>
                         <input
-                            type={showPassword ? "text" : "password"}
-                            id="password"
-                            name="password"
-                            value={newPass}
-                            onChange={handlePassword}
-                            placeholder="Your password"
-                            className={`w-full p-3 text-sm border rounded-md focus:ring-1 focus:ring-blue-500 ${
-                                passwordError !== '' ? 'border-red-500 bg-red-200' : 'border-gray-300'
-                            }`}
+                            type="text"
+                            placeholder="Username"
+                            value={username}
+                            onChange={handleUsernameChange}
+                            className="w-full p-3 mb-4 border rounded"
+                            disabled={isLoading}
                         />
+                        <input
+                            type="text"
+                            placeholder='+90 (xxx) xxx xx xx'
+                            value={phoneNo}
+                            onChange={handlePhoneChange}
+                            className="w-full p-3 mb-4 border rounded"
+                            disabled={isLoading}
+                        />
+                        {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
                         <button
-                            type="button"
-                            className="fixed-password-toggle absolute inset-y-0 right-0 flex items-center"
-                            onClick={() => setShowPassword(!showPassword)}
+                            onClick={handleSendCode}
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
+                            style={{backgroundColor: isHovered ? '#0056b3' : buttonColor}}
+                            className="w-full px-5 py-3 rounded text-white text-lg cursor-pointer transition-colors duration-300"
+                            disabled={isLoading}
                         >
-                            {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                            {isLoading ? 'Sending...' : 'Send Verification Code'}
                         </button>
-                    </div>
+                        <button
+                            onClick={handleCancel}
+                            className="w-full mt-2 px-5 py-3 rounded text-gray-700 text-lg cursor-pointer transition-colors duration-300 border"
+                        >
+                            Cancel
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        <p className="mb-2">Verification code sent to:</p>
+                        <p className="font-medium mb-4">{phoneNo}</p>
 
-                    {passwordError !== '' && <p className="text-xs text-red-500">{passwordError}</p>}
-                </div>
+                        <input
+                            type="password"
+                            placeholder="New Password"
+                            value={newPassword}
+                            onChange={handleNewPasswordChange}
+                            className="w-full p-3 mb-4 border rounded"
+                            disabled={isLoading}
+                        />
 
-                <div className={`password-field-container ${showConfirmPasswordField ? 'slide-down' : ''}`}>
-                    {showConfirmPasswordField && (
-                        <div>
-                            <div className="relative w-full">
-                                <input
-                                    type={showPasswordConf ? "text" : "password"}
-                                    id="passwordConf"
-                                    name="passwordConf"
-                                    value={newPassConf}
-                                    onChange={handleConfirmPass}
-                                    placeholder="Confirm your password"
-                                    className={`w-full p-3 text-sm border rounded-md focus:ring-1 focus:ring-blue-500 ${
-                                        passwordError !== '' ? 'border-red-500 bg-red-200' : 'border-gray-300'
-                                    }`}
-                                />
-                                <button
-                                    type="button"
-                                    className="fixed-password-toggle absolute inset-y-0 right-0 flex items-center"
-                                    onClick={() => setShowPasswordConf(!showPasswordConf)}
-                                >
-                                    {showPasswordConf ? <EyeOffIcon /> : <EyeIcon />}
-                                </button>
-                            </div>
+                        <input
+                            type="password"
+                            placeholder="Confirm New Password"
+                            value={confirmPassword}
+                            onChange={handleConfirmPasswordChange}
+                            className="w-full p-3 mb-4 border rounded"
+                            disabled={isLoading}
+                        />
 
+                        <input
+                            type="text"
+                            placeholder="Enter 6-digit code"
+                            value={verificationCode}
+                            onChange={handleCodeChange}
+                            className="w-full p-3 mb-4 border rounded"
+                            disabled={isLoading}
+                            maxLength={6}
+                        />
+
+                        {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
+
+                        <button
+                            onClick={handleChangePassword}
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
+                            style={{backgroundColor: isHovered ? '#0056b3' : buttonColor}}
+                            className="w-full px-5 py-3 rounded text-white text-lg cursor-pointer transition-colors duration-300"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? 'Processing...' : 'Change Password'}
+                        </button>
+
+                        <div className="flex justify-between mt-4">
+                            <button
+                                onClick={handleResendCode}
+                                className="text-blue-600 hover:text-blue-800 text-sm"
+                                disabled={isResendDisabled || isLoading}
+                            >
+                                {isResendDisabled
+                                    ? `Resend code in ${resendTimer}s`
+                                    : 'Resend code'}
+                            </button>
+                            <button
+                                onClick={handleCancel}
+                                className="text-gray-600 hover:text-gray-800 text-sm"
+                            >
+                                Cancel
+                            </button>
                         </div>
-                    )}
-                </div>
-                <button
-                    onClick={handleLoginClick}
-                    disabled={disableLoginButton}
-                    className={`w-full px-5 py-3 rounded text-white ${disableLoginButton ? "bg-gray-600" : buttonColor} text-lg cursor-pointer transition-colors duration-300`}
-                >
-                    {buttonText}
-                </button>
+                    </>
+                )}
             </div>
         </div>
     );
 };
 
-export default ChangePassword;
+export default ChangePasswordPopup;
