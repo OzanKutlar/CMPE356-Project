@@ -1,7 +1,6 @@
 package cmpe.project.Project.Services;
 
 import java.math.BigDecimal;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,13 +24,33 @@ public class OrderService {
     private OrderRepository orderRepository;
 
     @Autowired
+    private CreditCardService creditCardService;
+
+    @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    public void SubmitOrder(CustomerOrderDTO order) throws SQLException {
+    public void SubmitOrder(CustomerOrderDTO order) throws SQLException, RuntimeException {
         long orderId = orderRepository.insertOrder(order);
+        String paymentMethod = order.getPaymentMethod();
+        boolean isPending = true;
+        long paymentId = 0;
 
-        for (SplitOrderDTO split : order.getSplits()) {
-            long splitId = orderRepository.insertOrderSplit(orderId, split);
+        List<SplitOrderDTO> splits = order.getSplits();
+        List<BigDecimal> splitCosts = new ArrayList<>();
+        BigDecimal totalCost = orderRepository.CalculateTotalCost(splits, splitCosts);
+
+        if(paymentMethod.equals("Credit Card")) { // CHECK IF CREDIT CARD TRANSACTION SUCCEEDS BEFORE USING TOTAL COST CALCULATION
+            if(creditCardService.HandleTransaction(order.getCardCredentials(), totalCost))
+                throw new RuntimeException("Transaction failed, retry later");
+            paymentId = orderRepository.insertPayment(paymentMethod, totalCost, "completed");
+            isPending = false;
+        }
+
+        for (int i = 0; i<splits.size(); i++) {
+            SplitOrderDTO split = splits.get(i);
+            if(isPending)
+                paymentId = orderRepository.insertPayment(paymentMethod, splitCosts.get(i), "pending");
+            long splitId = orderRepository.insertOrderSplit(orderId, split.getStoreName(), paymentId);
             orderRepository.insertOrderItems(splitId, split);
         }
         Object[] arr = orderRepository.GetListByFilter("o.order_id = (SELECT MAX(order_id) FROM orders) ", (Object[]) null).toArray();
