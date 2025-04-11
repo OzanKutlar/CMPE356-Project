@@ -20,7 +20,7 @@ const BestSellerListFullScreen = () => {
         }, 300); // Match this with your animation duration (0.3s = 300ms)
     };
 
-    const countToKG = 50;
+    const countToKG = 1;
     const multiplier = 1000 / countToKG;
     const buttonAdd = (100 / countToKG);
 
@@ -35,11 +35,13 @@ const BestSellerListFullScreen = () => {
         try {
             // Call the backend with the purchase endpoint and headers
             const headers = {
+                userID: Util.savedUser.id,
+                itemID: selectedItem.id,
                 itemName: selectedItem.ItemName,
                 amount: quantity
             };
 
-            await Util.callBackend("updateStock", headers);
+            await Util.callBackend("butcher/updateStock", headers);
             let unit = "";
             let amount = quantity * countToKG;
             if (amount < 1000) unit = "gs"
@@ -50,7 +52,7 @@ const BestSellerListFullScreen = () => {
 
             setPurchaseMessage({
                 type: "success",
-                text: `Added ${amount} ${unit} of ${selectedItem.ItemName} to your stock.`
+                text: `Your ${selectedItem.ItemName} stock is now set to ${amount}${unit}.`
             });
         } catch (err) {
             setPurchaseMessage({
@@ -64,7 +66,7 @@ const BestSellerListFullScreen = () => {
 
     useEffect(() => {
         setLoading(true);
-        Util.callBackend("getStock", {userID: Util.savedUser.id})
+        Util.callBackend("butcher/getStock", {userID: Util.savedUser.id})
             .then((data) => {
                 setBestSellers(data);
                 setLoading(false);
@@ -116,9 +118,9 @@ const BestSellerListFullScreen = () => {
                                     <p className="text-sm text-gray-500 mt-2">
                                         Sold Stock:{" "}
                                         <span className="font-bold text-green-800">
-                                            {(item.startStock - item.currentStock) * countToKG < 1000
-                                                ? `${(item.startStock - item.currentStock) * countToKG}g`
-                                                : `${((item.startStock - item.currentStock) * countToKG / 1000).toFixed(2)}kg`}
+                                            {(item.soldStock) * countToKG < 1000
+                                                ? `${(item.soldStock) * countToKG}g`
+                                                : `${((item.soldStock) * countToKG / 1000).toFixed(2)}kg`}
                                         </span>
                                     </p>
                                     <p className="text-sm text-gray-500 mt-2">
@@ -177,28 +179,28 @@ const BestSellerListFullScreen = () => {
                                         className={`flex ${isMobile ? "flex-col" : "flex-row"} items-center justify-center`}>
                                         {/* Buttons with adjustments for spacing */}
                                         <button
-                                            onClick={() => setQuantity((prev) => Math.max(1, prev - multiplier))}
+                                            onClick={() => setQuantity((prev) => Math.max(0, prev - multiplier))}
                                             className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                                         >
                                             -1kg
                                         </button>
                                         <button
-                                            onClick={() => setQuantity((prev) => Math.max(1, prev - (multiplier / 10)))}
+                                            onClick={() => setQuantity((prev) => Math.max(0, prev - (multiplier / 10)))}
                                             className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                                         >
                                             -100g
                                         </button>
                                         <button
-                                            onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                                            onClick={() => setQuantity((prev) => Math.max(0, prev - (multiplier / 20)))}
                                             className="px-4 mr-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                                         >
-                                            -{countToKG}g
+                                            -{(multiplier / 20)}g
                                         </button>
                                         <button
-                                            onClick={() => setQuantity((prev) => prev + 1)}
+                                            onClick={() => setQuantity((prev) => prev + (multiplier / 20))}
                                             className="px-4 ml-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                                         >
-                                            +{countToKG}g
+                                            +{(multiplier / 20)}g
                                         </button>
                                         <button
                                             onClick={() => setQuantity((prev) => prev + (multiplier / 10))}

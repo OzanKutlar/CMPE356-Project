@@ -1,16 +1,23 @@
 package cmpe.project.Project.Endpoints;
 
+import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
+import cmpe.project.Project.Utility.Util;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static cmpe.project.Project.Utility.Util.logHeaders;
+import static cmpe.project.Project.Utility.Logger.*;
+import static cmpe.project.Project.Utility.Util.*;
 
 @RestController
 @RequestMapping("/api/butcher")
@@ -88,7 +95,7 @@ public class ButcherEndpoints {
     @GetMapping("/getTransactions")
     public ResponseEntity<?> getTransactions(@RequestHeader Map<String, String> headers) {
         logHeaders("getTransactions", headers);
-        return ResponseEntity.ok().body(new ArrayList<>()); // Stub: Replace with actual logic
+        return ResponseEntity.ok().body(new ArrayList<>());
     }
 
     @GetMapping("/getRecipes")
@@ -120,18 +127,59 @@ public class ButcherEndpoints {
      * @return
      */
     @GetMapping("/getStock")
-   public ResponseEntity<?> getStock(@RequestHeader Map<String, String> headers) {
-        logHeaders("getStock", headers);
-        List<Map<String, Object>> stockData = new ArrayList<>();
-        // Example mock data structure for testing
-        stockData.add(Map.of(
-            "ItemName", "Minced Meat",
-            "ItemPrice", 59.99,
-            "ItemPhotoLink", "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
-            "currentStock", 12,
-            "startStock", 30
-        ));
-        return ResponseEntity.ok().body(stockData);
+   public ResponseEntity<?> getStock(@RequestHeader("userID") String userID) {
+
+
+        String userIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID));
+        if (userIdFromSession == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid user ID"));
+        }
+
+
+        String isAdminQuery = "SELECT * FROM managers WHERE userID = ?";
+        Object[] isAdminParams = { userIdFromSession };
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isAdminQuery, isAdminParams)) {
+            if (rs == null || !rs.next()) {
+                System.out.println("User with ID " + userID + " is not authorized to get stock of this store");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User is not authorized"));
+            }
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + isAdminQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user role"));
+        }
+
+        log("User %s requested butcher stock.", userIdFromSession);
+
+
+        List<Map<String, Object>> items = new ArrayList<>();
+
+        String getOrdersQuery = "SELECT p.* FROM products p WHERE p.store_id IN (SELECT storeID FROM managers WHERE userID = ?);";
+        Object[] queryParams = { userIdFromSession };
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getOrdersQuery, queryParams)) {
+            while (rs != null && rs.next()) {
+                Map<String, Object> item = new HashMap<>();
+                item.put("ItemName", rs.getString("name"));
+                item.put("id", rs.getString("product_id"));
+                item.put("ItemPhotoLink", rs.getString("photo"));
+                item.put("currentStock", rs.getString("currentStock"));
+                item.put("soldStock", rs.getString("soldStock"));
+                try{
+                    item.put("ItemPrice", Double.parseDouble(rs.getString("price_per_kg")));
+                }
+                catch(Exception e){
+                    item.put("totalPrice", 0.00d);
+                }
+                items.add(item);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            logError("Error executing SQL request: " + getOrdersQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user role"));
+        }
+
+
+
+        return ResponseEntity.ok().body(items);
     }
 }
 
