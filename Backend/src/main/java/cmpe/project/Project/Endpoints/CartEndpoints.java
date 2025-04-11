@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static cmpe.project.Project.Utility.Logger.log;
 import static cmpe.project.Project.Utility.Logger.logError;
@@ -71,21 +72,155 @@ public class CartEndpoints {
     }
 
     @GetMapping("/submitOrder")
-    public ResponseEntity<?> submitOrder( // ADD PROPER ORDER SUBMISSION
+    public ResponseEntity<?> submitOrder(
+            @RequestHeader("istemp") String istemp,
+            @RequestHeader("phoneNo") String phoneNo,
             @RequestHeader("userId") String userId,
-            @RequestBody CustomerOrderDTO request) {
-        System.out.println("Order submitted by user: " + userId);
+            @RequestHeader("items") String cartItemsJson,
+            @RequestHeader("address") String address) {
 
+        log("Processing order submission");
         try {
-            orderService.SubmitOrder(request);
-            carts.remove(userId);
-            return ResponseEntity.noContent().build();
+            ObjectMapper objectMapper = new ObjectMapper();
+            ArrayList<Map<String, Object>> cartItems = objectMapper.readValue(cartItemsJson, new TypeReference<>() {});
+
+            // Validate cart items first
+            boolean hasErrors = false;
+            String errorMessage = "";
+
+            // Check if cart is empty
+            if (cartItems.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Cart is empty"));
+            }
+
+            // Track total price
+            double totalPrice = 0;
+            StringBuilder contentBuilder = new StringBuilder();
+
+            // Validate each item and check stock availability
+            for (Map<String, Object> cartItem : cartItems) {
+                String productId = (String) cartItem.get("id");
+                if (productId == null) {
+                    log("Invalid cart item: missing product id");
+                    hasErrors = true;
+                    errorMessage = "Invalid cart item: missing product id";
+                    break;
+                }
+
+                Object[] productParams = {productId};
+                String getProductQuery = "SELECT currentStock, price_per_kg, name FROM products WHERE product_id = ?";
+
+                try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getProductQuery, productParams)) {
+                    if (rs == null || !rs.next()) {
+                        log("Product not found: " + productId);
+                        hasErrors = true;
+                        errorMessage = "Product not found: " + productId;
+                        break;
+                    }
+
+                    double currentStock = rs.getDouble("currentStock");
+                    double price = rs.getDouble("price_per_kg");
+                    String productName = rs.getString("name");
+
+                    Object buyAmount = cartItem.get("buyAmount");
+                    if (buyAmount == null) {
+                        log("Invalid cart item: missing buyAmount");
+                        hasErrors = true;
+                        errorMessage = "Invalid cart item: missing buyAmount for " + productName;
+                        break;
+                    }
+
+                    try {
+                        double amount = Double.parseDouble(String.valueOf(buyAmount));
+                        if (amount > currentStock) {
+                            log("Not enough stock for item: %s", cartItem.get("ItemName"));
+                            hasErrors = true;
+                            errorMessage = "Not enough stock for item: " + productName;
+                            break;
+                        }
+
+                        // Calculate item price and add to total
+                        double itemPrice = price * amount;
+                        totalPrice += itemPrice;
+
+                        String suffix;
+
+                        if(amount > 1000){
+                            suffix = "kg's";
+                        }
+                        else if(amount == 1000){
+                            suffix = "kg";
+                        }
+                        else{
+                            suffix = "g's";
+                        }
+
+                        // Build content string
+                        if (contentBuilder.length() > 0) {
+                            contentBuilder.append(",");
+                        }
+                        contentBuilder.append(productName).append(" - ").append(amount).append(suffix);
+
+                        log("Item %s added to order.", productName);
+                    } catch (NumberFormatException e) {
+                        log("Invalid buyAmount for item: %s", cartItem.get("ItemName"));
+                        hasErrors = true;
+                        errorMessage = "Invalid quantity format for " + productName;
+                        break;
+                    }
+                } catch (SQLException e) {
+                    log("Error getting product information: " + e.getMessage());
+                    hasErrors = true;
+                    errorMessage = "Database error: " + e.getMessage();
+                    break;
+                }
+            }
+
+            if (hasErrors) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", errorMessage));
+            }
+
+            String content = contentBuilder.toString();
+
+            String createDeliveryQuery = "INSERT INTO deliveries (address, istemp, totalPrice, content, status, assignedTo, phone_no, user_id, store_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            String status = "pending";
+            String assignedTo = "-1";
+            String store_id = "1";
+
+
+            Object[] deliveryParams = {address, istemp, totalPrice, content, status, assignedTo, phoneNo, userId, store_id};
+
+            try {
+                DatabaseHandler.INSTANCE.executeQuery(createDeliveryQuery, deliveryParams);
+            } catch (SQLException e) {
+                log("Failed to create delivery record: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to create delivery record"));
+            }
+
+            for (Map<String, Object> cartItem : cartItems) {
+                String productId = (String) cartItem.get("id");
+                double amount = Double.parseDouble(String.valueOf(cartItem.get("buyAmount")));
+
+                String updateStockQuery = "UPDATE products SET currentStock = currentStock - ? WHERE product_id = ?";
+                try {
+                    DatabaseHandler.INSTANCE.sendRequest(updateStockQuery, new Object[] {amount, productId});
+                } catch (SQLException e) {
+                    log("Warning: Failed to update stock for product " + productId + ": " + e.getMessage());
+                }
+            }
+
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "success"
+            ));
 
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            e.printStackTrace();
+            log("Order submission failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to submit order"));
         }
-
     }
+
 
     @GetMapping("/cancelOrder")
     public ResponseEntity<?> cancelOrder(
