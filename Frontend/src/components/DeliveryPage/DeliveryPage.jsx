@@ -9,7 +9,6 @@ import NavbarDelivery from './NavbarDelivery.jsx';
 
 const DeliveryPage = () => {
     const isMounted = useRef(true);
-    const userId = Util.savedUser.id;
     const [activeTab, setActiveTab] = useState('Waiting Orders');
     const [isListBarOpen, setIsListBarOpen] = useState(false);
     const [WaitingOrders, setWaitingOrders] = useState([]);
@@ -32,7 +31,7 @@ const DeliveryPage = () => {
         const fetchOrders = async () => {
             try {
                 const response_unassigned = await Util.callBackend('delivery/get-unassigned-orders');
-                const response_assigned = await Util.callBackend(`delivery/get-assigned-orders/${userId}`);
+                const response_assigned = await Util.callBackend(`delivery/get-assigned-orders/${Util.savedUser.id}`);
                 setWaitingOrders(response_unassigned);
                 setTakenOrders(response_assigned);
             } catch (error) {
@@ -144,7 +143,7 @@ const DeliveryPage = () => {
     //button handlers
     const handleTakeOrder = async (order, tab) => {
         const temp = order;
-        const response = await Util.callBackend(`delivery/assign-order/${userId}/${order.splitId}`);
+        const response = await Util.callBackend(`delivery/assign-order/${Util.savedUser.id}/${order.splitId}`);
         if(typeof response === 'string'){
             if(response.startsWith("Conflict"))
                 console.error(response);

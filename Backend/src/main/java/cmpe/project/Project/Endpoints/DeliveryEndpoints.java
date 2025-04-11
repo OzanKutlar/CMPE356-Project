@@ -1,5 +1,6 @@
 package cmpe.project.Project.Endpoints;
 
+import cmpe.project.Project.Utility.Util;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,18 +31,18 @@ public class DeliveryEndpoints {
     }
 
     @GetMapping("/get-assigned-orders/{userId}")
-    public ResponseEntity<?> GetAssignedOrders(@PathVariable long userId) {
+    public ResponseEntity<?> GetAssignedOrders(@PathVariable String userId) {
         try {
-            return ResponseEntity.ok(orderService.GetAssignedOrdersFilterByDriver(userId));
+            return ResponseEntity.ok(orderService.GetAssignedOrdersFilterByDriver(Long.valueOf(UserEndpoints.sessionMap.get(Util.getUuidOrNull(userId)))));
         } catch (Exception e) {
             return ResponseEntity.ok().body("Failed to get assigned orders: " + e.getMessage());
         }
     }
 
     @PatchMapping("/assign-order/{userId}/{splitId}")
-    public ResponseEntity<?> AssignOrder(@PathVariable long userId, @PathVariable long splitId) {
+    public ResponseEntity<?> AssignOrder(@PathVariable String userId, @PathVariable long splitId) {
         try {
-            orderService.AssignOrder(splitId, userId);
+            orderService.AssignOrder(splitId, Long.parseLong(UserEndpoints.sessionMap.get(Util.getUuidOrNull(userId))));
             return ResponseEntity.noContent().build();
 
         } catch (RuntimeException e) {
