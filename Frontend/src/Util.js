@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { wsService } from './WebSocketService';
+import wsService from './WebSocketService';
 class Util {
     static backendIp = 'http://127.0.0.1:33000/api';
     static fakeIt = false;
@@ -566,13 +565,14 @@ class Util {
     }
 
 
+    // Initialize STOMP websocket connection and return the connection promise
     static initializeWebSocket(serverUrl = 'http://localhost:8080') {
-        wsService.connect(serverUrl);
+        return wsService.connect(serverUrl);
     }
     
-    // Subscribe to a STOMP topic
-    static subscribeToTopic(topic, callback) {
-        wsService.subscribe(topic, callback);
+    // Subscribe to a STOMP topic, now returns a promise that resolves when subscribed
+    static async subscribeToTopic(topic, callback) {
+        await wsService.subscribe(topic, callback);
     }
     
     // Unsubscribe from a STOMP topic

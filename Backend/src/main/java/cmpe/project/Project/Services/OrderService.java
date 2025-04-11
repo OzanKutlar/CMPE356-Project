@@ -72,7 +72,7 @@ public class OrderService {
         messagingTemplate.convertAndSend("/topic/order-canceled", payload);
     }
 
-    public void AssignOrder(long splitId, long driverId) throws SQLException {
+    public void AssignOrder(long splitId, long driverId) throws SQLException, RuntimeException {
         orderRepository.UpdateBySplitId(splitId, "driver_id = ?, status = ?", "status = ?", driverId, "assigned", "unassigned");
 
         String message = "Order #" + splitId + " has been assigned to driver: " + driverId;
@@ -93,12 +93,15 @@ public class OrderService {
     }
 
     public List<DeliveryOrderDTO> GetUnassignedOrders() throws SQLException {
-        return orderRepository.GetListByFilter("os.status = ? ", "unassigned");
+        List<DeliveryOrderDTO> list = orderRepository.GetListByFilter("os.status = ? ", "unassigned");
+        System.out.println(list);
+        return list;
     }
 
     public List<DeliveryOrderDTO> GetAssignedOrdersFilterByDriver(Long driverId) throws SQLException {
-        return orderRepository.GetListByFilter("os.status = ? AND os.driver_id = ? ", "assigned", driverId);
-        
+        List<DeliveryOrderDTO> list = orderRepository.GetListByFilter("os.status = ? AND os.driver_id = ? ", "assigned", driverId);
+        System.out.println(list);
+        return list;
     }
 
     

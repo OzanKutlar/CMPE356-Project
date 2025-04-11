@@ -14,8 +14,20 @@ export function OrderItem({
   const toggleExpand = (e) => {
     e.stopPropagation();
     onExpandChange(order);
-    handleMapRouting(order.startLocation, order.destination);
+    handleMapRouting(order.storeAddress, order.customerAddress);
   };
+
+
+  // private long orderId;
+  // private long splitId;
+  // private String storeName;
+  // private String storeAddress;
+  // private String customerAddress;
+  // private String paymentMethod;
+  // private String[] productNames;
+  // private String[] productAmounts;
+  // private BigDecimal totalPrice;
+
 
   // Render buttons based on current tab
   const renderButtons = () => {
@@ -25,7 +37,7 @@ export function OrderItem({
           <button 
             onClick={(e) => {
               e.stopPropagation();
-              handleTakeOrder(order, 'Taken Orders', currentTab);
+              handleTakeOrder(order, 'Taken Orders');
             }} 
             className="w-full flex items-center justify-center bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition-colors"
           >
@@ -38,7 +50,7 @@ export function OrderItem({
             <button 
               onClick={(e) => {
                 e.stopPropagation();
-                handleDropOrder(order, 'Waiting Orders', currentTab);
+                handleDropOrder(order, currentTab);
               }} 
               className="flex-1 flex items-center justify-center bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition-colors"
             >
@@ -73,9 +85,10 @@ export function OrderItem({
       {/* Basic Order Information */}
       <div className="flex justify-between items-center p-2 cursor-pointer">
         <div className="flex-grow">
-          <h3 className="font-semibold text-gray-800">Order: #{order.order_id}</h3>
+          <h3 className="font-semibold text-gray-800">Order: #{order.orderId}</h3>
+          <h4 className="font-semibold text-gray-800">Split: #{order.splitId}</h4>
           <h4 className="font-semibold text-gray-800">Pickup</h4>
-          <p className="text-gray-600 text-sm">{order.startLocation}</p>
+          <p className="text-gray-600 text-sm">{order.storeName}</p>
         </div>
         
         
@@ -93,10 +106,20 @@ export function OrderItem({
           <div className="space-y-1">
             <p className="whitespace-pre-line pt-2">
               <strong className="text-gray-700 mb-2">Products</strong> {"\n"}
-              {order.content.map(item => `${item}`).join("\n")}
+              {order.productNames.map((productName, index) => {
+                const productAmount = order.productAmounts[index]; // Get the corresponding productAmount
+                return `${productName} - ${productAmount}`;
+              }).join("\n")}
             </p>
           </div>
-          <p className='pt-4'><strong className='text-gray-700 mb-2'>Total Price: </strong>${order.totalPrice.toFixed(2)}</p>
+          <p className='pt-4'>
+            <strong className='text-gray-700 mb-2'>Payment Method: </strong>
+            ${order.paymentMethod}
+          </p>
+          <p className='pt-4'>
+            <strong className='text-gray-700 mb-2'>Total Price: </strong>
+            {order.paymentMethod === "Credit Card" ? "Paid" : `$${order.totalPrice.toFixed(2)}`}
+          </p>
         </div>
 
         {/* Action Buttons */}
@@ -108,13 +131,29 @@ export function OrderItem({
   );
 }
 
+
+  // private long orderId;
+  // private long splitId;
+  // private String storeName;
+  // private String storeAddress;
+  // private String customerAddress;
+  // private String paymentMethod;
+  // private String[] productNames;
+  // private String[] productAmounts;
+  // private BigDecimal totalPrice;
+
+
 OrderItem.propTypes = {
   order: PropTypes.shape({
-    order_id: PropTypes.number.isRequired,
+    orderId: PropTypes.number.isRequired,
+    splitId: PropTypes.number.isRequired,
+    storeName: PropTypes.string.isRequired,
+    paymentMethod: PropTypes.string.isRequired,
     totalPrice: PropTypes.number.isRequired,
-    content: PropTypes.array.isRequired,
-    startLocation: PropTypes.string.isRequired,
-    destination: PropTypes.string.isRequired
+    productNames: PropTypes.array.isRequired,
+    productAmounts: PropTypes.array.isRequired,
+    storeAddress: PropTypes.string.isRequired,
+    customerAddress: PropTypes.string.isRequired
   }).isRequired,
   onButtonClick: PropTypes.func.isRequired,
   currentTab: PropTypes.string.isRequired,

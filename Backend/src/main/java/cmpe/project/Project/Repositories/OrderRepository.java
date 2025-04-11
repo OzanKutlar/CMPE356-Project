@@ -1,5 +1,6 @@
 package cmpe.project.Project.Repositories;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.ResultSet;
@@ -18,7 +19,7 @@ import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
 @Repository
 public class OrderRepository {
 
-    public void UpdateBySplitId(long splitId, String columns, String filter, Object... data) throws SQLException {
+    public void UpdateBySplitId(long splitId, String columns, String filter, Object... data) throws SQLException, RuntimeException {
         String query =
         "UPDATE order_splits " +
         "SET " + columns +
@@ -36,26 +37,26 @@ public class OrderRepository {
 
         int rowsUpdated = DatabaseHandler.INSTANCE.executeQuery(query, params.toArray());
         if(rowsUpdated == 0)
-            throw new RuntimeException("This order is already assigned!");
+            throw new RuntimeException("Conflict: This order is already assigned!");
     }
 
     public List<DeliveryOrderDTO> GetListByFilter(String filter, Object... filterParams) throws SQLException {
         String query =
         "SELECT o.order_id, os.split_id, o.address AS customer_address, " +
         "pa.payment_method, s.name AS store_name, s.address AS store_address, " +
-        "GROUP_CONCAT(p.name) AS product_names " +
+        "GROUP_CONCAT(p.name) AS product_names, " +
         "GROUP_CONCAT(oi.amount) AS product_amounts, " +
-        "SUM(oi.price) AS total_price, " +
+        "SUM(oi.price) AS total_price " +
         "FROM orders o " +
         "JOIN order_splits os ON o.order_id = os.order_id " +
         "JOIN stores s ON os.store_id = s.store_id " +
         "JOIN order_items oi ON os.split_id = oi.split_id " +
         "JOIN products p ON oi.product_id = p.product_id " +
-        "JOIN payments pa ON os.payment_id = pa.payment_id" +
+        "JOIN payments pa ON os.payment_id = pa.payment_id " +
         "WHERE " + filter +
         "GROUP BY o.order_id, os.split_id, s.store_id " +
         "ORDER BY o.order_id, os.split_id, s.store_id";
-        
+
         ResultSet rs;
         if(filterParams != null && filterParams.length > 0) {
             List<Object> params = new ArrayList<>();
@@ -178,6 +179,7 @@ public class OrderRepository {
                     splitCost.setScale(2, RoundingMode.HALF_UP);
                 i++;
             }
+            splitCost.setScale(2, RoundingMode.HALF_UP);
             sum.add(splitCost);
             splitCosts.add(splitCost);
         }

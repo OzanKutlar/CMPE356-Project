@@ -25,7 +25,7 @@ public class DeliveryEndpoints {
         try {
             return ResponseEntity.ok(orderService.GetUnassignedOrders());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Failed to get unassigned orders: " + e.getMessage());
+            return ResponseEntity.ok().body("Failed to get unassigned orders: " + e.getMessage());
         }
     }
 
@@ -34,7 +34,7 @@ public class DeliveryEndpoints {
         try {
             return ResponseEntity.ok(orderService.GetAssignedOrdersFilterByDriver(userId));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Failed to get assigned orders: " + e.getMessage());
+            return ResponseEntity.ok().body("Failed to get assigned orders: " + e.getMessage());
         }
     }
 
@@ -45,9 +45,9 @@ public class DeliveryEndpoints {
             return ResponseEntity.noContent().build();
 
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            return ResponseEntity.ok().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Failed to assign order: " + e.getMessage());
+            return ResponseEntity.ok().body("Failed to assign order: " + e.getMessage());
         }
     }
 
@@ -55,9 +55,9 @@ public class DeliveryEndpoints {
     public ResponseEntity<?> DropOrder(@PathVariable long splitId) {
         try {
             orderService.DropOrder(splitId);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok().body("Success");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Failed to drop order: " + e.getMessage());
+            return ResponseEntity.ok().body("Failed to drop order: " + e.getMessage());
         }
     }
 
@@ -65,9 +65,9 @@ public class DeliveryEndpoints {
     public ResponseEntity<?> CompleteOrder(@PathVariable long splitId) {
         try {
             orderService.CompleteOrder(splitId);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok().body("Success");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Failed to complete order: " + e.getMessage());
+            return ResponseEntity.ok().body("Failed to complete order: " + e.getMessage());
         }
     }
 

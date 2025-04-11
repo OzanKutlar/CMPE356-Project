@@ -10,7 +10,7 @@ export function ListBarDelivery({ isDesktop, listContent, currentTab }) {
   }, [currentTab]);
 
   const handleExpandChange = (order) => {
-    setExpandedOrder(expandedOrder && expandedOrder.order_id === order.order_id ? null : order);
+    setExpandedOrder(expandedOrder && expandedOrder.splitId === order.splitId ? null : order);
   };
 
   return (
@@ -25,7 +25,7 @@ export function ListBarDelivery({ isDesktop, listContent, currentTab }) {
               key={index} 
               order={item} 
               currentTab={currentTab}
-              isExpanded={expandedOrder && expandedOrder.order_id === item.order_id}
+              isExpanded={expandedOrder && expandedOrder.splitId === item.splitId}
               onExpandChange={handleExpandChange}
             />
           ))
