@@ -27,20 +27,22 @@ const DeliveryPage = () => {
         }
     }, [isDesktop]);
 
-    useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response_unassigned = await Util.callBackend('delivery/get-unassigned-orders');
-                const response_assigned = await Util.callBackend(`delivery/get-assigned-orders/${Util.savedUser.id}`);
-                setWaitingOrders(response_unassigned);
-                setTakenOrders(response_assigned);
-            } catch (error) {
-                console.error('Failed to fetch orders:', error);
-            }
-        };
 
-        fetchOrders();
-    });
+    const fetchOrders = async () => {
+        try {
+            if(Util.first) return;
+            const response_unassigned = await Util.callBackend('delivery/get-unassigned-orders');
+            const response_assigned = await Util.callBackend(`delivery/get-assigned-orders`, {userID:Util.savedUser.id});
+            setWaitingOrders(response_unassigned);
+            setTakenOrders(response_assigned);
+            Util.first = true;
+        } catch (error) {
+            console.error('Failed to fetch orders:', error);
+        }
+    };
+
+    fetchOrders();
+
 
     // Handle tab click
     const handleTabClick = (tab) => {
@@ -101,7 +103,7 @@ const DeliveryPage = () => {
     //button handlers
     const handleTakeOrder = async (order, tab) => {
         const temp = order;
-        const response = await Util.callBackend(`delivery/assign-order/${Util.savedUser.id}/${order.splitId}`);
+        const response = await Util.callBackend(`delivery/assign-order`, {userID:Util.savedUser.id, delivery_id:order.splitId});
         if(typeof response === 'string'){
             if(response.startsWith("Conflict"))
                 console.error(response);
@@ -114,7 +116,7 @@ const DeliveryPage = () => {
     };
 
     const handleDropOrder = async (order, currentTab) => {
-        const response = await Util.callBackend(`delivery/drop-order/${order.splitId}`);
+        const response = await Util.callBackend(`delivery/drop-order`, {delivery_id:order.splitId});
         if(response.startsWith("Failed")){
             console.error(response);
         } else {
@@ -123,7 +125,7 @@ const DeliveryPage = () => {
     };
 
     const handleComplete = async (order, currentTab) => {
-        const response = await Util.callBackend(`delivery/complete-order/${order.splitId}`);
+        const response = await Util.callBackend(`delivery/complete-order`, {delivery_id:order.splitId});
         if(response.startsWith("Failed")){
             console.error(response);
         } else {

@@ -48,8 +48,8 @@ public class DeliveryEndpoints {
     }
 
 
-    @GetMapping("/get-assigned-orders/{user}")
-    public ResponseEntity<?> GetAssignedOrders(@PathVariable String user) {
+    @GetMapping("/get-assigned-orders")
+    public ResponseEntity<?> GetAssignedOrders(@RequestHeader("userID") String user) {
         List<Map<String, Object>> assignedOrders = new ArrayList<>();
 
         String userId = UserEndpoints.sessionMap.get(Util.getUuidOrNull(user));
@@ -79,8 +79,8 @@ public class DeliveryEndpoints {
     }
 
 
-    @PatchMapping("/assign-order/{user}/{delivery_id}")
-    public ResponseEntity<?> AssignOrder(@PathVariable String user, @PathVariable String delivery_id) {
+    @GetMapping("/assign-order")
+    public ResponseEntity<?> AssignOrder(@RequestHeader("userID") String user, @RequestHeader("delivery_id") String delivery_id) {
 
         String userId = UserEndpoints.sessionMap.get(Util.getUuidOrNull(user));
         String assignOrderQuery = "UPDATE deliveries SET assignedTo = ? WHERE delivery_id = ? AND assignedTo = -1";
@@ -94,27 +94,98 @@ public class DeliveryEndpoints {
     }
 
 
-    @PatchMapping("/drop-order/{delivery_id}")
+    @GetMapping("/drop-order")
     public ResponseEntity<?> DropOrder(@PathVariable String delivery_id) {
-        String dropOrderQuery = "UPDATE deliveries SET assignedTo = -1 WHERE delivery_id = ? AND assignedTo != -1";
+        String dropDeliveryQuery = "UPDATE deliveries SET assignedTo = -1 WHERE delivery_id = ? AND assignedTo != -1";
+        String updateOrderQuery = "UPDATE userOrders SET status = 'Cancelled' WHERE delivery_id = ?";
 
         try {
-            DatabaseHandler.INSTANCE.executeQuery(dropOrderQuery, new Object[]{delivery_id});
-            return ResponseEntity.ok().body(Map.of("msg", "success", "message", "Order dropped successfully"));
+            DatabaseHandler.INSTANCE.connection.setAutoCommit(false);
+
+            // Update delivery
+            int deliveryResult = DatabaseHandler.INSTANCE.executeQuery(dropDeliveryQuery, new Object[]{delivery_id});
+
+            // Update associated userOrder
+            int orderResult = DatabaseHandler.INSTANCE.executeQuery(updateOrderQuery, new Object[]{delivery_id});
+
+            // Commit transaction
+            DatabaseHandler.INSTANCE.connection.commit();
+            DatabaseHandler.INSTANCE.connection.setAutoCommit(true);
+
+            if (deliveryResult > 0 || orderResult > 0) {
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "success",
+                        "message", "Order dropped successfully",
+                        "deliveryUpdated", deliveryResult > 0,
+                        "orderUpdated", orderResult > 0
+                ));
+            } else {
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "warning",
+                        "message", "Order not found or already unassigned"
+                ));
+            }
         } catch (SQLException e) {
-            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Order not found or already unassigned"));
+            // Rollback transaction on error
+            try {
+                if (DatabaseHandler.INSTANCE.connection != null) {
+                    DatabaseHandler.INSTANCE.connection.rollback();
+                    DatabaseHandler.INSTANCE.connection.setAutoCommit(true);
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "msg", "error",
+                    "message", "Database error: " + e.getMessage()
+            ));
         }
     }
 
-    @PatchMapping("/complete-order/{delivery_id}")
-    public ResponseEntity<?> CompleteOrder(@PathVariable String delivery_id) {
-        String completeOrderQuery = "UPDATE deliveries SET status = 'COMPLETED' WHERE delivery_id = ? AND status != 'COMPLETED'";
+    @GetMapping("/complete-order")
+    public ResponseEntity<?> CompleteOrder(@RequestHeader("delivery_id") String delivery_id) {
+        String completeDeliveryQuery = "UPDATE deliveries SET status = 'completed' WHERE delivery_id = ? AND status != 'completed'";
+        String updateOrderQuery = "UPDATE userOrders SET status = 'Completed' WHERE delivery_id = ?";
 
         try {
-            DatabaseHandler.INSTANCE.executeQuery(completeOrderQuery, new Object[]{delivery_id});
-            return ResponseEntity.ok().body(Map.of("msg", "success", "message", "Order marked as completed"));
+            DatabaseHandler.INSTANCE.connection.setAutoCommit(false);
+
+            int deliveryResult = DatabaseHandler.INSTANCE.executeQuery(completeDeliveryQuery, new Object[]{delivery_id});
+
+            int orderResult = DatabaseHandler.INSTANCE.executeQuery(updateOrderQuery, new Object[]{delivery_id});
+
+            DatabaseHandler.INSTANCE.connection.commit();
+            DatabaseHandler.INSTANCE.connection.setAutoCommit(true);
+
+            if (deliveryResult > 0 || orderResult > 0) {
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "success",
+                        "message", "Order marked as completed",
+                        "deliveryUpdated", deliveryResult > 0,
+                        "orderUpdated", orderResult > 0
+                ));
+            } else {
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "warning",
+                        "message", "Order not found or already completed"
+                ));
+            }
         } catch (SQLException e) {
-            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Order not found or already completed"));
+            // Rollback transaction on error
+            try {
+                if (DatabaseHandler.INSTANCE.connection != null) {
+                    DatabaseHandler.INSTANCE.connection.rollback();
+                    DatabaseHandler.INSTANCE.connection.setAutoCommit(true);
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "msg", "error",
+                    "message", "Database error: " + e.getMessage()
+            ));
         }
     }
 

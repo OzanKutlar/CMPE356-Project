@@ -107,7 +107,7 @@ const CartItemsLarge = () => {
                 phoneNo: Util.savedUser.id === '' ? Util.tempPhoneNumber : '',
                 userID:  Util.savedUser.id === '' ? '' : Util.savedUser.id,
                 items: JSON.stringify(Object.values(cart())),
-                address: formData.adress});
+                address: formData.address});
 
             if(response.msg === "success"){
                 setMessage({

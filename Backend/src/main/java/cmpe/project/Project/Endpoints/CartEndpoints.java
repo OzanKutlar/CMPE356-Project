@@ -75,11 +75,12 @@ public class CartEndpoints {
     public ResponseEntity<?> submitOrder(
             @RequestHeader("istemp") String istemp,
             @RequestHeader("phoneNo") String phoneNo,
-            @RequestHeader("userId") String userId,
+            @RequestHeader("userId") String user,
             @RequestHeader("items") String cartItemsJson,
             @RequestHeader("address") String address) {
 
         log("Processing order submission");
+        String userId = UserEndpoints.sessionMap.get(Util.getUuidOrNull(user));
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             ArrayList<Map<String, Object>> cartItems = objectMapper.readValue(cartItemsJson, new TypeReference<>() {});
@@ -140,7 +141,7 @@ public class CartEndpoints {
                         }
 
                         // Calculate item price and add to total
-                        double itemPrice = price * amount;
+                        double itemPrice = price * amount / 1000;
                         totalPrice += itemPrice;
 
                         String suffix;
@@ -189,15 +190,49 @@ public class CartEndpoints {
             String store_id = "1";
 
 
-            Object[] deliveryParams = {address, istemp, totalPrice, content, status, assignedTo, phoneNo, userId, store_id};
+            Object[] deliveryParams = {address, Boolean.parseBoolean(istemp) ? 1 : 0, totalPrice, content, status, assignedTo, phoneNo.replaceAll("[^0-9+]", ""), userId, store_id};
 
+            long deliveryId = -1;
             try {
-                DatabaseHandler.INSTANCE.executeQuery(createDeliveryQuery, deliveryParams);
+                // Execute the query and get the generated delivery ID
+                deliveryId = DatabaseHandler.INSTANCE.executeQueryAndGetId(createDeliveryQuery, deliveryParams);
+                if (deliveryId == -1) {
+                    log("Failed to retrieve delivery ID");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to create delivery record"));
+                }
             } catch (SQLException e) {
                 log("Failed to create delivery record: " + e.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to create delivery record"));
             }
 
+            // Create entry in userOrders table
+            try {
+                // Get first item name from content for userOrders table
+                String firstItemName = content.contains(",") ?
+                        content.substring(0, content.indexOf("-") - 1) :
+                        content.substring(0, content.indexOf("-") - 1);
+
+                // Fixed minced meat image URL
+                String itemPhoto = "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg";
+
+                // Default payment information
+                String paymentMethod = "Paid at door";
+                String paymentID = "#" + generateRandomPaymentId();
+
+                // Create user order
+                String createOrderQuery = "INSERT INTO userOrders (userID, address, itemName, itemPhoto, paymentMethod, paymentID, status, totalPrice, delivery_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                Object[] orderParams = {userId, address, firstItemName, itemPhoto, paymentMethod, paymentID, status, totalPrice, deliveryId};
+
+                DatabaseHandler.INSTANCE.executeQuery(createOrderQuery, orderParams);
+                log("Created user order with delivery_id: " + deliveryId);
+
+            } catch (SQLException e) {
+                log("Warning: Failed to create user order record: " + e.getMessage());
+                // Continue with the process even if user order creation fails
+            }
+
+            // Update stock for each item
             for (Map<String, Object> cartItem : cartItems) {
                 String productId = (String) cartItem.get("id");
                 double amount = Double.parseDouble(String.valueOf(cartItem.get("buyAmount")));
@@ -219,6 +254,11 @@ public class CartEndpoints {
             log("Order submission failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to submit order"));
         }
+    }
+
+    // Helper method to generate a random payment ID
+    private String generateRandomPaymentId() {
+        return String.valueOf(100000000000L + (long) (Math.random() * 900000000000L));
     }
 
 

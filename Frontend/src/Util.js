@@ -7,6 +7,12 @@ class Util {
     static CallVerification = null;
     static CallPasswordReset = null;
     static forgot = false;
+    static first = false;
+    static resetFirst = () => {
+        setTimeout(() => {
+            this.first = false;
+        }, 2000);
+    };
     static tempPhoneNumber = '';
     static footerColor = "bg-rose-500";
     static fakeData = {
