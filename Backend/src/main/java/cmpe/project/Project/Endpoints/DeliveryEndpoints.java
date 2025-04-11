@@ -18,12 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/delivery")
 public class DeliveryEndpoints {
-    
-    private final OrderService orderService;
 
-    public DeliveryEndpoints(OrderService orderService) {
-        this.orderService = orderService;
-    }
 
     @GetMapping("/get-unassigned-orders")
     public ResponseEntity<?> GetUnassignedOrders() {
@@ -35,9 +30,10 @@ public class DeliveryEndpoints {
             while (rs != null && rs.next()) {
                 Map<String, Object> order = new HashMap<>();
                 order.put("order_id", rs.getString("delivery_id"));
-                order.put("startLocation", rs.getString("store_address"));
+//                order.put("startLocation", rs.getString("store_address"));
+                order.put("startLocation", "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/Istanbul");
                 order.put("destination", rs.getString("address"));
-                order.put("totalPrice", "123");
+                order.put("totalPrice", rs.getString("totalPrice"));
                 order.put("content", rs.getString("content").split(","));
                 order.put("status", rs.getString("status"));
 
@@ -52,21 +48,22 @@ public class DeliveryEndpoints {
     }
 
 
-    @GetMapping("/get-assigned-orders/{userId}")
+    @GetMapping("/get-assigned-orders/{user}")
     public ResponseEntity<?> GetAssignedOrders(@PathVariable String user) {
         List<Map<String, Object>> assignedOrders = new ArrayList<>();
 
         String userId = UserEndpoints.sessionMap.get(Util.getUuidOrNull(user));
 
-        String getAssignedOrdersQuery = "SELECT * FROM orders WHERE assignedTo = ?";
+        String getAssignedOrdersQuery = "SELECT * FROM deliveries WHERE assignedTo = ?";
 
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getAssignedOrdersQuery, new Object[] { userId })) {
             while (rs != null && rs.next()) {
                 Map<String, Object> order = new HashMap<>();
                 order.put("order_id", rs.getString("delivery_id"));
-                order.put("startLocation", rs.getString("store_address"));
+//                order.put("startLocation", rs.getString("store_address"));
+                order.put("startLocation", "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/Istanbul");
                 order.put("destination", rs.getString("address"));
-                order.put("totalPrice", "123");
+                order.put("totalPrice", rs.getString("totalPrice"));
                 order.put("content", rs.getString("content").split(","));
                 order.put("status", rs.getString("status"));
                 order.put("assignedTo", rs.getString("assignedTo"));
@@ -82,7 +79,7 @@ public class DeliveryEndpoints {
     }
 
 
-    @PatchMapping("/assign-order/{userId}/{delivery_id}")
+    @PatchMapping("/assign-order/{user}/{delivery_id}")
     public ResponseEntity<?> AssignOrder(@PathVariable String user, @PathVariable String delivery_id) {
 
         String userId = UserEndpoints.sessionMap.get(Util.getUuidOrNull(user));

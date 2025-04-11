@@ -96,7 +96,7 @@ export function OrderItem({
               {order.content.map(item => `${item}`).join("\n")}
             </p>
           </div>
-          <p className='pt-4'><strong className='text-gray-700 mb-2'>Total Price: </strong>${order.totalPrice.toFixed(2)}</p>
+          <p className='pt-4'><strong className='text-gray-700 mb-2'>Total Price: </strong>${order.totalPrice}</p>
         </div>
 
         {/* Action Buttons */}

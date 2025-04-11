@@ -40,49 +40,7 @@ const DeliveryPage = () => {
         };
 
         fetchOrders();
-
-        async function setupWebSocket() {
-            try {
-                // Set explicit server URL - MAKE SURE THIS IS CORRECT
-                const serverUrl = 'http://localhost:33000';
-
-                if (isMounted) console.log('Initializing WebSocket...');
-
-                // Initialize and wait for connection
-                await Util.initializeWebSocket(serverUrl);
-
-                if (isMounted) console.log('Connected! Subscribing to topics...');
-
-                // Subscribe to order submission topic
-                await Util.subscribeToTopic('/topic/unassigned-add', (data) => {
-                    if (!isMounted) return;
-                    console.log('Received unassigned order data:', data);
-                    updateWaitingOrdersWithArray(data);
-                });
-
-                // Subscribe to order assignment topic
-                await Util.subscribeToTopic('/topic/order-assigned', (data) => {
-                    if (!isMounted) return;
-                    console.log('Received order assigned data:', data);
-                    removeOrderFromWaitingOrdersBySplitId(data.splitId);
-                });
-
-                if (isMounted) console.log('Successfully subscribed to all WebSocket topics');
-            } catch (error) {
-                console.error('Failed to setup WebSocket connection:', error);
-                if (isMounted) console.log(`Connection error: ${error.message}`);
-            }
-        }
-        setupWebSocket();
-
-        return () => {
-            isMounted.current = false;
-            console.log('Component unmounting, cleaning up WebSocket connections');
-            Util.unsubscribeFromTopic('/topic/unassigned-add');
-            Util.unsubscribeFromTopic('/topic/order-assigned');
-            Util.disconnectWebSocket();
-        };
-    }, []);
+    });
 
     // Handle tab click
     const handleTabClick = (tab) => {
