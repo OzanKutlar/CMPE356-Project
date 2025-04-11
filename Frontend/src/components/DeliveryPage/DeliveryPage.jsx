@@ -71,28 +71,28 @@ const DeliveryPage = () => {
         }
     };
 
-    const removeOrderFromTab = (splitId, tab) => {
+    const removeOrderFromTab = (delivery_id, tab) => {
         if (tab === "Waiting Orders") {
-            setWaitingOrders(prevOrders => prevOrders.filter(order => order.splitId !== splitId));
+            setWaitingOrders(prevOrders => prevOrders.filter(order => order.delivery_id !== delivery_id));
         } else if (tab === "Taken Orders") {
-            setTakenOrders(prevOrders => prevOrders.filter(order => order.splitId !== splitId));
+            setTakenOrders(prevOrders => prevOrders.filter(order => order.delivery_id !== delivery_id));
         }
     };
 
     const updateWaitingOrdersWithArray = (newOrders) => {
         setWaitingOrders(prevOrders => {
-            // Combine existing orders with new ones, removing duplicates based on splitId
-            const existingSplitIds = new Set(prevOrders.map(order => order.splitId));
-            const filteredNewOrders = newOrders.filter(order => !existingSplitIds.has(order.splitId));
+            // Combine existing orders with new ones, removing duplicates based on delivery_id
+            const existingdelivery_ids = new Set(prevOrders.map(order => order.delivery_id));
+            const filteredNewOrders = newOrders.filter(order => !existingdelivery_ids.has(order.delivery_id));
 
             // Combine and sort all orders
             const updatedOrders = [...prevOrders, ...filteredNewOrders];
-            return updatedOrders.sort((a, b) => a.splitId - b.splitId);
+            return updatedOrders.sort((a, b) => a.delivery_id - b.delivery_id);
         });
     };
 
-    const removeOrderFromWaitingOrdersBySplitId = (splitId) => {
-        setWaitingOrders(prevOrders => prevOrders.filter(order => order.splitId !== splitId));
+    const removeOrderFromWaitingOrdersBydelivery_id = (delivery_id) => {
+        setWaitingOrders(prevOrders => prevOrders.filter(order => order.delivery_id !== delivery_id));
     };
 
 
@@ -103,7 +103,7 @@ const DeliveryPage = () => {
     //button handlers
     const handleTakeOrder = async (order, tab) => {
         const temp = order;
-        const response = await Util.callBackend(`delivery/assign-order`, {userID:Util.savedUser.id, delivery_id:order.splitId});
+        const response = await Util.callBackend(`delivery/assign-order`, {userID:Util.savedUser.id, delivery_id:order.delivery_id});
         if(typeof response === 'string'){
             if(response.startsWith("Conflict"))
                 console.error(response);
@@ -116,20 +116,20 @@ const DeliveryPage = () => {
     };
 
     const handleDropOrder = async (order, currentTab) => {
-        const response = await Util.callBackend(`delivery/drop-order`, {delivery_id:order.splitId});
+        const response = await Util.callBackend(`delivery/drop-order`, {delivery_id:order.delivery_id});
         if(response.startsWith("Failed")){
             console.error(response);
         } else {
-            removeOrderFromTab(order.splitId, currentTab);
+            removeOrderFromTab(order.delivery_id, currentTab);
         }
     };
 
     const handleComplete = async (order, currentTab) => {
-        const response = await Util.callBackend(`delivery/complete-order`, {delivery_id:order.splitId});
+        const response = await Util.callBackend(`delivery/complete-order`, {delivery_id:order.delivery_id});
         if(response.startsWith("Failed")){
             console.error(response);
         } else {
-            removeOrderFromTab(order.splitId, currentTab);
+            removeOrderFromTab(order.delivery_id, currentTab);
         }
     };
 

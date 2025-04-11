@@ -81,6 +81,7 @@ public class CartEndpoints {
 
         log("Processing order submission");
         String userId = UserEndpoints.sessionMap.get(Util.getUuidOrNull(user));
+        if(userId == null) userId = "";
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             ArrayList<Map<String, Object>> cartItems = objectMapper.readValue(cartItemsJson, new TypeReference<>() {});
@@ -185,7 +186,7 @@ public class CartEndpoints {
 
             String createDeliveryQuery = "INSERT INTO deliveries (address, istemp, totalPrice, content, status, assignedTo, phone_no, user_id, store_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-            String status = "pending";
+            String status = "Pending";
             String assignedTo = "-1";
             String store_id = "1";
 

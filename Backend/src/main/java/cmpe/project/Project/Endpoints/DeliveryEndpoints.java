@@ -84,9 +84,11 @@ public class DeliveryEndpoints {
 
         String userId = UserEndpoints.sessionMap.get(Util.getUuidOrNull(user));
         String assignOrderQuery = "UPDATE deliveries SET assignedTo = ? WHERE delivery_id = ? AND assignedTo = -1";
+        String updateOrderQuery = "UPDATE userOrders SET status = 'In Delivery' WHERE delivery_id = ?";
 
         try {
             DatabaseHandler.INSTANCE.executeQuery(assignOrderQuery, new Object[] { userId, delivery_id });
+            DatabaseHandler.INSTANCE.executeQuery(updateOrderQuery, new Object[] {delivery_id});
             return ResponseEntity.ok().body(Map.of("msg", "success", "message", "Order assigned successfully"));
         } catch (SQLException e) {
             return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Order could not be assigned (possibly already assigned or not found)"));
