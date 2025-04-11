@@ -105,8 +105,60 @@ public class ButcherEndpoints {
     }
 
     @GetMapping("/updateStock")
-    public ResponseEntity<?> updateStock(@RequestHeader Map<String, String> headers) {
-        logHeaders("updateStock", headers);
+    public ResponseEntity<?> updateStock(@RequestHeader("userID") String userID,
+                                         @RequestHeader("itemID") String productID,
+                                         @RequestHeader("amount") String amount) {
+
+        String userIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID));
+        if (userIdFromSession == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid user ID"));
+        }
+
+        String isManager = "SELECT storeID FROM managers WHERE userID = ?";
+        Object[] params = { userIdFromSession };
+        String storeID = "";
+
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isManager, params)) {
+            if (rs == null || !rs.next()) {
+                System.out.println("User with ID " + userIdFromSession + " is not authorized to get stock of this store");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User is not authorized"));
+            }
+
+            storeID = rs.getString("storeID");
+            System.out.println("Authorized manager for store ID: " + storeID);
+
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + isManager + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user role"));
+        }
+
+        String getOrdersQuery = "SELECT store_id FROM products WHERE product_id = ?;";
+        Object[] queryParams = { productID };
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getOrdersQuery, queryParams)) {
+            while (rs != null && rs.next()) {
+                if(!storeID.equals(rs.getString("store_id"))){
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "You do not have access to this store."));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            logError("Error executing SQL request: " + getOrdersQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user role"));
+        }
+
+
+        String userQuery = "UPDATE products SET currentStock = ? WHERE product_id = ?";
+        Object[] userParams = {amount, productID};
+        try {
+            DatabaseHandler.INSTANCE.executeQuery(userQuery, userParams);
+        } catch (SQLException e) {
+            logError("Error executing user SQL request: " + userQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to update user information"));
+        }
+
+        log("Stock Updated for product %s by user %s", productID, userIdFromSession);
+
+
         return ResponseEntity.ok().body(Map.of("msg", "success"));
     }
 
@@ -136,17 +188,24 @@ public class ButcherEndpoints {
         }
 
 
-        String isAdminQuery = "SELECT * FROM managers WHERE userID = ?";
-        Object[] isAdminParams = { userIdFromSession };
-        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isAdminQuery, isAdminParams)) {
+        String isManager = "SELECT storeID FROM managers WHERE userID = ?";
+        Object[] params = { userIdFromSession };
+        String storeID = "";
+
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isManager, params)) {
             if (rs == null || !rs.next()) {
-                System.out.println("User with ID " + userID + " is not authorized to get stock of this store");
+                System.out.println("User with ID " + userIdFromSession + " is not authorized to get stock of this store");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User is not authorized"));
             }
+
+            storeID = rs.getString("storeID");
+            System.out.println("Authorized manager for store ID: " + storeID);
+
         } catch (SQLException e) {
-            logError("Error executing SQL request: " + isAdminQuery + ". Error: " + e.getMessage());
+            logError("Error executing SQL request: " + isManager + ". Error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user role"));
         }
+
 
         log("User %s requested butcher stock.", userIdFromSession);
 

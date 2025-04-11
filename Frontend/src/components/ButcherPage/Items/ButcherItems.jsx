@@ -37,7 +37,6 @@ const BestSellerListFullScreen = () => {
             const headers = {
                 userID: Util.savedUser.id,
                 itemID: selectedItem.id,
-                itemName: selectedItem.ItemName,
                 amount: quantity
             };
 
@@ -197,19 +196,19 @@ const BestSellerListFullScreen = () => {
                                             -{(multiplier / 20)}g
                                         </button>
                                         <button
-                                            onClick={() => setQuantity((prev) => prev + (multiplier / 20))}
+                                            onClick={() => setQuantity((prev) => Number(prev) + Number(multiplier) / 20)}
                                             className="px-4 ml-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                                         >
                                             +{(multiplier / 20)}g
                                         </button>
                                         <button
-                                            onClick={() => setQuantity((prev) => prev + (multiplier / 10))}
+                                            onClick={() => setQuantity((prev) => Number(prev) + Number(multiplier) / 10)}
                                             className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                                         >
                                             +100g
                                         </button>
                                         <button
-                                            onClick={() => setQuantity((prev) => prev + (multiplier))}
+                                            onClick={() => setQuantity((prev) => Number(prev) + Number(multiplier))}
                                             className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                                         >
                                             +1kg
