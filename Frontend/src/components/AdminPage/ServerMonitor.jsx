@@ -26,7 +26,7 @@ ChartJS.register(
 
 const ServerMonitor = () => {
     const [cpuData, setCpuData] = useState([]);
-    const [gpuData, setGpuData] = useState([]);
+    const [ramData, setRamData] = useState([]);
     const [networkData, setNetworkData] = useState([]);
     const [labels, setLabels] = useState([]);
     const [showManageOptions, setShowManageOptions] = useState(true);
@@ -34,48 +34,30 @@ const ServerMonitor = () => {
     const [popUpText, setPopUpText] = useState('');
     const [popUpType, setPopUpType] = useState('');
 
-    // Simulated backend function for fetching metrics and handling server commands
-    const dummyBackend = async (endpoint) => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Dummy data for serverMetrics endpoint
-        if (endpoint === 'serverMetrics') {
-            return {
-                cpu: (Math.random() * 10) + 60, // Random CPU usage between 0% and 100%
-                gpu: (Math.random() * 10) + 20, // Random GPU usage between 0% and 100%
-                network: Math.random() * 10, // Random network usage between 0 MB and 100 MB
-                timestamp: Math.floor(Date.now() / 1000), // Current timestamp in seconds
-            };
-        }
-
-        // Dummy responses for other endpoints
-        if (endpoint === 'shutdown') return {message: 'Server is shutting down...'};
-        if (endpoint === 'restart') return {message: 'Server is restarting...'};
-
-        throw new Error(`Endpoint ${endpoint} not found`);
-    };
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await dummyBackend("serverMetrics"); //Util.callBackend("serverMetrics");
-                console.log('Backend Response:', response); // Log the response for debugging
+                const response = await Util.callBackend("admin/serverMetrics", {userID: Util.savedUser.id});
+                console.log('Backend Response:', response);
 
-                const {cpu, gpu, network, timestamp} = response;
+                if (response.msg === "error") {
+                    alert(response.message);
+                    Util.navigateTo("home");
+                    throw new Error(response.message || 'Failed to send verification code');
+                }
 
-                // Convert timestamp to milliseconds and format time
-                const timeLabel = new Date(timestamp * 1000).toLocaleTimeString();
 
-                setCpuData(prevData => [...prevData, cpu].slice(-10)); // Keep only last 10 data points
-                setGpuData(prevData => [...prevData, gpu].slice(-10)); // Keep only last 10 data points
-                setNetworkData(prevData => [...prevData, network].slice(-10)); // Keep only last 10 data points
-                setLabels(prevLabels => [...prevLabels, timeLabel].slice(-10)); // Keep only last 10 labels
+                setCpuData(prevData => [...prevData, response.cpu.replace("%", "")].slice(-10)); // Keep only last 10 data points
+                setRamData(prevData => [...prevData, response.ram].slice(-10)); // Keep only last 10 data points
+                setNetworkData(prevData => [...prevData, response.network].slice(-10)); // Keep only last 10 data points
+                setLabels(prevLabels => [...prevLabels, ""].slice(-10)); // Keep only last 10 labels
             } catch (error) {
                 console.error('Error fetching metrics:', error);
             }
         };
 
-        const interval = setInterval(fetchData, 500); // Fetch data every 5 seconds
+        const interval = setInterval(fetchData, 2000); // Fetch data every 5 seconds
         return () => clearInterval(interval); // Cleanup interval on unmount
     }, []);
 
@@ -181,7 +163,7 @@ const ServerMonitor = () => {
                 <div className="bg-white p-4 shadow-lg rounded-xl">
                     <h2 className="text-xl font-semibold mb-2">GPU Usage</h2>
                     <div className="h-64">
-                        <Line data={generateChartData('GPU Usage (%)', gpuData, '#3B82F6')} options={chartOptions}/>
+                        <Line data={generateChartData('RAM Usage (GB)', ramData, '#3B82F6')} options={chartOptions}/>
                     </div>
                 </div>
                 {/* Network Usage Chart */}

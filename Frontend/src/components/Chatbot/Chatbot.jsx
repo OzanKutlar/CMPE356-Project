@@ -1,5 +1,6 @@
 import React, {useState} from "react";
-import "./Chatbot.css"; // Import the separate CSS file
+import "./Chatbot.css";
+import Util from "../../Util.js"; // Import the separate CSS file
 
 const Chatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +25,7 @@ const Chatbot = () => {
 
     const getBotResponse = async (userInput) => {
         try {
-            const response = await fetch("/api/chatbot/ask", {
+            const response = await fetch(Util.backendIp + "/api/chatbot/ask", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

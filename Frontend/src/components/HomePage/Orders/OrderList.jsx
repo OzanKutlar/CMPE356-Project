@@ -159,7 +159,7 @@ const FullscreenSales = () => {
                                                                 ? "bg-gray-400 cursor-not-allowed"
                                                                 : "bg-red-500 hover:bg-red-600"
                                                         }`}
-                                                        onClick={() => handleAction("user/cancelOrder", sale.id)}
+                                                        onClick={() => handleAction("cart/cancelOrder", sale.id)}
                                                         disabled={disabledButtons["cancelOrder" + sale.id]}
                                                     >
                                                         Cancel Order
@@ -175,17 +175,17 @@ const FullscreenSales = () => {
                                                     >
                                                         Change Address
                                                     </button>
-                                                    <button
-                                                        className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${
-                                                            disabledButtons["contDriver" + sale.id]
-                                                                ? "bg-gray-400 cursor-not-allowed"
-                                                                : "bg-gray-700 hover:bg-gray-800"
-                                                        }`}
-                                                        onClick={() => handleAction("contDriver", sale.id)}
-                                                        disabled={disabledButtons["contDriver" + sale.id]}
-                                                    >
-                                                        Contact Driver
-                                                    </button>
+                                                    {/*<button*/}
+                                                    {/*    className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${*/}
+                                                    {/*        disabledButtons["contDriver" + sale.id]*/}
+                                                    {/*            ? "bg-gray-400 cursor-not-allowed"*/}
+                                                    {/*            : "bg-gray-700 hover:bg-gray-800"*/}
+                                                    {/*    }`}*/}
+                                                    {/*    onClick={() => handleAction("contDriver", sale.id)}*/}
+                                                    {/*    disabled={disabledButtons["contDriver" + sale.id]}*/}
+                                                    {/*>*/}
+                                                    {/*    Contact Driver*/}
+                                                    {/*</button>*/}
                                                 </div>
                                             </div>
                                         </div>
