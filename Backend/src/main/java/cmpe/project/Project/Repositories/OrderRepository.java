@@ -19,29 +19,27 @@ import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
 @Repository
 public class OrderRepository {
 
-    public void UpdateBySplitId(long splitId, String columns, String filter, Object... data) throws SQLException, RuntimeException {
-        String query =
-        "UPDATE order_splits " +
-        "SET " + columns +
-        "WHERE split_id = ?";
+    public void UpdateSplitStatusBySplitId(long splitId, String status) throws SQLException {
+        String query = "UPDATE order_splits SET status = ? WHERE split_id = ?";
+        Object[] params = { status, splitId };
+        int rowCount = DatabaseHandler.INSTANCE.executeQuery(query, params);
+        if(rowCount < 1)
+            throw new RuntimeException("No such order found. Try again later");
+    }
 
-        if(filter != null)
-            query += " AND " + filter;
-
-        List<Object> params = new ArrayList<>();
-        if(data.length > 0) {
-            for(Object cd : data)
-                params.add(cd);
-        }
-        params.add(splitId);
-
-        int rowsUpdated = DatabaseHandler.INSTANCE.executeQuery(query, params.toArray());
-        if(rowsUpdated == 0)
-            throw new RuntimeException("Conflict: This order is already assigned!");
+    public void UpdateAssignment(long splitId, Long driverId, String currentStatus, String newStatus) throws SQLException, RuntimeException {
+        //assign = update driver id and status according to split id and currentstatus
+        //drop   = update driver id and status according to split id and currentstatus
+        String query = "UPDATE order_splits SET driver_id = ?, status = ? WHERE split_id = ? AND status = ?";
+        Object[] params = { driverId, newStatus, splitId, currentStatus };
+        int rowCount = DatabaseHandler.INSTANCE.executeQuery(query, params);
+        if(rowCount < 1)
+            throw new RuntimeException("Error: Order with matching id and status not found. No such entry or lost racing condition!");
     }
 
     public List<DeliveryOrderDTO> GetListByFilter(String filter, Object... filterParams) throws SQLException {
-        String query =
+        StringBuilder sb = new StringBuilder();
+        sb.append(
         "SELECT o.order_id, os.split_id, o.address AS customer_address, " +
         "pa.payment_method, s.name AS store_name, s.address AS store_address, " +
         "GROUP_CONCAT(p.name) AS product_names, " +
@@ -55,7 +53,10 @@ public class OrderRepository {
         "JOIN payments pa ON os.payment_id = pa.payment_id " +
         "WHERE " + filter +
         "GROUP BY o.order_id, os.split_id, s.store_id " +
-        "ORDER BY o.order_id, os.split_id, s.store_id";
+        "ORDER BY o.order_id, os.split_id, s.store_id"
+        );
+
+        String query = sb.toString();
 
         ResultSet rs;
         if(filterParams != null && filterParams.length > 0) {

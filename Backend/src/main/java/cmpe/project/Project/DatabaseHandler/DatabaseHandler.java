@@ -47,10 +47,11 @@ public class DatabaseHandler {
                 boolean hasResults = stmt.execute();
                 if (hasResults) {
                     ResultSet rs = stmt.getResultSet();
-                    CachedRowSet cached = RowSetProvider.newFactory().createCachedRowSet();
-                    cached.populate(rs);
-                    rs.close();
-                    return cached;
+                    return rs;
+                    // CachedRowSet cached = RowSetProvider.newFactory().createCachedRowSet();
+                    // cached.populate(rs);
+                    // rs.close();
+                    // return cached;
                 } else {
                     return null;
                 }
