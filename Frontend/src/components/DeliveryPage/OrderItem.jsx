@@ -87,8 +87,7 @@ export function OrderItem({
         <div className="flex-grow">
           <h3 className="font-semibold text-gray-800">Order: #{order.orderId}</h3>
           <h4 className="font-semibold text-gray-800">Split: #{order.splitId}</h4>
-          <h4 className="font-semibold text-gray-800">Pickup</h4>
-          <p className="text-gray-600 text-sm">{order.storeName}</p>
+          <h4 className="font-semibold text-gray-800">Pickup: {order.storeName}</h4>
         </div>
         
         
@@ -114,7 +113,7 @@ export function OrderItem({
           </div>
           <p className='pt-4'>
             <strong className='text-gray-700 mb-2'>Payment Method: </strong>
-            ${order.paymentMethod}
+            {order.paymentMethod}
           </p>
           <p className='pt-4'>
             <strong className='text-gray-700 mb-2'>Total Price: </strong>

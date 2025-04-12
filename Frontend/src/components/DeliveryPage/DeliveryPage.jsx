@@ -144,33 +144,23 @@ const DeliveryPage = () => {
     const handleTakeOrder = async (order, tab) => {
         const temp = order;
         const response = await Util.callBackend(`delivery/assign-order/${Util.savedUser.id}/${order.splitId}`);
-        if(typeof response === 'string'){
-            if(response.startsWith("Conflict"))
-                console.error(response);
-            else
-                console.error(response);
-
-        } else {
+        if(response.Status.startsWith("Success"))
             addOrderToTab(temp, tab);
-        }
+        console.log(response);
     };
 
     const handleDropOrder = async (order, currentTab) => {
         const response = await Util.callBackend(`delivery/drop-order/${order.splitId}`);
-        if(response.startsWith("Failed")){
-            console.error(response);
-        } else {
+        if(response.Status.startsWith("Success"))
             removeOrderFromTab(order.splitId, currentTab);
-        }
+        console.log(response);
     };
 
     const handleComplete = async (order, currentTab) => {
         const response = await Util.callBackend(`delivery/complete-order/${order.splitId}`);
-        if(response.startsWith("Failed")){
-            console.error(response);
-        } else {
+        if(response.Status.startsWith("Success"))
             removeOrderFromTab(order.splitId, currentTab);
-        }
+        console.log(response);
     };
 
     // //Helper functions
