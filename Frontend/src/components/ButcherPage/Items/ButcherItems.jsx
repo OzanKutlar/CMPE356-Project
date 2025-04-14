@@ -11,6 +11,7 @@ const BestSellerListFullScreen = () => {
     const [purchaseMessage, setPurchaseMessage] = useState(null);
     const [isClosing, setIsClosing] = useState(false);
     const [quantity, setQuantity] = useState(false);
+    const [showAddProductPopup, setShowAddProductPopup] = useState(false);
 
     const closeModal = () => {
         setIsClosing(true);
@@ -79,8 +80,10 @@ const BestSellerListFullScreen = () => {
     const handleItemClick = (item) => {
         setSelectedItem(item);
         setQuantity(item.currentStock)
+    };
 
-        // Util.navigateTo("butcher/sales");
+    const handleAddProductClick = () => {
+        setShowAddProductPopup(true);
     };
 
     return (
@@ -133,6 +136,25 @@ const BestSellerListFullScreen = () => {
                                 </div>
                             </div>
                         ))}
+
+                        {/* Add New Product Card */}
+                        <div
+                            onClick={handleAddProductClick}
+                            className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:scale-105 cursor-pointer border-2 border-dashed border-gray-300"
+                        >
+                            <div className="h-48 flex items-center justify-center">
+                                <div className="text-gray-400 flex flex-col items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div className="p-4 text-center">
+                                <h3 className="font-semibold text-lg mb-1 text-gray-500">
+                                    Add New Product
+                                </h3>
+                            </div>
+                        </div>
                     </div>
 
                     {selectedItem && (
@@ -237,8 +259,200 @@ const BestSellerListFullScreen = () => {
                         </div>
                     )}
 
+                    {/* Add Product Popup */}
+                    {showAddProductPopup && (
+                        <AddProductPopup setShowPopUp={setShowAddProductPopup} onProductAdded={(newProduct) => {
+                            setBestSellers([...bestSellers, newProduct]);
+                        }} />
+                    )}
+
                 </div>
             )}
+        </div>
+    );
+};
+
+// New Component: Add Product Popup
+const AddProductPopup = ({ setShowPopUp, onProductAdded }) => {
+    const [productName, setProductName] = useState('');
+    const [productPrice, setProductPrice] = useState('');
+    const [initialStock, setInitialStock] = useState('');
+    const [photoLink, setPhotoLink] = useState('');
+    const [fadeIn, setFadeIn] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [buttonColor, setButtonColor] = useState('#007bff');
+    const [isHovered, setIsHovered] = useState(false);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => setFadeIn(true), 50);
+        return () => {
+            clearTimeout(timeout);
+            setFadeIn(false);
+        };
+    }, []);
+
+    const handleProductNameChange = (e) => {
+        setProductName(e.target.value);
+    };
+
+    const handleProductPriceChange = (e) => {
+        const value = e.target.value;
+        if (/^\d*\.?\d*$/.test(value)) { // Only allow numbers and decimal point
+            setProductPrice(value);
+        }
+    };
+
+    const handleInitialStockChange = (e) => {
+        const value = e.target.value;
+        if (/^\d*$/.test(value)) { // Only allow numbers
+            setInitialStock(value);
+        }
+    };
+
+    const handlePhotoLinkChange = (e) => {
+        setPhotoLink(e.target.value);
+    };
+
+    const handleAddProduct = async () => {
+        // Clear any previous errors
+        setErrorMessage('');
+
+        // Validation
+        if (!productName.trim()) {
+            setErrorMessage('Please enter a product name');
+            return;
+        }
+
+        if (!productPrice || parseFloat(productPrice) <= 0) {
+            setErrorMessage('Please enter a valid price');
+            return;
+        }
+
+        if (!initialStock || parseInt(initialStock) < 0) {
+            setErrorMessage('Please enter a valid initial stock');
+            return;
+        }
+
+        if (!photoLink.trim()) {
+            setErrorMessage('Please enter a photo link');
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+
+            // Create a new product object
+            const newProduct = {
+                ItemName: productName,
+                ItemPrice: parseFloat(productPrice),
+                currentStock: parseInt(initialStock),
+                startStock: parseInt(initialStock),
+                soldStock: 0,
+                ItemPhotoLink: photoLink,
+                id: Date.now().toString() // Temporary ID, backend will replace this
+            };
+
+            // Call the backend
+            const response = await Util.callBackend("butcher/addProduct", {
+                userID: Util.savedUser.id,
+                product: newProduct
+            });
+
+            if (response.msg === "error") {
+                throw new Error(response.message || 'Failed to add product');
+            }
+
+            // Add the new product to the list
+            if (onProductAdded) {
+                onProductAdded(response.product || newProduct);
+            }
+
+            // Close the popup
+            setShowPopUp(false);
+
+        } catch (error) {
+            setErrorMessage(error.message || 'An error occurred. Please try again.');
+            console.error('Error adding product:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleCancel = () => {
+        setShowPopUp(false);
+    };
+
+    return (
+        <div className="login-popup-wrapper">
+            {/* Background Overlay */}
+            <div className="login-overlay" onClick={handleCancel}></div>
+
+            {/* Popup */}
+            <div className={`login-popup ${fadeIn ? 'show' : ''}`}>
+                <h2 className="text-2xl font-bold mb-4">Add New Product</h2>
+
+                <input
+                    type="text"
+                    placeholder="Product Name"
+                    value={productName}
+                    onChange={handleProductNameChange}
+                    className="w-full p-3 mb-4 border rounded"
+                    disabled={isLoading}
+                />
+
+                <div className="flex mb-4">
+                    <div className="flex-1 mr-2">
+                        <input
+                            type="text"
+                            placeholder="Price per kg (e.g. 12.99)"
+                            value={productPrice}
+                            onChange={handleProductPriceChange}
+                            className="w-full p-3 border rounded"
+                            disabled={isLoading}
+                        />
+                    </div>
+                    <div className="flex-1 ml-2">
+                        <input
+                            type="text"
+                            placeholder="Initial Stock (in kg)"
+                            value={initialStock}
+                            onChange={handleInitialStockChange}
+                            className="w-full p-3 border rounded"
+                            disabled={isLoading}
+                        />
+                    </div>
+                </div>
+
+                <input
+                    type="text"
+                    placeholder="Photo Link (URL)"
+                    value={photoLink}
+                    onChange={handlePhotoLinkChange}
+                    className="w-full p-3 mb-4 border rounded"
+                    disabled={isLoading}
+                />
+
+                {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
+
+                <button
+                    onClick={handleAddProduct}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                    style={{backgroundColor: isHovered ? '#0056b3' : buttonColor}}
+                    className="w-full px-5 py-3 rounded text-white text-lg cursor-pointer transition-colors duration-300"
+                    disabled={isLoading}
+                >
+                    {isLoading ? 'Adding...' : 'Add Product'}
+                </button>
+
+                <button
+                    onClick={handleCancel}
+                    className="w-full mt-2 px-5 py-3 rounded text-gray-700 text-lg cursor-pointer transition-colors duration-300 border"
+                >
+                    Cancel
+                </button>
+            </div>
         </div>
     );
 };
