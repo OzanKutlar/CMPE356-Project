@@ -10,10 +10,10 @@ import cmpe.project.Project.Services.OrderService;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static cmpe.project.Project.Utility.Logger.format;
+import static cmpe.project.Project.Utility.Util.sendSMS;
 
 @RestController
 @RequestMapping("/api/delivery")
@@ -54,7 +54,7 @@ public class DeliveryEndpoints {
 
         String userId = UserEndpoints.sessionMap.get(Util.getUuidOrNull(user));
 
-        String getAssignedOrdersQuery = "SELECT * FROM deliveries WHERE assignedTo = ?";
+        String getAssignedOrdersQuery = "SELECT * FROM deliveries WHERE assignedTo = ? AND status = 'Pending'";
 
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getAssignedOrdersQuery, new Object[] { userId })) {
             while (rs != null && rs.next()) {
@@ -83,15 +83,58 @@ public class DeliveryEndpoints {
     public ResponseEntity<?> AssignOrder(@RequestHeader("userID") String user, @RequestHeader("delivery_id") String delivery_id) {
 
         String userId = UserEndpoints.sessionMap.get(Util.getUuidOrNull(user));
+
+        String phoneNo = null;
+
+        Map<String, String> order = null;
+
+        String getAssignedOrdersQuery = "SELECT assignedTo, istemp, phone_no, content FROM deliveries WHERE delivery_id = ?";
+
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getAssignedOrdersQuery, new Object[] { delivery_id })) {
+            if(rs != null && rs.next()) {
+                Map<String, String> orderTemp = new HashMap<>();
+                orderTemp.put("assignedTo", rs.getString("assignedTo"));
+                orderTemp.put("content", rs.getString("content"));
+
+                if(!Objects.equals(orderTemp.get("assignedTo"), "-1")){
+                    return ResponseEntity.ok().body(Map.of(
+                            "msg", "error",
+                            "message", "This order was already assigned."
+                    ));
+                }
+
+                if(rs.getBoolean("istemp")){
+                    phoneNo = rs.getString("phone_no");
+                    order = orderTemp;
+                }
+
+            }
+            else{
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "error",
+                        "message", "No such order exists."
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Failed to fetch assigned orders"));
+        }
+
         String assignOrderQuery = "UPDATE deliveries SET assignedTo = ? WHERE delivery_id = ? AND assignedTo = -1";
         String updateOrderQuery = "UPDATE userOrders SET status = 'In Delivery' WHERE delivery_id = ?";
 
         try {
             DatabaseHandler.INSTANCE.executeQuery(assignOrderQuery, new Object[] { userId, delivery_id });
             DatabaseHandler.INSTANCE.executeQuery(updateOrderQuery, new Object[] {delivery_id});
+
+            if(phoneNo != null)
+                sendSMS(phoneNo, format("Your order of %s has been picked up by our delivery drivers.", order.get("content")));
             return ResponseEntity.ok().body(Map.of("msg", "success", "message", "Order assigned successfully"));
         } catch (SQLException e) {
+            e.printStackTrace();
             return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Order could not be assigned (possibly already assigned or not found)"));
+        } catch (Exception e) {
+            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Unable to send phone message for user."));
         }
     }
 
@@ -99,15 +142,49 @@ public class DeliveryEndpoints {
     @GetMapping("/drop-order")
     public ResponseEntity<?> DropOrder(@PathVariable String delivery_id) {
         String dropDeliveryQuery = "UPDATE deliveries SET assignedTo = -1 WHERE delivery_id = ? AND assignedTo != -1";
-        String updateOrderQuery = "UPDATE userOrders SET status = 'Cancelled' WHERE delivery_id = ?";
+        String updateOrderQuery = "UPDATE userOrders SET status = 'Pending' WHERE delivery_id = ?";
+
+        String phoneNo = null;
+
+        Map<String, String> order = null;
+
+        String getAssignedOrdersQuery = "SELECT assignedTo, istemp, phone_no, content FROM deliveries WHERE delivery_id = ?";
+
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getAssignedOrdersQuery, new Object[] { delivery_id })) {
+            if(rs != null && rs.next()) {
+                Map<String, String> orderTemp = new HashMap<>();
+                orderTemp.put("assignedTo", rs.getString("assignedTo"));
+                orderTemp.put("content", rs.getString("content"));
+
+                if(Objects.equals(orderTemp.get("assignedTo"), "-1")){
+                    return ResponseEntity.ok().body(Map.of(
+                            "msg", "error",
+                            "message", "This order is not assigned."
+                    ));
+                }
+
+                if(rs.getBoolean("istemp")){
+                    phoneNo = rs.getString("phone_no");
+                    order = orderTemp;
+                }
+
+            }
+            else{
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "error",
+                        "message", "No such order exists."
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Failed to fetch assigned orders"));
+        }
 
         try {
             DatabaseHandler.INSTANCE.connection.setAutoCommit(false);
 
-            // Update delivery
             int deliveryResult = DatabaseHandler.INSTANCE.executeQuery(dropDeliveryQuery, new Object[]{delivery_id});
 
-            // Update associated userOrder
             int orderResult = DatabaseHandler.INSTANCE.executeQuery(updateOrderQuery, new Object[]{delivery_id});
 
             // Commit transaction
@@ -115,6 +192,14 @@ public class DeliveryEndpoints {
             DatabaseHandler.INSTANCE.connection.setAutoCommit(true);
 
             if (deliveryResult > 0 || orderResult > 0) {
+                try{
+                    if(phoneNo != null)
+                        sendSMS(phoneNo, format("Your order of %s has been dropped up by our delivery drivers.", order.get("content")));
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+
                 return ResponseEntity.ok().body(Map.of(
                         "msg", "success",
                         "message", "Order dropped successfully",
@@ -123,12 +208,11 @@ public class DeliveryEndpoints {
                 ));
             } else {
                 return ResponseEntity.ok().body(Map.of(
-                        "msg", "warning",
+                        "msg", "error",
                         "message", "Order not found or already unassigned"
                 ));
             }
         } catch (SQLException e) {
-            // Rollback transaction on error
             try {
                 if (DatabaseHandler.INSTANCE.connection != null) {
                     DatabaseHandler.INSTANCE.connection.rollback();
@@ -150,6 +234,43 @@ public class DeliveryEndpoints {
         String completeDeliveryQuery = "UPDATE deliveries SET status = 'completed' WHERE delivery_id = ? AND status != 'completed'";
         String updateOrderQuery = "UPDATE userOrders SET status = 'Completed' WHERE delivery_id = ?";
 
+
+        String phoneNo = null;
+
+        Map<String, String> order = null;
+
+        String getAssignedOrdersQuery = "SELECT assignedTo, istemp, phone_no, content FROM deliveries WHERE delivery_id = ?";
+
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getAssignedOrdersQuery, new Object[] { delivery_id })) {
+            if(rs != null && rs.next()) {
+                Map<String, String> orderTemp = new HashMap<>();
+                orderTemp.put("assignedTo", rs.getString("assignedTo"));
+                orderTemp.put("content", rs.getString("content"));
+
+                if(Objects.equals(orderTemp.get("assignedTo"), "-1")){
+                    return ResponseEntity.ok().body(Map.of(
+                            "msg", "error",
+                            "message", "This order is not assigned."
+                    ));
+                }
+
+                if(rs.getBoolean("istemp")){
+                    phoneNo = rs.getString("phone_no");
+                    order = orderTemp;
+                }
+
+            }
+            else{
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "error",
+                        "message", "No such order exists."
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Failed to fetch assigned orders"));
+        }
+
         try {
             DatabaseHandler.INSTANCE.connection.setAutoCommit(false);
 
@@ -161,6 +282,13 @@ public class DeliveryEndpoints {
             DatabaseHandler.INSTANCE.connection.setAutoCommit(true);
 
             if (deliveryResult > 0 || orderResult > 0) {
+                try{
+                    if(phoneNo != null)
+                        sendSMS(phoneNo, format("Your order of %s has been completed.", order.get("content")));
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
                 return ResponseEntity.ok().body(Map.of(
                         "msg", "success",
                         "message", "Order marked as completed",

@@ -158,6 +158,9 @@ public class CartEndpoints {
                         else{
                             suffix = "g's";
                         }
+                        if(suffix.charAt(0) == 'k'){
+                            amount = amount / 1000;
+                        }
 
                         // Build content string
                         if (contentBuilder.length() > 0) {

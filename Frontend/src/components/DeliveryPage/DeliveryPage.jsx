@@ -28,21 +28,31 @@ const DeliveryPage = () => {
     }, [isDesktop]);
 
 
+    // Define the function inside the component as you already have
     const fetchOrders = async () => {
         try {
-            if(Util.first) return;
             const response_unassigned = await Util.callBackend('delivery/get-unassigned-orders');
             const response_assigned = await Util.callBackend(`delivery/get-assigned-orders`, {userID:Util.savedUser.id});
             setWaitingOrders(response_unassigned);
             setTakenOrders(response_assigned);
-            Util.first = true;
         } catch (error) {
             console.error('Failed to fetch orders:', error);
         }
     };
 
-    fetchOrders();
 
+    useEffect(() => {
+        fetchOrders();
+
+        const intervalId = setInterval(() => {
+            fetchOrders();
+        }, 30000); // Fetch every 30 seconds, adjust as needed
+
+        return () => {
+            isMounted.current = false;
+            clearInterval(intervalId);
+        };
+    }, []);
 
     // Handle tab click
     const handleTabClick = (tab) => {
@@ -73,17 +83,17 @@ const DeliveryPage = () => {
 
     const removeOrderFromTab = (delivery_id, tab) => {
         if (tab === "Waiting Orders") {
-            setWaitingOrders(prevOrders => prevOrders.filter(order => order.delivery_id !== delivery_id));
+            setWaitingOrders(prevOrders => prevOrders.filter(order => order.order_id !== delivery_id));
         } else if (tab === "Taken Orders") {
-            setTakenOrders(prevOrders => prevOrders.filter(order => order.delivery_id !== delivery_id));
+            setTakenOrders(prevOrders => prevOrders.filter(order => order.order_id !== delivery_id));
         }
     };
 
     const updateWaitingOrdersWithArray = (newOrders) => {
         setWaitingOrders(prevOrders => {
             // Combine existing orders with new ones, removing duplicates based on delivery_id
-            const existingdelivery_ids = new Set(prevOrders.map(order => order.delivery_id));
-            const filteredNewOrders = newOrders.filter(order => !existingdelivery_ids.has(order.delivery_id));
+            const existingdelivery_ids = new Set(prevOrders.map(order => order.order_id));
+            const filteredNewOrders = newOrders.filter(order => !existingdelivery_ids.has(order.order_id));
 
             // Combine and sort all orders
             const updatedOrders = [...prevOrders, ...filteredNewOrders];
@@ -92,7 +102,7 @@ const DeliveryPage = () => {
     };
 
     const removeOrderFromWaitingOrdersBydelivery_id = (delivery_id) => {
-        setWaitingOrders(prevOrders => prevOrders.filter(order => order.delivery_id !== delivery_id));
+        setWaitingOrders(prevOrders => prevOrders.filter(order => order.order_id !== delivery_id));
     };
 
 
@@ -103,7 +113,7 @@ const DeliveryPage = () => {
     //button handlers
     const handleTakeOrder = async (order, tab) => {
         const temp = order;
-        const response = await Util.callBackend(`delivery/assign-order`, {userID:Util.savedUser.id, delivery_id:order.delivery_id});
+        const response = await Util.callBackend(`delivery/assign-order`, {userID:Util.savedUser.id, delivery_id:order.order_id});
         if(typeof response === 'string'){
             if(response.startsWith("Conflict"))
                 console.error(response);
@@ -116,20 +126,20 @@ const DeliveryPage = () => {
     };
 
     const handleDropOrder = async (order, currentTab) => {
-        const response = await Util.callBackend(`delivery/drop-order`, {delivery_id:order.delivery_id});
+        const response = await Util.callBackend(`delivery/drop-order`, {delivery_id:order.order_id});
         if(response.startsWith("Failed")){
             console.error(response);
         } else {
-            removeOrderFromTab(order.delivery_id, currentTab);
+            removeOrderFromTab(order.order_id, currentTab);
         }
     };
 
     const handleComplete = async (order, currentTab) => {
-        const response = await Util.callBackend(`delivery/complete-order`, {delivery_id:order.delivery_id});
+        const response = await Util.callBackend(`delivery/complete-order`, {delivery_id:order.order_id});
         if(response.startsWith("Failed")){
             console.error(response);
         } else {
-            removeOrderFromTab(order.delivery_id, currentTab);
+            removeOrderFromTab(order.order_id, currentTab);
         }
     };
 
