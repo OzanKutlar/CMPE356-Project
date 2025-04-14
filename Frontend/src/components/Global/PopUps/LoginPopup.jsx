@@ -67,6 +67,8 @@ const LoginPopup = ({setShowLogin}) => {
     const handlePassword = async (e) => {
         const {name, value} = e.target;
         setPassword(value)
+        if(passwordError !== '')
+            setPasswordError('');
     }
 
     const handleConfirmPassword = async (e) =>{
@@ -100,6 +102,7 @@ const LoginPopup = ({setShowLogin}) => {
                 }
                 setShowLogin(false);
             } else {
+                setPasswordError(s.message);
                 console.error(`Error: ${s.message}`);
             }
         } catch (error) {

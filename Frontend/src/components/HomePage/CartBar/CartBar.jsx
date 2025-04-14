@@ -70,7 +70,7 @@ const CartBar = ({showNavbar, setShowNavbar}) => {
     const handleSubmitOrder = async () => {
         setSubmitting(true);
         try {
-            const response = await Util.callBackend("cart/saveCart", {items: JSON.stringify(cartItems)});
+            const response = await Util.callBackend("cart/saveCart", {userID: Util.savedUser.id} ,{items: JSON.stringify(cartItems)});
             if (response.msg === 'success') {
                 setShowNavbar(false);
                 Util.navigateTo("cart");

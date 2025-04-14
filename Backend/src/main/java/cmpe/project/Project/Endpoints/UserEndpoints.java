@@ -66,11 +66,17 @@ public class UserEndpoints {
         } catch (SQLException e) {
             logError("Error executing SQL request: " + query + ". Error: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to retrieve user details"));
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to retrieve user details"
+            ));
         }
 
         if (user == null) {
-            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "User Not Found."));
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Wrong Username/Password"
+            ));
         }
 
         UUID sessionUUID = UUID.randomUUID();

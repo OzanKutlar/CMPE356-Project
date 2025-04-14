@@ -110,9 +110,7 @@ const AddProductPopup = ({ setShowPopUp, onProductAdded }) => {
         try {
             setIsLoading(true);
 
-            // In a real implementation, we would upload the image file first
-            // and get back a URL, but for now we'll simulate that
-            const imageUrl = URL.createObjectURL(imageFile); // Temporary URL for demo purposes
+            const imageUrl = imageFile;
 
             // Create a new product object
             const newProduct = {
@@ -121,18 +119,11 @@ const AddProductPopup = ({ setShowPopUp, onProductAdded }) => {
                 currentStock: parseInt(initialStock),
                 startStock: parseInt(initialStock),
                 soldStock: 0,
-                ItemPhotoLink: imageUrl, // This would be a real URL from the server in production
-                id: Date.now().toString() // Temporary ID, backend will replace this
+                ItemPhotoLink: imageUrl
             };
 
-            // Call the backend (in a real app)
-            // const response = await Util.callBackend("butcher/addProduct", {
-            //     userID: Util.savedUser.id,
-            //     product: newProduct
-            // });
 
-            // Simulate successful response
-            const response = { product: newProduct };
+            const response = await Util.callBackend()
 
             // Add the new product to the list
             if (onProductAdded) {
@@ -171,7 +162,7 @@ const AddProductPopup = ({ setShowPopUp, onProductAdded }) => {
                         {imageFile ? (
                             <div>
                                 <img
-                                    src={URL.createObjectURL(imageFile)}
+                                    src={imageFile}
                                     alt="Product Preview"
                                     className="w-full h-48 object-cover"
                                 />

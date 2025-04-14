@@ -105,9 +105,12 @@ const CartItemsLarge = () => {
             const response = await Util.callBackend("cart/submitOrder", {
                 istemp: Util.savedUser.id === '',
                 phoneNo: Util.savedUser.id === '' ? Util.tempPhoneNumber : '',
-                userID:  Util.savedUser.id === '' ? '' : Util.savedUser.id,
+                userID:  Util.savedUser.id === '' ? '' : Util.savedUser.id
+                },
+                {
                 items: JSON.stringify(Object.values(cart())),
-                address: formData.address});
+                address: formData.address
+            });
 
             if(response.msg === "success"){
                 setMessage({
