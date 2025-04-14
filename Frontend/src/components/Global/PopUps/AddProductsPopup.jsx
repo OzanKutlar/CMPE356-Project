@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './LoginPopup.css';
+import Util from "../../../Util.js";
 
 const AddProductPopup = ({ setShowPopUp, onProductAdded }) => {
     const [productName, setProductName] = useState('');
@@ -40,10 +41,44 @@ const AddProductPopup = ({ setShowPopUp, onProductAdded }) => {
     };
 
     const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setImageFile(file);
-            setFileName(file.name);
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+                setImageFile(URL.createObjectURL(file));
+
+                const base64Data = reader.result.split(',')[1];
+
+                const fileType = file.name.split('.').pop();
+
+                const userID = Util.savedUser.id
+
+                // Make the upload request
+                fetch(Util.backendIp + '/image/upload', {
+                    method: 'POST', // Changed to POST to send data in body
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userID: userID,
+                        pictureData: base64Data,
+                        fileName: fileType
+                    })
+                }).then(response => response.json()).then(data => {
+                    if (data.msg === "success") {
+                        // setImageFile(Util.getImageFromBackend(data.url.substring(8)));
+                        console.log("Image uploaded successfully:", data.url);
+                    } else {
+                        console.error(data.message);
+                    }
+                })
+                    .catch(error => {
+                        console.error("Error uploading image:", error);
+                    });
+            };
+
+            reader.readAsDataURL(file);
         }
     };
 
