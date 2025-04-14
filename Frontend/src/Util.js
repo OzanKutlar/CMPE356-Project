@@ -532,6 +532,11 @@ class Util {
         }
         const url = `${Util.backendIp}/${endpoint}`;
         try {
+
+            if (body !== null) {
+                headers['Content-Type'] = 'application/json';
+            }
+
             const response = body === null ? await fetch(url, {
                 method: 'GET',
                 headers: headers,

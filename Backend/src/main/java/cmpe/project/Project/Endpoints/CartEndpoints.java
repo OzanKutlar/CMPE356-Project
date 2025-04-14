@@ -27,7 +27,6 @@ public class CartEndpoints {
     @Autowired
     private OrderService orderService;
 
-    private static final Map<String, List<Map<String, Object>>> carts = new HashMap<>();
 
     @GetMapping("/items")
     public ResponseEntity<?> getItems(@RequestHeader Map<String, String> headers) {
