@@ -1,0 +1,213 @@
+import React, { useState, useEffect } from 'react';
+import './LoginPopup.css';
+
+const AddProductPopup = ({ setShowPopUp, onProductAdded }) => {
+    const [productName, setProductName] = useState('');
+    const [productPrice, setProductPrice] = useState('');
+    const [initialStock, setInitialStock] = useState('');
+    const [fadeIn, setFadeIn] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [imageFile, setImageFile] = useState(null);
+    const [fileName, setFileName] = useState('');
+    const [buttonColor, setButtonColor] = useState('#007bff');
+    const [isHovered, setIsHovered] = useState(false);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => setFadeIn(true), 50);
+        return () => {
+            clearTimeout(timeout);
+            setFadeIn(false);
+        };
+    }, []);
+
+    const handleProductNameChange = (e) => {
+        setProductName(e.target.value);
+    };
+
+    const handleProductPriceChange = (e) => {
+        const value = e.target.value;
+        if (/^\d*\.?\d*$/.test(value)) { // Only allow numbers and decimal point
+            setProductPrice(value);
+        }
+    };
+
+    const handleInitialStockChange = (e) => {
+        const value = e.target.value;
+        if (/^\d*$/.test(value)) { // Only allow numbers
+            setInitialStock(value);
+        }
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file);
+            setFileName(file.name);
+        }
+    };
+
+    const handleAddProduct = async () => {
+        // Clear any previous errors
+        setErrorMessage('');
+
+        // Validation
+        if (!productName.trim()) {
+            setErrorMessage('Please enter a product name');
+            return;
+        }
+
+        if (!productPrice || parseFloat(productPrice) <= 0) {
+            setErrorMessage('Please enter a valid price');
+            return;
+        }
+
+        if (!initialStock || parseInt(initialStock) < 0) {
+            setErrorMessage('Please enter a valid initial stock');
+            return;
+        }
+
+        if (!imageFile) {
+            setErrorMessage('Please upload a product image');
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+
+            // In a real implementation, we would upload the image file first
+            // and get back a URL, but for now we'll simulate that
+            const imageUrl = URL.createObjectURL(imageFile); // Temporary URL for demo purposes
+
+            // Create a new product object
+            const newProduct = {
+                ItemName: productName,
+                ItemPrice: parseFloat(productPrice),
+                currentStock: parseInt(initialStock),
+                startStock: parseInt(initialStock),
+                soldStock: 0,
+                ItemPhotoLink: imageUrl, // This would be a real URL from the server in production
+                id: Date.now().toString() // Temporary ID, backend will replace this
+            };
+
+            // Call the backend (in a real app)
+            // const response = await Util.callBackend("butcher/addProduct", {
+            //     userID: Util.savedUser.id,
+            //     product: newProduct
+            // });
+
+            // Simulate successful response
+            const response = { product: newProduct };
+
+            // Add the new product to the list
+            if (onProductAdded) {
+                onProductAdded(response.product || newProduct);
+            }
+
+            // Close the popup
+            setShowPopUp(false);
+
+        } catch (error) {
+            setErrorMessage(error.message || 'An error occurred. Please try again.');
+            console.error('Error adding product:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleCancel = () => {
+        setShowPopUp(false);
+    };
+
+    return (
+        <div className="login-popup-wrapper">
+            {/* Background Overlay */}
+            <div className="login-overlay" onClick={handleCancel}></div>
+
+            {/* Popup */}
+            <div className={`login-popup ${fadeIn ? 'show' : ''}`}>
+                <h2 className="text-2xl font-bold mb-4">Add New Product</h2>
+
+                <p className="mb-4">Please fill in the product details below.</p>
+
+                {/* Image upload section */}
+                <div className="mb-4 border rounded overflow-hidden">
+                    <div className="relative">
+                        {imageFile ? (
+                            <div>
+                                <img
+                                    src={URL.createObjectURL(imageFile)}
+                                    alt="Product Preview"
+                                    className="w-full h-48 object-cover"
+                                />
+                            </div>
+                        ) : (
+                            <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
+                                <span className="text-gray-400">Product Image</span>
+                            </div>
+
+                        )}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            className="hidden"
+                        />
+
+                    </div>
+
+                </div>
+
+                {/* Product details */}
+                <input
+                    type="text"
+                    placeholder="Product Name"
+                    value={productName}
+                    onChange={handleProductNameChange}
+                    className="w-full p-3 mb-4 border rounded"
+                    disabled={isLoading}
+                />
+
+                <input
+                    type="text"
+                    placeholder="Price per kg (e.g. 12.99)"
+                    value={productPrice}
+                    onChange={handleProductPriceChange}
+                    className="w-full p-3 mb-4 border rounded"
+                    disabled={isLoading}
+                />
+
+                <input
+                    type="text"
+                    placeholder="Initial Stock (in kg)"
+                    value={initialStock}
+                    onChange={handleInitialStockChange}
+                    className="w-full p-3 mb-4 border rounded"
+                    disabled={isLoading}
+                />
+
+                {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
+
+                <button
+                    onClick={handleAddProduct}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                    style={{backgroundColor: isHovered ? '#0056b3' : buttonColor}}
+                    className="w-full px-5 py-3 rounded text-white text-lg cursor-pointer transition-colors duration-300"
+                    disabled={isLoading}
+                >
+                    {isLoading ? 'Adding...' : 'Add Product'}
+                </button>
+
+                <button
+                    onClick={handleCancel}
+                    className="w-full mt-2 px-5 py-3 rounded text-gray-700 text-lg cursor-pointer transition-colors duration-300 border"
+                >
+                    Cancel
+                </button>
+            </div>
+        </div>
+    );
+};
+
+export default AddProductPopup;
