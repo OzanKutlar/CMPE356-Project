@@ -1,4 +1,3 @@
-import axios from 'axios';
 class Util {
     static backendIp = 'http://127.0.0.1:33000/api';
     static fakeIt = false;

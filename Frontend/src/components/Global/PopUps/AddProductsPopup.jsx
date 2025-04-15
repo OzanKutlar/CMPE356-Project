@@ -123,7 +123,9 @@ const AddProductPopup = ({ setShowPopUp, onProductAdded }) => {
             };
 
 
-            const response = await Util.callBackend()
+            const response = await Util.callBackend("butcher/addItem", {
+                userID: Util.savedUser.id
+            },newProduct)
 
             // Add the new product to the list
             if (onProductAdded) {

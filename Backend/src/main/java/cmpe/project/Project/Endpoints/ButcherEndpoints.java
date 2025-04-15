@@ -4,10 +4,7 @@ import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
 import cmpe.project.Project.Utility.Util;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -102,6 +99,14 @@ public class ButcherEndpoints {
     public ResponseEntity<?> getRecipes(@RequestHeader Map<String, String> headers) {
         logHeaders("getRecipes", headers);
         return ResponseEntity.ok().body(new ArrayList<>()); // Placeholder
+    }
+
+    @PostMapping("/addItem")
+    public ResponseEntity<?> addItem(@RequestHeader("userID") String userID,
+                                     @RequestBody Map<String, Object> body){
+
+        String realID = UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID));
+
     }
 
     @GetMapping("/updateStock")
