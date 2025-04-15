@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import Util from '../../../Util.js';
 import useMobileDetection from "../../../mobileDetection.js";
 import './ItemPicker.css';
+import FilterBar from '../ProductFilter/ProductFilter.jsx';
 
 const ItemPicker = () => {
     const isMobile = useMobileDetection();
@@ -149,7 +150,9 @@ const ItemPicker = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-2xl font-bold mb-6 text-center">Item Gallery</h1>
-
+            
+            <FilterBar />
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {items.map((item, index) => (
                     <div
