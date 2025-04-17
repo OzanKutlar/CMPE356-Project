@@ -58,11 +58,11 @@ public class OrderService {
     }
 
     public void CompleteOrder (long splitId) throws SQLException {
-        orderRepository.UpdateBySplitId(splitId, null, "status = ? ", "completed");
+        orderRepository.UpdateSplitStatusBySplitId(splitId, "completed");
     }
 
     public void CancelOrder (long splitId) throws SQLException {
-        orderRepository.UpdateBySplitId(splitId, null, "status = ? ", "canceled");
+        orderRepository.UpdateSplitStatusBySplitId(splitId, "canceled");
         
         String message = "Order #" + splitId + " canceled successfully";
         Map<String, Object> payload = new HashMap<>();
@@ -72,8 +72,9 @@ public class OrderService {
         messagingTemplate.convertAndSend("/topic/order-canceled", payload);
     }
 
-    public void AssignOrder(long splitId, long driverId) throws SQLException {
-        orderRepository.UpdateBySplitId(splitId, "driver_id = ?, status = ?", "status = ?", driverId, "assigned", "unassigned");
+    public void AssignOrder(long splitId, long driverId) throws SQLException, RuntimeException {
+        //Update driver_id and status
+        orderRepository.UpdateAssignment(splitId, driverId, "unassigned", "assigned");
 
         String message = "Order #" + splitId + " has been assigned to driver: " + driverId;
         Map<String, Object> payload = new HashMap<>();
@@ -85,20 +86,23 @@ public class OrderService {
     }
 
     public void DropOrder(long splitId) throws SQLException {
-        orderRepository.UpdateBySplitId(splitId, "driver_id = ?, status = ?", "status = ?", (Long) null, "assigned", "unassigned");
-        DeliveryOrderDTO dto = orderRepository.GetListByFilter("os.splitId = ? ", splitId).get(0);
+        orderRepository.UpdateAssignment(splitId, null, "assigned", "unassigned");
+        DeliveryOrderDTO dto = orderRepository.GetListByFilter("os.split_id = ? ", splitId).get(0);
 
         Object[] arr = { dto };
         messagingTemplate.convertAndSend("/topic/unassigned-add", arr);
     }
 
     public List<DeliveryOrderDTO> GetUnassignedOrders() throws SQLException {
-        return orderRepository.GetListByFilter("os.status = ? ", "unassigned");
+        List<DeliveryOrderDTO> list = orderRepository.GetListByFilter("os.status = ? ", "unassigned");
+        System.out.println(list);
+        return list;
     }
 
     public List<DeliveryOrderDTO> GetAssignedOrdersFilterByDriver(Long driverId) throws SQLException {
-        return orderRepository.GetListByFilter("os.status = ? AND os.driver_id = ? ", "assigned", driverId);
-        
+        List<DeliveryOrderDTO> list = orderRepository.GetListByFilter("os.status = ? AND os.driver_id = ? ", "assigned", driverId);
+        System.out.println(list);
+        return list;
     }
 
     

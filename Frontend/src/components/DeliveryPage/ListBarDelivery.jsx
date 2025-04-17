@@ -18,19 +18,18 @@ export function ListBarDelivery({ isDesktop, listContent, currentTab }) {
            className={`bg-gray-100 overflow-y-auto
       ${isDesktop ? 'w-80 h-full border-r border-gray-300' : 'w-full h-1/2 border-b border-gray-300'}
     `}>
-        <div className="p-2">
-          {listContent.length > 0 ?
-              listContent.map((item, index) => (
-                  <OrderItem
-                      key={index}
-                      order={item}
-                      currentTab={currentTab}
-                      isExpanded={expandedOrder && expandedOrder.splitId === item.splitId}
-                      onExpandChange={handleExpandChange}
-                  />
-              ))
-              : <p className="p-4 text-gray-500">No orders available</p>}
-        </div>
+      <div className="p-2">
+        {listContent.length > 0 ?
+          listContent.map((item, index) => (
+            <OrderItem 
+              key={index} 
+              order={item} 
+              currentTab={currentTab}
+              isExpanded={expandedOrder && expandedOrder.splitId === item.splitId}
+              onExpandChange={handleExpandChange}
+            />
+          ))
+        : <p className="p-4 text-gray-500">No orders available</p>}
       </div>
   );
 }

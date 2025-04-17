@@ -27,31 +27,64 @@ const DeliveryPage = () => {
         }
     }, [isDesktop]);
 
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const response_unassigned = await Util.callBackend('delivery/get-unassigned-orders');
+                const response_assigned = await Util.callBackend(`delivery/get-assigned-orders/${Util.savedUser.id}`);
+                setWaitingOrders(response_unassigned);
+                setTakenOrders(response_assigned);
+            } catch (error) {
+                console.error('Failed to fetch orders:', error);
+            }
+        };
 
-    // Define the function inside the component as you already have
-    const fetchOrders = async () => {
-        try {
-            const response_unassigned = await Util.callBackend('delivery/get-unassigned-orders');
-            const response_assigned = await Util.callBackend(`delivery/get-assigned-orders`, {userID:Util.savedUser.id});
-            setWaitingOrders(response_unassigned);
-            setTakenOrders(response_assigned);
-        } catch (error) {
-            console.error('Failed to fetch orders:', error);
-        }
-    };
 
 
     useEffect(() => {
         fetchOrders();
-
-        const intervalId = setInterval(() => {
-            fetchOrders();
-        }, 30000); // Fetch every 30 seconds, adjust as needed
+        
+        async function setupWebSocket() {
+            try {
+              // Set explicit server URL - MAKE SURE THIS IS CORRECT
+              const serverUrl = 'http://localhost:33000';
+              
+              if (isMounted) console.log('Initializing WebSocket...');
+              
+              // Initialize and wait for connection
+              await Util.initializeWebSocket(serverUrl);
+              
+              if (isMounted) console.log('Connected! Subscribing to topics...');
+              
+              // Subscribe to order submission topic
+              await Util.subscribeToTopic('/topic/unassigned-add', (data) => {
+                if (!isMounted) return;
+                console.log('Received unassigned order data:', data);
+                updateWaitingOrdersWithArray(data);
+              });
+              
+              // Subscribe to order assignment topic
+              await Util.subscribeToTopic('/topic/order-assigned', (data) => {
+                if (!isMounted) return;
+                console.log('Received order assigned data:', data);
+                removeOrderFromWaitingOrdersBySplitId(data.splitId);
+              });
+              
+              if (isMounted) console.log('Successfully subscribed to all WebSocket topics');
+            } catch (error) {
+              console.error('Failed to setup WebSocket connection:', error);
+              if (isMounted) console.log(`Connection error: ${error.message}`);
+            }
+          }
+        setupWebSocket();
 
         return () => {
             isMounted.current = false;
-            clearInterval(intervalId);
-        };
+            console.log('Component unmounting, cleaning up WebSocket connections');
+            Util.unsubscribeFromTopic('/topic/unassigned-add');
+            Util.unsubscribeFromTopic('/topic/order-assigned');
+            Util.disconnectWebSocket();
+          };
     }, []);
 
     // Handle tab click
@@ -81,66 +114,56 @@ const DeliveryPage = () => {
         }
     };
 
-    const removeOrderFromTab = (delivery_id, tab) => {
+    const removeOrderFromTab = (splitId, tab) => {
         if (tab === "Waiting Orders") {
-            setWaitingOrders(prevOrders => prevOrders.filter(order => order.order_id !== delivery_id));
+            setWaitingOrders(prevOrders => prevOrders.filter(order => order.splitId !== splitId));
         } else if (tab === "Taken Orders") {
-            setTakenOrders(prevOrders => prevOrders.filter(order => order.order_id !== delivery_id));
+            setTakenOrders(prevOrders => prevOrders.filter(order => order.splitId !== splitId));
         }
     };
 
     const updateWaitingOrdersWithArray = (newOrders) => {
         setWaitingOrders(prevOrders => {
-            // Combine existing orders with new ones, removing duplicates based on delivery_id
-            const existingdelivery_ids = new Set(prevOrders.map(order => order.order_id));
-            const filteredNewOrders = newOrders.filter(order => !existingdelivery_ids.has(order.order_id));
-
+            // Combine existing orders with new ones, removing duplicates based on splitId
+            const existingSplitIds = new Set(prevOrders.map(order => order.splitId));
+            const filteredNewOrders = newOrders.filter(order => !existingSplitIds.has(order.splitId));
+            
             // Combine and sort all orders
             const updatedOrders = [...prevOrders, ...filteredNewOrders];
-            return updatedOrders.sort((a, b) => a.delivery_id - b.delivery_id);
+            return updatedOrders.sort((a, b) => a.splitId - b.splitId);
         });
     };
 
-    const removeOrderFromWaitingOrdersBydelivery_id = (delivery_id) => {
-        setWaitingOrders(prevOrders => prevOrders.filter(order => order.order_id !== delivery_id));
+    const removeOrderFromWaitingOrdersBySplitId = (splitId) => {
+        setWaitingOrders(prevOrders => prevOrders.filter(order => order.splitId !== splitId));
     };
 
+    
 
-
-
+    
 
     // TODO: update handlers to work properly
     //button handlers
     const handleTakeOrder = async (order, tab) => {
         const temp = order;
-        const response = await Util.callBackend(`delivery/assign-order`, {userID:Util.savedUser.id, delivery_id:order.order_id});
-        if(typeof response === 'string'){
-            if(response.startsWith("Conflict"))
-                console.error(response);
-            else
-                console.error(response);
-
-        } else {
+        const response = await Util.callBackend(`delivery/assign-order/${Util.savedUser.id}/${order.splitId}`);
+        if(response.Status.startsWith("Success"))
             addOrderToTab(temp, tab);
-        }
+        console.log(response);
     };
 
     const handleDropOrder = async (order, currentTab) => {
-        const response = await Util.callBackend(`delivery/drop-order`, {delivery_id:order.order_id});
-        if(response.startsWith("Failed")){
-            console.error(response);
-        } else {
-            removeOrderFromTab(order.order_id, currentTab);
-        }
+        const response = await Util.callBackend(`delivery/drop-order/${order.splitId}`);
+        if(response.Status.startsWith("Success"))
+            removeOrderFromTab(order.splitId, currentTab);
+        console.log(response);
     };
 
     const handleComplete = async (order, currentTab) => {
-        const response = await Util.callBackend(`delivery/complete-order`, {delivery_id:order.order_id});
-        if(response.startsWith("Failed")){
-            console.error(response);
-        } else {
-            removeOrderFromTab(order.order_id, currentTab);
-        }
+        const response = await Util.callBackend(`delivery/complete-order/${order.splitId}`);
+        if(response.Status.startsWith("Success"))
+            removeOrderFromTab(order.splitId, currentTab);
+        console.log(response);
     };
 
     // //Helper functions
@@ -150,7 +173,6 @@ const DeliveryPage = () => {
     //         [tab]: [...prevOrders[tab], order]
     //     }));
     // };
-
     // const removeOrderFromTab = (orderId, tab) => {
     //     setAllOrders(prevOrders => ({
     //         ...prevOrders,

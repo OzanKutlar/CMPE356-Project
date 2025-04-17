@@ -43,13 +43,15 @@ public class DatabaseHandler {
                         stmt.setObject(i + 1, params[i]);
                     }
                 }
+                System.out.println(stmt + "\n \n");
                 boolean hasResults = stmt.execute();
                 if (hasResults) {
                     ResultSet rs = stmt.getResultSet();
-                    CachedRowSet cached = RowSetProvider.newFactory().createCachedRowSet();
-                    cached.populate(rs);
-                    rs.close();
-                    return cached;
+                    return rs;
+                    // CachedRowSet cached = RowSetProvider.newFactory().createCachedRowSet();
+                    // cached.populate(rs);
+                    // rs.close();
+                    // return cached;
                 } else {
                     return null;
                 }

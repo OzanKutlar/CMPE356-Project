@@ -1,3 +1,4 @@
+import wsService from './WebSocketService';
 class Util {
     static backendIp = 'http://127.0.0.1:33000/api';
     static fakeIt = false;
@@ -293,131 +294,6 @@ class Util {
                 "data": "Heat oil in a pan. Add chopped meat, bell peppers, onions, and soy sauce. Stir-fry on high heat until cooked through. Serve with rice."
             }
         ],
-        "orders": {
-            "Waiting Orders": [
-                {
-                    "order_id": 1,
-                    "destination": "Yeniköy, Köybaşı Cd. No:166/B, 34464 Sarıyer/İstanbul",
-                    "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
-                    "totalPrice": 349.97,
-                    "content": [
-                        "Minced Meat - 1.2kg",
-                        "Steak - 1.1kg",
-                        "Entrecôte - 0.8kg"
-                    ]
-                },
-                {
-                    "order_id": 2,
-                    "destination": "Atatürk Mahallesi Ataşehir Bulvarı, Ertuğrul, Gazi Sokak, 34758 Ataşehir/İstanbul",
-                    "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
-                    "totalPrice": 129.98,
-                    "content": [
-                        "Cubed Meat - 1.6kg"
-                    ]
-                },
-                {
-                    "order_id": 3,
-                    "destination": "Levazım, Vadi Caddesi Zorlu Center No:2, 34340 Beşiktaş/İstanbul",
-                    "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
-                    "totalPrice": 454.48,
-                    "content": [
-                        "Entrecôte - 1.5kg",
-                        "Chopped Meat - 1.2kg",
-                        "Steak - 1.3kg",
-                        "Minced Meat - 1.1kg"
-                    ]
-                },
-                {
-                    "order_id": 4,
-                    "destination": "Yeniköy, Köybaşı Cd. No:166/B, 34464 Sarıyer/İstanbul",
-                    "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
-                    "totalPrice": 85.98,
-                    "content": [
-                        "Steak - 0.8kg"
-                    ]
-                },
-                {
-                    "order_id": 5,
-                    "destination": "Atatürk Mahallesi Ataşehir Bulvarı, Ertuğrul, Gazi Sokak, 34758 Ataşehir/İstanbul",
-                    "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
-                    "totalPrice": 289.97,
-                    "content": [
-                        "Chopped Meat - 1.6kg",
-                        "Minced Meat - 0.5kg",
-                        "Cubed Meat - 1.3kg"
-                    ]
-                },
-                {
-                    "order_id": 6,
-                    "destination": "Levazım, Vadi Caddesi Zorlu Center No:2, 34340 Beşiktaş/İstanbul",
-                    "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
-                    "totalPrice": 120.00,
-                    "content": [
-                        "Entrecôte - 1kg"
-                    ]
-                }
-            ],
-            "Taken Orders": [
-                {
-                    "order_id": 7,
-                    "destination": "Yeniköy, Köybaşı Cd. No:166/B, 34464 Sarıyer/İstanbul",
-                    "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
-                    "totalPrice": 449.94,
-                    "content": [
-                        "Minced Meat - 1.7kg",
-                        "Cubed Meat - 0.8kg",
-                        "Steak - 1.2kg",
-                        "Entrecôte - 0.9kg",
-                        "Chopped Meat - 1.3kg"
-                    ]
-                },
-                {
-                    "order_id": 8,
-                    "destination": "Atatürk Mahallesi Ataşehir Bulvarı, Ertuğrul, Gazi Sokak, 34758 Ataşehir/İstanbul",
-                    "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
-                    "totalPrice": 345.97,
-                    "content": [
-                        "Cubed Meat - 1.2kg",
-                        "Steak - 1.1kg",
-                        "Chopped Meat - 0.9kg"
-                    ]
-                },
-                {
-                    "order_id": 9,
-                    "destination": "Levazım, Vadi Caddesi Zorlu Center No:2, 34340 Beşiktaş/İstanbul",
-                    "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
-                    "totalPrice": 257.00,
-                    "content": [
-                        "Entrecôte - 1.5kg",
-                        "Chopped Meat - 1.2kg"
-                    ]
-                },
-                {
-                    "order_id": 10,
-                    "destination": "Yeniköy, Köybaşı Cd. No:166/B, 34464 Sarıyer/İstanbul",
-                    "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
-                    "totalPrice": 219.99,
-                    "content": [
-                        "Steak - 1.1kg",
-                        "Minced Meat - 1.5kg",
-                        "Cubed Meat - 0.6kg"
-                    ]
-                },
-                {
-                    "order_id": 11,
-                    "destination": "Atatürk Mahallesi Ataşehir Bulvarı, Ertuğrul, Gazi Sokak, 34758 Ataşehir/İstanbul",
-                    "startLocation": "Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul",
-                    "totalPrice": 473.56,
-                    "content": [
-                        "Chopped Meat - 1.4kg",
-                        "Cubed Meat - 0.6kg",
-                        "Minced Meat - 1.9kg",
-                        "Entrecôte - 1.5kg",
-                        "Steak - 1.1kg",
-                    ]
-                }
-            ]
-        }
     };
 
     // Navigation system
@@ -580,6 +456,28 @@ class Util {
             }
         }
     }
+
+
+    // Initialize STOMP websocket connection and return the connection promise
+    static initializeWebSocket(serverUrl = 'http://localhost:8080') {
+        return wsService.connect(serverUrl);
+    }
+    
+    // Subscribe to a STOMP topic, now returns a promise that resolves when subscribed
+    static async subscribeToTopic(topic, callback) {
+        await wsService.subscribe(topic, callback);
+    }
+    
+    // Unsubscribe from a STOMP topic
+    static unsubscribeFromTopic(topic) {
+        wsService.unsubscribe(topic);
+    }
+    
+    // Disconnect from STOMP server
+    static disconnectWebSocket() {
+        wsService.disconnect();
+    }
+
 }
 
 export default Util;
