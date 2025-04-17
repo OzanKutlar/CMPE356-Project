@@ -14,8 +14,8 @@ export function ListBarDelivery({ isDesktop, listContent, currentTab }) {
   };
 
   return (
-    <div key={currentTab}
-      className={`bg-gray-100 overflow-y-auto
+      <div key={currentTab}
+           className={`bg-gray-100 overflow-y-auto
       ${isDesktop ? 'w-80 h-full border-r border-gray-300' : 'w-full h-1/2 border-b border-gray-300'}
     `}>
       <div className="p-2">
@@ -31,7 +31,6 @@ export function ListBarDelivery({ isDesktop, listContent, currentTab }) {
           ))
         : <p className="p-4 text-gray-500">No orders available</p>}
       </div>
-    </div>
   );
 }
 
@@ -40,6 +39,5 @@ ListBarDelivery.propTypes = {
   listContent: PropTypes.array,
   currentTab: PropTypes.string,
 }
-
 
 

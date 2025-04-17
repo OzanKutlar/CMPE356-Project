@@ -7,6 +7,12 @@ class Util {
     static CallVerification = null;
     static CallPasswordReset = null;
     static forgot = false;
+    static first = false;
+    static resetFirst = () => {
+        setTimeout(() => {
+            this.first = false;
+        }, 2000);
+    };
     static tempPhoneNumber = '';
     static footerColor = "bg-rose-500";
     static fakeData = {
@@ -368,7 +374,9 @@ class Util {
         return this.backendIp + "/image/get/" + filename
     }
 
-    static async callBackend(endpoint, headers = {}) {
+
+
+    static async callBackend(endpoint, headers = {}, body = null) {
         console.log(`Calling backend endpoint: ${endpoint}`);
         if (Util.fakeIt) {
             if (endpoint === "check-user") {
@@ -399,10 +407,20 @@ class Util {
         }
         const url = `${Util.backendIp}/${endpoint}`;
         try {
-            const response = await fetch(url, {
+
+            if (body !== null) {
+                headers['Content-Type'] = 'application/json';
+            }
+
+            const response = body === null ? await fetch(url, {
                 method: 'GET',
                 headers: headers,
-            });
+            }) :
+                await fetch(url, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(body)
+                });
             if (!response.ok) {
                 throw new Error(`Backend error: ${response.statusText}`);
             }

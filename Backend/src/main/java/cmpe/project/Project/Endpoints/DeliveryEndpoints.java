@@ -1,28 +1,26 @@
 package cmpe.project.Project.Endpoints;
 
 import cmpe.project.Project.Utility.Util;
-
 import java.util.UUID;
-
+import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
+import cmpe.project.Project.Utility.Util;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import cmpe.project.Project.Services.OrderService;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
+
+import static cmpe.project.Project.Utility.Logger.format;
+import static cmpe.project.Project.Utility.Util.sendSMS;
 
 @RestController
 @RequestMapping("/api/delivery")
 public class DeliveryEndpoints {
-    
-    private final OrderService orderService;
 
-    public DeliveryEndpoints(OrderService orderService) {
-        this.orderService = orderService;
-    }
 
     @GetMapping("/get-unassigned-orders")
     public ResponseEntity<?> GetUnassignedOrders() {
@@ -31,6 +29,8 @@ public class DeliveryEndpoints {
         } catch (Exception e) {
             return ResponseEntity.ok(Util.JsonResponder("Status", "Failed to get unassigned orders: " + e.getMessage()));
         }
+
+        return ResponseEntity.ok().body(unassignedOrders);
     }
 
     @GetMapping("/get-assigned-orders/{uuid}")
@@ -40,6 +40,8 @@ public class DeliveryEndpoints {
         } catch (Exception e) {
             return ResponseEntity.ok(Util.JsonResponder("Status", "Failed to get assigned orders: " + e.getMessage()));
         }
+
+        return ResponseEntity.ok().body(assignedOrders);
     }
 
     //@PatchMapping
@@ -78,6 +80,7 @@ public class DeliveryEndpoints {
             return ResponseEntity.ok(Util.JsonResponder("Status", "Failed to complete order: " + e.getMessage()));
         }
     }
+
 
 
 }

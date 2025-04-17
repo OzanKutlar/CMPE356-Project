@@ -1,7 +1,8 @@
-package cmpe.project.Project.Utility;
+package cmpe.project.Project.Endpoints;
 
 
 import cmpe.project.Project.Endpoints.UserEndpoints;
+import cmpe.project.Project.Utility.Util;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -26,11 +27,13 @@ public class ImageEndpoints {
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestBody Map<String, String> requestBody) {
-        String userID = requestBody.get("userID");
+        String frontUserID = requestBody.get("userID");
         String pictureData = requestBody.get("pictureData");
         String filetype = requestBody.get("fileName");
 
-        if(UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID)) == null){
+        String userID = UserEndpoints.sessionMap.get(Util.getUuidOrNull(frontUserID));
+
+        if(userID == null){
             return ResponseEntity.ok().body(Map.of("msg", "error", "message", "You need to be logged in before you upload a file."));
         }
 

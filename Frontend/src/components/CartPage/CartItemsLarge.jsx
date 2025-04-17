@@ -102,17 +102,23 @@ const CartItemsLarge = () => {
 
         setSubmitting(true);
         try {
-            const response = await Util.callBackend("submitOrder", {
-                items: cartItems,
-                paymentDetails: formData
+            const response = await Util.callBackend("cart/submitOrder", {
+                istemp: Util.savedUser.id === '',
+                phoneNo: Util.savedUser.id === '' ? Util.tempPhoneNumber : '',
+                userID:  Util.savedUser.id === '' ? '' : Util.savedUser.id
+                },
+                {
+                items: JSON.stringify(Object.values(cart())),
+                address: formData.address
             });
 
-            if (response === 'success') {
+            if(response.msg === "success"){
                 setMessage({
                     type: "success",
                     text: "Order submitted successfully!"
                 });
                 setCartItems([]);
+                setCart({});
                 setFormData({
                     cardNumber: '',
                     expiryDate: '',

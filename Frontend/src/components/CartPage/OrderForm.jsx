@@ -1,9 +1,13 @@
 import React, {useState} from 'react';
 import Util from "../../Util.js";
+import Info from "../Global/PopUps/Info.jsx";
 
 const OrderForm = ({formData, onFormDataChange}) => {
 
     const [isCardValid, setCardValid] = useState(true);
+    const [showPopup, setShowPopup] = useState(false);
+    const [popUpText, setPopUpText] = useState('');
+    const [popUpType, setPopUpType] = useState('');
 
     const handleChange = (e) => {
         const {name, value} = e.target;
@@ -65,13 +69,34 @@ const OrderForm = ({formData, onFormDataChange}) => {
         return (sum % 10) === 0;
     };
 
+    const cart = () =>{
+        const storedCart = localStorage.getItem('cart');
+        return storedCart ? JSON.parse(storedCart) : {};
+    }
+
+
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Send the form data to the backend
         try {
-            await Util.callBackend("orderSubmit", formData);
-            alert('Order submitted successfully!');
+            const response = await Util.callBackend("cart/submitOrder", {
+                istemp: Util.savedUser.id === '',
+                phoneNo: Util.savedUser.id === '' ? Util.tempPhoneNumber : '',
+                userID:  Util.savedUser.id === '' ? '' : Util.savedUser.id,
+                items: JSON.stringify(Object.values(cart())),
+                address: formData.adress});
+            if(response.msg === "success"){
+                Util.delUser();
+                setPopUpText("Your order has been submitted successfully.")
+                setPopUpType("Info")
+                setShowPopup(true);
+            }
+            else{
+                setPopUpText("Error : " + response.message)
+                setPopUpType("Error")
+                setShowPopup(true);
+            }
         } catch (error) {
             console.error('Error submitting order:', error);
             alert('Failed to submit order. Please try again.');
@@ -80,6 +105,9 @@ const OrderForm = ({formData, onFormDataChange}) => {
 
     return (
         <form className="p-0" onSubmit={handleSubmit}>
+            {showPopup && (
+                <Info popUpText={popUpText} popUpType={popUpType} setShowPopup={setShowPopup} />
+            )}
             <div className="mb-4">
                 <label htmlFor="cardNumber"
                        className={`block ${isCardValid ? "text-gray-700" : "text-red-700"} text-xl font-bold mb-2`}>

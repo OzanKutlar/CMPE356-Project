@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import static cmpe.project.Project.Utility.Logger.*;
+import static cmpe.project.Project.Utility.Util.*;
 
 @RestController
 @RequestMapping("/api/user")
@@ -66,11 +67,17 @@ public class UserEndpoints {
         } catch (SQLException e) {
             logError("Error executing SQL request: " + query + ". Error: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to retrieve user details"));
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to retrieve user details"
+            ));
         }
 
         if (user == null) {
-            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "User Not Found."));
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Wrong Username/Password"
+            ));
         }
 
         UUID sessionUUID = UUID.randomUUID();
@@ -320,37 +327,6 @@ public class UserEndpoints {
 
     private String generateVerificationCode() {
         return String.format("%06d", (int) (Math.random() * 900000) + 100000);
-    }
-
-    private void sendSMS(String phoneNumber, String message) throws Exception {
-        phoneNumber = phoneNumber.replaceAll("[^0-9+]", "");
-        String remoteCmd = "bash -c 'termux-sms-send -n \"" + phoneNumber + "\" \"" + message + "\"'";
-        String command = "ssh phonePush \"" + remoteCmd + "\"";
-
-        System.out.println("Sending SMS: " + command);
-
-
-        Process process = Runtime.getRuntime().exec(command);
-
-        // Read standard output
-        BufferedReader stdOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String line;
-        while ((line = stdOut.readLine()) != null) {
-            System.out.println("[STDOUT] " + line);
-        }
-
-        // Read error output
-        StringBuilder errorMessage = new StringBuilder();
-        BufferedReader stdErr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-        while ((line = stdErr.readLine()) != null) {
-            errorMessage.append("[STDERR] ").append(line).append("\n");
-        }
-
-        if(!errorMessage.isEmpty()){
-            throw new Exception(errorMessage.toString());
-        }
-
-        process.waitFor();
     }
 
 

@@ -12,7 +12,7 @@ public class DatabaseHandler {
     static final String PASSWORD = "12345";
 
     public static DatabaseHandler INSTANCE;
-    private Connection connection;
+    public Connection connection;
 
     public static void createInstance() {
         if (INSTANCE == null) {
@@ -110,6 +110,58 @@ public class DatabaseHandler {
             }
         }
         return rowsUpdated;
+    }
+
+    /**
+     * Executes the SQL query and returns the auto-generated key (ID) from the insert
+     *
+     * @param requestString The SQL query to execute
+     * @param params The parameters for the prepared statement
+     * @return The auto-generated key from the insert, or -1 if no key was generated
+     * @throws SQLException If a database error occurs
+     */
+    public long executeQueryAndGetId(String requestString, Object[] params) throws SQLException {
+        long generatedId = -1;
+        try {
+            connect();
+            try (PreparedStatement stmt = connection.prepareStatement(requestString, Statement.RETURN_GENERATED_KEYS)) {
+                for (int i = 0; i < params.length; i++) {
+                    stmt.setObject(i + 1, params[i]);
+                }
+                int rowsUpdated = stmt.executeUpdate();
+
+                if (rowsUpdated > 0) {
+                    try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            generatedId = generatedKeys.getLong(1);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logError("Database error: " + e.getMessage());
+            try {
+                connect();
+                // Retry the operation
+                try (PreparedStatement stmt = connection.prepareStatement(requestString, Statement.RETURN_GENERATED_KEYS)) {
+                    for (int i = 0; i < params.length; i++) {
+                        stmt.setObject(i + 1, params[i]);
+                    }
+                    int rowsUpdated = stmt.executeUpdate();
+
+                    if (rowsUpdated > 0) {
+                        try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                            if (generatedKeys.next()) {
+                                generatedId = generatedKeys.getLong(1);
+                            }
+                        }
+                    }
+                }
+            } catch (SQLException ex) {
+                throw ex;
+            }
+        }
+        return generatedId;
     }
 
     public static boolean checkDatabaseExists() {

@@ -30,14 +30,19 @@ const UserList = () => {
     const deleteUser = async (userId) => {
         setNotification({message: '', isLoading: true, isError: false});
         try {
-            await Util.callBackend(`admin/delUserAdmin`, {userID: userId, adminID: Util.savedUser.id});
+            const response = await Util.callBackend(`admin/delUserAdmin`, {userID: userId, adminID: Util.savedUser.id});
+
+            if (response.msg === "error") {
+                throw new Error(response.message || 'Failed to send verification code');
+            }
+
             setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
             if (selectedUser && selectedUser.id === userId) {
                 setSelectedUser(null);
             }
             showNotification('User deleted successfully');
         } catch (err) {
-            showNotification('Failed to delete user', true);
+            showNotification(err.message, true);
         }
     };
 

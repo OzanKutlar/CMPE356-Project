@@ -14,7 +14,7 @@ const DeliveryPage = () => {
     const [WaitingOrders, setWaitingOrders] = useState([]);
     const [TakenOrders, setTakenOrders] = useState([]);
     const isDesktop = !useMobileDetection();
-    
+
     const [startLocation, setStartLocation] = useState("");
     const [destination, setDestination] = useState("");
 
@@ -39,6 +39,9 @@ const DeliveryPage = () => {
             }
         };
 
+
+
+    useEffect(() => {
         fetchOrders();
         
         async function setupWebSocket() {
@@ -170,7 +173,6 @@ const DeliveryPage = () => {
     //         [tab]: [...prevOrders[tab], order]
     //     }));
     // };
-    
     // const removeOrderFromTab = (orderId, tab) => {
     //     setAllOrders(prevOrders => ({
     //         ...prevOrders,
@@ -224,15 +226,15 @@ const DeliveryPage = () => {
             {/* Main content area */}
             <div className={`flex flex-1 ${isDesktop ? 'flex-row' : 'flex-col'} overflow-y-auto`}>
                 <div className="flex-none">
-                <ButtonContext.Provider value={{ handleTakeOrder, handleDropOrder, handleComplete, handleMapRouting }}>
-                    {isListBarOpen && renderListBar()}
-                </ButtonContext.Provider>
+                    <ButtonContext.Provider value={{ handleTakeOrder, handleDropOrder, handleComplete, handleMapRouting }}>
+                        {isListBarOpen && renderListBar()}
+                    </ButtonContext.Provider>
                 </div>
                 <div className="flex-1 p-4 bg-white">
                     {//<GoogleMapsDirections startAddress={startLocation} targetAddress={destination} />
                     }
                     <OpenLayerMap startLocation={startLocation} destination={destination} />
-                    
+
                 </div>
             </div>
         </div>

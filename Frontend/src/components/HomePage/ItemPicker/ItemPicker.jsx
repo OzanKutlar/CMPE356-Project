@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import Util from '../../../Util.js';
 import useMobileDetection from "../../../mobileDetection.js";
 import './ItemPicker.css';
+import FilterBar from '../ProductFilter/ProductFilter.jsx';
 
 const ItemPicker = () => {
     const isMobile = useMobileDetection();
@@ -9,7 +10,7 @@ const ItemPicker = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedItem, setSelectedItem] = useState(null);
-    const [quantity, setQuantity] = useState(1);
+    const [quantity, setQuantity] = useState(50);
     const [purchasing, setPurchasing] = useState(false);
     const [purchaseMessage, setPurchaseMessage] = useState(null);
     const [isClosing, setIsClosing] = useState(false);
@@ -33,6 +34,7 @@ const ItemPicker = () => {
             const newItemId = newItem.id;
 
             if (newCart[newItemId]) {
+                newCart[newItemId].currentStock = newItem.currentStock;
                 newCart[newItemId].buyAmount = newCart[newItemId].buyAmount + newItem.buyAmount/2;
                 newCart[newItemId].buyAmount = Math.min(newCart[newItemId].buyAmount, newCart[newItemId].currentStock)
             } else {
@@ -45,7 +47,7 @@ const ItemPicker = () => {
     };
 
 
-    const countToKG = 50;
+    const countToKG = 1;
     const multiplier = 1000 / countToKG;
     const buttonAdd = (100 / countToKG);
 
@@ -66,7 +68,7 @@ const ItemPicker = () => {
 
     const handleItemClick = (item) => {
         setSelectedItem(item);
-        setQuantity(1);
+        setQuantity(50);
         setPurchaseMessage(null);
     };
 
@@ -148,7 +150,9 @@ const ItemPicker = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-2xl font-bold mb-6 text-center">Item Gallery</h1>
-
+            
+            <FilterBar />
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {items.map((item, index) => (
                     <div
@@ -196,40 +200,40 @@ const ItemPicker = () => {
                                     className={`flex ${isMobile ? "flex-col" : "flex-row"} items-center justify-center`}>
                                     {/* Buttons with adjustments for spacing */}
                                     <button
-                                        onClick={() => setQuantity((prev) => Math.max(1, prev - multiplier))}
+                                        onClick={() => setQuantity((prev) => Math.max(0, prev - multiplier))}
                                         className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                                     >
                                         -1kg
                                     </button>
                                     <button
-                                        onClick={() => setQuantity((prev) => Math.max(1, prev - (multiplier / 10)))}
+                                        onClick={() => setQuantity((prev) => Math.max(0, prev - (multiplier / 10)))}
                                         className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                                     >
                                         -100g
                                     </button>
                                     <button
-                                        onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                                        onClick={() => setQuantity((prev) => Math.max(0, prev - (multiplier / 20)))}
                                         className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                                     >
-                                        -{countToKG}g
+                                        -{50}g
                                     </button>
                                     <span className="mx-4 text-lg font-medium mb-2">{quantity * countToKG < 1000
                                         ? `${quantity * countToKG}g`
                                         : `${(quantity * countToKG / 1000).toFixed(2)}kg`}</span>
                                     <button
-                                        onClick={() => setQuantity((prev) => prev + 1)}
+                                        onClick={() => setQuantity((prev) => Math.min(selectedItem.currentStock, prev + (multiplier / 20)))}
                                         className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                                     >
-                                        +{countToKG}g
+                                        +{50}g
                                     </button>
                                     <button
-                                        onClick={() => setQuantity((prev) => prev + (multiplier / 10))}
+                                        onClick={() => setQuantity((prev) => Math.min(selectedItem.currentStock, prev + (multiplier / 10)))}
                                         className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                                     >
                                         +100g
                                     </button>
                                     <button
-                                        onClick={() => setQuantity((prev) => prev + (multiplier))}
+                                        onClick={() => setQuantity((prev) => Math.min(selectedItem.currentStock, prev + (multiplier)))}
                                         className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors mb-2"
                                     >
                                         +1kg

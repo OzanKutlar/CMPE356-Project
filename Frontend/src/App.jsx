@@ -190,7 +190,7 @@ export default function App() {
                 {/*<Email />*/}
                 {renderPage()}
                 {currentPage != "delivery" && currentPage != "register" ? <Footer/> : null}
-                <Chatbot />
+                {/*<Chatbot />*/}
             </GlobalContext.Provider>
         </div>
     );
