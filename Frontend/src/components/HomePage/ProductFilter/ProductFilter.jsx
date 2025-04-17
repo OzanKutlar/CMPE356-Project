@@ -26,6 +26,13 @@ const FilterBar = ({ selectedFilters, setSelectedFilters }) => {
 
     // Calculate and update dropdown max heights when visibility changes
     useEffect(() => {
+        // Reset all dropdown max heights to 0 first
+        Object.keys(dropdownRefs.current).forEach(key => {
+            if (dropdownRefs.current[key]) {
+                dropdownRefs.current[key].style.maxHeight = '0px';
+            }
+        });
+
         // If there's an open filter, calculate and set its max height
         if (openFilter && dropdownRefs.current[openFilter]) {
             const container = dropdownRefs.current[openFilter];
@@ -40,7 +47,6 @@ const FilterBar = ({ selectedFilters, setSelectedFilters }) => {
 
     const handleOptionClick = (filterName, option) => {
         setSelectedFilters((prev) => {
-
             const newFilters = { ...prev };
 
             if (newFilters[filterName]) {
@@ -60,16 +66,19 @@ const FilterBar = ({ selectedFilters, setSelectedFilters }) => {
 
     return (
         <div className="w-full bg-white py-6 px-2 md:px-6 shadow-sm">
-            <style jsx>{`
+            <style jsx="true">{`
                 .filterbar-dropdown {
                     max-height: 0;
                     overflow: hidden;
                     transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
                     opacity: 0;
+                    pointer-events: none; /* Disable pointer events when hidden */
                 }
 
                 .filterbar-dropdown-open {
                     opacity: 1;
+                    visibility: visible; /* Make visible when open */
+                    pointer-events: auto; /* Enable pointer events when visible */
                 }
 
                 .filterbar-icon-rotate {

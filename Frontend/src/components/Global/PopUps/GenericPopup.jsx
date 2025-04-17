@@ -104,7 +104,7 @@ const GenericPopup = forwardRef((props, ref) => {
                 </div>
             )}
 
-            <style jsx={"true"} global>{`
+            <style jsx="true" global="true">{`
                 .genericpopup-backdrop {
                     position: fixed;
                     top: 0;
