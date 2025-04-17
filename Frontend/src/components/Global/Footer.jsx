@@ -1,5 +1,6 @@
 import React from "react";
 import Util from "../../Util.js";
+import GenericPopup from "./PopUps/GenericPopup.jsx";
 
 const Footer = () => {
     return (
@@ -48,6 +49,8 @@ const Footer = () => {
                         FAQ
                     </button>
                 </div>
+
+                <GenericPopup/>
 
                 {/* Quality & Copyright Message */}
                 <div className="text-sm text-gray-200">

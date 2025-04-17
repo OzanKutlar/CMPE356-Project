@@ -1,8 +1,10 @@
-import { useState } from 'react';
-import { ChickenUp, ChickenDown } from '../../Global/Icons';
+import { useState, useRef, useEffect } from 'react';
+import { ChickenDown } from '../../Global/Icons';
+import Util from "../../../Util.js";
 
 const FilterBar = ({ selectedFilters, setSelectedFilters }) => {
     const [openFilter, setOpenFilter] = useState(null);
+    const dropdownRefs = useRef({});
 
     const filters = [
         {
@@ -23,12 +25,24 @@ const FilterBar = ({ selectedFilters, setSelectedFilters }) => {
         }
     ];
 
+    // Calculate and update dropdown max heights when visibility changes
+    useEffect(() => {
+        // If there's an open filter, calculate and set its max height
+        if (openFilter && dropdownRefs.current[openFilter]) {
+            const container = dropdownRefs.current[openFilter];
+            const dropdownHeight = container.scrollHeight;
+            container.style.maxHeight = `${dropdownHeight}px`;
+        }
+    }, [openFilter]);
+
     const toggleFilter = (filterName) => {
         setOpenFilter(openFilter === filterName ? null : filterName);
     };
 
     const handleOptionClick = (filterName, option) => {
         setSelectedFilters((prev) => {
+
+            Util.CallGeneric("Test");
             const newFilters = { ...prev };
 
             if (newFilters[filterName]) {
@@ -55,25 +69,24 @@ const FilterBar = ({ selectedFilters, setSelectedFilters }) => {
                     transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
                     opacity: 0;
                 }
-                
+
                 .filterbar-dropdown-open {
-                    max-height: 200px;
                     opacity: 1;
                 }
-                
+
                 .filterbar-icon-rotate {
                     transition: transform 0.3s ease;
                 }
-                
+
                 .filterbar-icon-rotate-open {
                     transform: rotate(180deg);
                 }
-                
+
                 .filterbar-selected {
                     background-color: rgba(220, 252, 231, 0.7); /* Light green */
                     border-color: rgba(74, 222, 128, 0.5); /* Green border */
                 }
-                
+
                 .filterbar-option-selected {
                     background-color: rgba(220, 252, 231, 0.7);
                     color: rgb(22, 101, 52);
@@ -101,6 +114,7 @@ const FilterBar = ({ selectedFilters, setSelectedFilters }) => {
                         </button>
 
                         <div
+                            ref={(el) => dropdownRefs.current[filter.name] = el}
                             className={`absolute z-10 mt-1 left-1/2 transform -translate-x-1/2 w-48 bg-white rounded-md shadow-lg border border-gray-200 filterbar-dropdown ${
                                 openFilter === filter.name ? 'filterbar-dropdown-open' : ''
                             }`}

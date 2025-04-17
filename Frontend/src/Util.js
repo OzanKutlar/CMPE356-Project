@@ -6,6 +6,7 @@ class Util {
     static CallLogin = null;
     static CallVerification = null;
     static CallPasswordReset = null;
+    static CallGeneric = null;
     static forgot = false;
     static first = false;
     static resetFirst = () => {
