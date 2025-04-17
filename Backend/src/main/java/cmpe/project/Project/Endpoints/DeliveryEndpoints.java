@@ -21,6 +21,12 @@ import static cmpe.project.Project.Utility.Util.sendSMS;
 @RequestMapping("/api/delivery")
 public class DeliveryEndpoints {
 
+    private final OrderService orderService;
+
+    public DeliveryEndpoints(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
 
     @GetMapping("/get-unassigned-orders")
     public ResponseEntity<?> GetUnassignedOrders() {
@@ -30,7 +36,6 @@ public class DeliveryEndpoints {
             return ResponseEntity.ok(Util.JsonResponder("Status", "Failed to get unassigned orders: " + e.getMessage()));
         }
 
-        return ResponseEntity.ok().body(unassignedOrders);
     }
 
     @GetMapping("/get-assigned-orders/{uuid}")
@@ -41,7 +46,6 @@ public class DeliveryEndpoints {
             return ResponseEntity.ok(Util.JsonResponder("Status", "Failed to get assigned orders: " + e.getMessage()));
         }
 
-        return ResponseEntity.ok().body(assignedOrders);
     }
 
     //@PatchMapping
