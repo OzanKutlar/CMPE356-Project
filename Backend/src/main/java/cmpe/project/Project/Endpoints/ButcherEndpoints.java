@@ -2,7 +2,6 @@ package cmpe.project.Project.Endpoints;
 
 import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
 import cmpe.project.Project.Utility.Util;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,20 +20,89 @@ import static cmpe.project.Project.Utility.Util.*;
 public class ButcherEndpoints {
 
 
+    public boolean checkButcherAllowed(String userID, String transactionID) {
+        String checkTransactionQuery = "SELECT COUNT(*) FROM userOrders WHERE userID = ? AND order_id = ?";
+        Object[] queryParams = {userID, transactionID};
 
-    /**
-     * The below three functions are practically identical, only returning a success or failure like saveButcher.
-     *
-     * @param headers
-     * header.userID (See above for explanation)
-     *
-     * should return the items that have generated the most profit to the seller based on their userID.
-     * @return
-     */
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(checkTransactionQuery, queryParams)) {
+            if (rs != null && rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            logError("Error checking user transaction: " + checkTransactionQuery + ". Error: " + e.getMessage());
+        }
+
+        return false;
+    }
+
     @GetMapping("/refundTransaction")
-    public ResponseEntity<?> refundTransaction(@RequestHeader Map<String, String> headers) {
-        logHeaders("refundTransaction", headers);
-        return ResponseEntity.ok().body(Map.of("msg", "success"));
+    public ResponseEntity<?> refundOrder(
+            @RequestHeader("userID") String id,
+            @RequestHeader("transactionID") String transactionID) {
+
+        String userID = UserEndpoints.sessionMap.get(Util.getUuidOrNull(id));
+
+        String isManager = "SELECT storeID FROM managers WHERE userID = ?";
+        Object[] params = { userID };
+        String storeID = "";
+
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isManager, params)) {
+            if (rs == null || !rs.next()) {
+                System.out.println("User with ID " + userID + " is not authorized to get stock of this store");
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "error",
+                        "message", "User is not authorized"
+                ));
+            }
+
+            storeID = rs.getString("storeID");
+            System.out.println("Authorized manager for store ID: " + storeID);
+
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + isManager + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to check user role"
+            ));
+        }
+
+//
+//        log("User %s has requested a refund for transaction no %s", userID, transactionID);
+//
+//        if (!checkButcherAllowed(userID, transactionID)) {
+//            return ResponseEntity.ok().body(Map.of(
+//                    "msg", "error",
+//                    "message", "Invalid user or transaction ID"
+//            ));
+//        }
+
+        String refundQuery = "UPDATE userOrders SET status = 'Refunded' WHERE AND order_id = ?";
+        Object[] refundParams = {transactionID};
+
+        try {
+            int updated = DatabaseHandler.INSTANCE.executeQuery(refundQuery, refundParams);
+            if(updated > 0) {
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "success",
+                        "message", "Your order has been refunded successfully."
+                ));
+            }
+            else{
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "error",
+                        "message", "Incorrect order_id."
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            logError("Error executing refund order SQL request: " + refundQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to process the refund."
+            ));
+        }
     }
 
     @GetMapping("/banUser")
@@ -48,18 +116,53 @@ public class ButcherEndpoints {
         return ResponseEntity.ok().body(Map.of("msg", "success"));
     }
 
-    /**
-     * @param headers
-     * header.userID (See above for explanation)
-     * header.limit determines how many items should be returned. Start from the latest transaction.
-     * header.pos determines which 'page' should be returned. If limit = 5 and pos = 0, the latest 5 transactions are returned, if limit = 5 and pos = 1
-     *  the transactions from the 6th to the 10th are returned.
-     * @return
-     */
     @GetMapping("/getTransactions")
-    public ResponseEntity<?> getTransactions(@RequestHeader Map<String, String> headers) {
-        logHeaders("getTransactions", headers);
-        return ResponseEntity.ok().body(new ArrayList<>());
+    public ResponseEntity<?> getTransactions(
+            @RequestHeader("userID") String userID,
+            @RequestHeader("limit") int limit,
+            @RequestHeader("pos") int pos) {
+
+        String userIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID));
+        if (userIdFromSession == null) {
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Invalid UserID"
+            ));
+        }
+
+        log("User %s requested their transactions. From %s to %s", userIdFromSession, pos, pos + limit);
+
+        String getTransactionsQuery = "SELECT * FROM userOrders WHERE userID = ? ORDER BY timestamps DESC LIMIT ?, ?";
+        Object[] queryParams = { userIdFromSession, pos, limit };
+        List<Map<String, Object>> transactionsList = new ArrayList<>();
+
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getTransactionsQuery, queryParams)) {
+            while (rs != null && rs.next()) {
+                Map<String, Object> order = new HashMap<>();
+                order.put("id", rs.getString("order_id"));
+                order.put("address", rs.getString("address"));
+                order.put("itemName", rs.getString("itemName"));
+                order.put("itemPhoto", rs.getString("itemPhoto"));
+                order.put("paymentMethod", rs.getString("paymentMethod"));
+                order.put("paymentID", rs.getString("paymentID"));
+                order.put("status", rs.getString("status"));
+                try{
+                    order.put("totalPrice", Double.parseDouble(rs.getString("totalPrice")));
+                }
+                catch(Exception e){
+                    order.put("totalPrice", 0.00d);
+                }
+                transactionsList.add(order);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Internal Server Error"
+            ));
+        }
+
+        return ResponseEntity.ok().body(transactionsList);
     }
 
     @GetMapping("/getRecipes")
@@ -196,21 +299,6 @@ public class ButcherEndpoints {
     }
 
 
-    /**
-     * headers has userid
-     *
-     * @param headers returns a list of how much of each item is left along with their initial stock count. in the following format :
-     * [
-     *   {
-     *     ItemName: "Minced Meat",
-     *     ItemPrice: 59.99,
-     *     ItemPhotoLink: "https://static.ticimax.cloud/43437/uploads/urunresimleri/buyuk/kuzu-az-yagli-kiyma-1f-4f9.jpg",
-     *     currentStock: 12,
-     *     startStock: 30
-     *   }
-     * ]
-     * @return
-     */
     @GetMapping("/getStock")
    public ResponseEntity<?> getStock(@RequestHeader("userID") String userID) {
 

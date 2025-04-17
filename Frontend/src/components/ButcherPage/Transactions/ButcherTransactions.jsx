@@ -27,7 +27,7 @@ const FullscreenSales = () => {
         const fetchLatestSales = async () => {
             try {
                 setLoading(true);
-                const response = await Util.callBackend("getTransactions", {
+                const response = await Util.callBackend("butcher/getTransactions", {
                     userID: Util.savedUser.id,
                     limit: 50,
                     pos: 0
@@ -157,33 +157,33 @@ const FullscreenSales = () => {
                                                                 ? "bg-gray-400 cursor-not-allowed"
                                                                 : "bg-red-500 hover:bg-red-600"
                                                         }`}
-                                                        onClick={() => handleAction("refundTransaction", sale.id)}
+                                                        onClick={() => handleAction("butcher/refundTransaction", sale.id)}
                                                         disabled={disabledButtons["refundTransaction" + sale.id]}
                                                     >
                                                         Refund Transaction
                                                     </button>
-                                                    <button
-                                                        className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${
-                                                            disabledButtons["banUser" + sale.id]
-                                                                ? "bg-gray-400 cursor-not-allowed"
-                                                                : "bg-yellow-500 hover:bg-yellow-600"
-                                                        }`}
-                                                        onClick={() => handleAction("banUser", sale.id)}
-                                                        disabled={disabledButtons["banUser" + sale.id]}
-                                                    >
-                                                        Ban User
-                                                    </button>
-                                                    <button
-                                                        className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${
-                                                            disabledButtons["banAddress" + sale.id]
-                                                                ? "bg-gray-400 cursor-not-allowed"
-                                                                : "bg-gray-700 hover:bg-gray-800"
-                                                        }`}
-                                                        onClick={() => handleAction("banAddress", sale.id)}
-                                                        disabled={disabledButtons["banAddress" + sale.id]}
-                                                    >
-                                                        Ban Address
-                                                    </button>
+                                                    {/*<button*/}
+                                                    {/*    className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${*/}
+                                                    {/*        disabledButtons["banUser" + sale.id]*/}
+                                                    {/*            ? "bg-gray-400 cursor-not-allowed"*/}
+                                                    {/*            : "bg-yellow-500 hover:bg-yellow-600"*/}
+                                                    {/*    }`}*/}
+                                                    {/*    onClick={() => handleAction("banUser", sale.id)}*/}
+                                                    {/*    disabled={disabledButtons["banUser" + sale.id]}*/}
+                                                    {/*>*/}
+                                                    {/*    Ban User*/}
+                                                    {/*</button>*/}
+                                                    {/*<button*/}
+                                                    {/*    className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${*/}
+                                                    {/*        disabledButtons["banAddress" + sale.id]*/}
+                                                    {/*            ? "bg-gray-400 cursor-not-allowed"*/}
+                                                    {/*            : "bg-gray-700 hover:bg-gray-800"*/}
+                                                    {/*    }`}*/}
+                                                    {/*    onClick={() => handleAction("banAddress", sale.id)}*/}
+                                                    {/*    disabled={disabledButtons["banAddress" + sale.id]}*/}
+                                                    {/*>*/}
+                                                    {/*    Ban Address*/}
+                                                    {/*</button>*/}
                                                 </div>
                                             </div>
                                         </div>

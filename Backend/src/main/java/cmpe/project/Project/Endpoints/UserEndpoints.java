@@ -349,7 +349,10 @@ public class UserEndpoints {
 
         String userIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID));
         if (userIdFromSession == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid user ID"));
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Invalid UserID"
+            ));
         }
 
         log("User %s requested their orders. From %s to %s", userIdFromSession, pos, pos + limit);
@@ -379,7 +382,10 @@ public class UserEndpoints {
         } catch (SQLException e) {
             e.printStackTrace();
             logError("Error executing SQL request: " + getOrdersQuery + ". Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user role"));
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Internal Server Error"
+            ));
         }
 
 
