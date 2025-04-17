@@ -250,9 +250,9 @@ public class CartEndpoints {
                 String productId = (String) cartItem.get("id");
                 double amount = Double.parseDouble(String.valueOf(cartItem.get("buyAmount")));
 
-                String updateStockQuery = "UPDATE products SET currentStock = currentStock - ? WHERE product_id = ?";
+                String updateStockQuery = "UPDATE products SET currentStock = currentStock - ?, soldStock = soldStock + ? WHERE product_id = ?";
                 try {
-                    DatabaseHandler.INSTANCE.sendRequest(updateStockQuery, new Object[] {amount, productId});
+                    DatabaseHandler.INSTANCE.sendRequest(updateStockQuery, new Object[] {amount, amount, productId});
                 } catch (SQLException e) {
                     log("Warning: Failed to update stock for product " + productId + ": " + e.getMessage());
                 }

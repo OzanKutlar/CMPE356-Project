@@ -64,8 +64,8 @@ const ServerMonitor = () => {
     // Handle server shutdown
     const handleShutdown = async () => {
         try {
-            let response = await Util.callBackend("shutdown", {
-                userID: Util.savedUser.id
+            let response = await Util.callBackend("admin/shutdown", {
+                adminId: Util.savedUser.id
             });
 
             if(response.msg === "success"){
@@ -74,12 +74,12 @@ const ServerMonitor = () => {
                 setShowPopup(true);
             }
             else{
-                setPopUpText("Error : " + response.msg)
+                setPopUpText("Error : " + response.message)
                 setPopUpType("Error")
                 setShowPopup(true);
             }
         } catch (err) {
-            setPopUpText("Error : " + err.error)
+            setPopUpText("Error : " + err.message)
             setPopUpType("Error")
             setShowPopup(true);
             console.error(err);
@@ -89,7 +89,7 @@ const ServerMonitor = () => {
     // Handle server restart
     const handleRestart = async () => {
         try {
-            let response = await Util.callBackend("restart", {
+            let response = await Util.callBackend("admin/restart", {
                 userID: Util.savedUser.id
             });
 
@@ -99,7 +99,7 @@ const ServerMonitor = () => {
                 setShowPopup(true);
             }
             else{
-                setPopUpText("Error : " + response.msg)
+                setPopUpText("Error : " + response.message)
                 setPopUpType("Error")
                 setShowPopup(true);
             }

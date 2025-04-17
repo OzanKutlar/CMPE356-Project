@@ -7,7 +7,7 @@ const BestSellerList = () => {
     useEffect(() => {
         // Fetch best-selling items data from the backend
         setLoading(true);
-        Util.callBackend("getMostProfits", {userID: Util.savedUser.id})
+        Util.callBackend("butcher/getMostProfits", {userID: Util.savedUser.id})
             .then((data) => {
                 setBestSellers(data);
                 setLoading(false);
@@ -46,16 +46,16 @@ const BestSellerList = () => {
                             className="flex items-center bg-white rounded-lg shadow p-4 hover:shadow-md transition"
                         >
                             <img
-                                src={item.itemPhotoLink}
-                                alt={item.itemName}
+                                src={item.ItemPhotoLink}
+                                alt={item.ItemName}
                                 className="w-16 h-16 rounded-full object-cover mr-4"
                             />
                             <div className="flex flex-col flex-grow">
-                                <p className="text-lg font-semibold text-gray-700">{item.itemName}</p>
+                                <p className="text-lg font-semibold text-gray-700">{item.ItemName}</p>
                                 <p className="text-gray-500">${item.totalProfit.toLocaleString()}</p>
                             </div>
                             <p className="text-sm text-gray-500">
-                                Sales: <span className="font-bold text-gray-700">{item.totalSales}</span>
+                                Sales: <span className="font-bold text-gray-700">{(item.soldStock > 1000 ? (item.soldStock / 1000).toFixed(2) : item.soldStock) + (item.soldStock > 1000 ? "kg" : "g")}</span>
                             </p>
                         </li>
                     ))}

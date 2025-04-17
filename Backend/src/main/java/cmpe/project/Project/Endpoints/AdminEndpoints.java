@@ -165,7 +165,7 @@ public class AdminEndpoints {
         }
 
         if(Objects.equals(userId, adminIdFromSession)){
-            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "You cannot change yourself."));
+            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "You cannot change your own role."));
         }
 
         String isAdminQuery = "SELECT role FROM users WHERE id = ?";
@@ -238,6 +238,7 @@ public class AdminEndpoints {
         }
 
 
+
         String isAdminQuery = "SELECT role FROM users WHERE id = ?";
         Object[] isAdminParams = { adminIdFromSession };
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isAdminQuery, isAdminParams)) {
@@ -250,6 +251,8 @@ public class AdminEndpoints {
             return ResponseEntity.ok().body(Map.of("msg", "error", "message", "An error occurred server-side"));
         }
 
+        log("Shutdown requested by admin user : %s", adminIdFromSession);
+
 
         new Thread(() ->{
             try {
@@ -258,7 +261,7 @@ public class AdminEndpoints {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-        }).run();
+        }).start();
 
         return ResponseEntity.ok().body(Map.of("msg", "success"));
     }

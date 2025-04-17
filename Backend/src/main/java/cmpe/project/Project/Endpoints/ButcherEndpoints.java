@@ -21,39 +21,6 @@ import static cmpe.project.Project.Utility.Util.*;
 public class ButcherEndpoints {
 
 
-    /**
-     * @param headers headers.get("userID") is a userID
-     *                headers.get("items") is a list of items with the following structure :
-     *                [
-     *                {
-     *                "name": "Antrikot",
-     *                "photoLink": "/src/assets/antrikot.png",
-     *                "pricePerKg": "13",
-     *                "stock": "20"
-     *                }
-     *                ]
-     *                <p>
-     *                returns msg : success if it went ok. Returns the error message in msg if not.
-     * @return
-     */
-    @GetMapping("/saveButcher")
-    public ResponseEntity<?> saveButcher(@RequestHeader Map<String, String> headers) {
-        logHeaders("saveButcher", headers);
-        return ResponseEntity.ok().body(Map.of("msg", "success"));
-    }
-
-    /**
-     * @param headers
-     * header.userID (See above for explanation)
-     *
-     * should return the items that have generated the most profit to the seller based on their userID.
-     * @return
-     */
-    @GetMapping("/getMostProfits")
-     public ResponseEntity<?> getMostProfits(@RequestHeader Map<String, String> headers) {
-        logHeaders("getMostProfits", headers);
-        return ResponseEntity.ok().body(new ArrayList<>()); // Stub: Replace with actual logic
-    }
 
     /**
      * The below three functions are practically identical, only returning a success or failure like saveButcher.
@@ -250,7 +217,10 @@ public class ButcherEndpoints {
 
         String userIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID));
         if (userIdFromSession == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid user ID"));
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Invalid User ID"
+            ));
         }
 
 
@@ -261,7 +231,10 @@ public class ButcherEndpoints {
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isManager, params)) {
             if (rs == null || !rs.next()) {
                 System.out.println("User with ID " + userIdFromSession + " is not authorized to get stock of this store");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User is not authorized"));
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "error",
+                        "message", "You do not have the authorization to access this data."
+                ));
             }
 
             storeID = rs.getString("storeID");
@@ -269,7 +242,10 @@ public class ButcherEndpoints {
 
         } catch (SQLException e) {
             logError("Error executing SQL request: " + isManager + ". Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user role"));
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Internal Server Error"
+            ));
         }
 
 
@@ -299,12 +275,83 @@ public class ButcherEndpoints {
         } catch (SQLException e) {
             e.printStackTrace();
             logError("Error executing SQL request: " + getOrdersQuery + ". Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user role"));
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Internal Server Error"
+            ));
         }
 
 
 
         return ResponseEntity.ok().body(items);
     }
+
+
+    @GetMapping("/getMostProfits")
+    public ResponseEntity<?> getMostProfits(@RequestHeader("userID") String userID) {
+
+        String userIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID));
+        if (userIdFromSession == null) {
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Invalid User ID"
+            ));
+        }
+
+        String isManager = "SELECT storeID FROM managers WHERE userID = ?";
+        Object[] params = { userIdFromSession };
+        String storeID = "";
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isManager, params)) {
+            if (rs == null || !rs.next()) {
+                System.out.println("User with ID " + userIdFromSession + " is not authorized to get stock of this store");
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "error",
+                        "message", "You do not have the authorization to access this data."
+                ));
+            }
+            storeID = rs.getString("storeID");
+            System.out.println("Authorized manager for store ID: " + storeID);
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + isManager + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Internal Server Error"
+            ));
+        }
+
+        log("User %s requested most profitable products.", userIdFromSession);
+
+        List<Map<String, Object>> items = new ArrayList<>();
+        String getOrdersQuery = "SELECT p.*, p.price_per_kg FROM products p WHERE p.store_id IN (SELECT storeID FROM managers WHERE userID = ?)" +
+                " ORDER BY (p.soldStock * p.price_per_kg) DESC LIMIT 5;";
+        Object[] queryParams = { userIdFromSession };
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getOrdersQuery, queryParams)) {
+            while (rs != null && rs.next()) {
+                Map<String, Object> item = new HashMap<>();
+                item.put("ItemName", rs.getString("name"));
+                item.put("id", rs.getString("product_id"));
+                item.put("ItemPhotoLink", rs.getString("photo"));
+                item.put("currentStock", rs.getString("currentStock"));
+                item.put("soldStock", rs.getString("soldStock"));
+                try{
+                    item.put("totalProfit", Double.parseDouble(rs.getString("price_per_kg")) * Double.parseDouble((String) item.get("soldStock")) / 1000);
+                }
+                catch(Exception e){
+                    item.put("totalProfit", 0.00d);
+                }
+                items.add(item);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            logError("Error executing SQL request: " + getOrdersQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Internal Server Error"
+            ));
+        }
+
+        return ResponseEntity.ok().body(items);
+    }
+
 }
 

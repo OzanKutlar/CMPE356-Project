@@ -49,7 +49,12 @@ const UserList = () => {
     const changeUserRole = async (userId, newRole) => {
         setNotification({message: '', isLoading: true, isError: false});
         try {
-            await Util.callBackend(`admin/changeUserRole`, {userID: userId, newRole: newRole, adminID: Util.savedUser.id});
+            const response = await Util.callBackend(`admin/changeUserRole`, {userID: userId, newRole: newRole, adminID: Util.savedUser.id});
+
+            if (response.msg === "error") {
+                throw new Error(response.message || 'Failed to send verification code');
+            }
+
             setUsers((prevUsers) =>
                 prevUsers.map((user) =>
                     user.id === userId ? {...user, role: newRole} : user
@@ -61,7 +66,7 @@ const UserList = () => {
             setRoleEdit({isEditing: false, userId: null, newRole: ''});
             showNotification('User role changed successfully');
         } catch (err) {
-            showNotification('Failed to change user role', true);
+            showNotification(err.message, true);
         }
     };
 
