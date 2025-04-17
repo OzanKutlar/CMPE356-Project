@@ -40,6 +40,7 @@ public class CartEndpoints {
                 item.put("id", rs.getString("product_id"));
                 item.put("ItemPhotoLink", rs.getString("photo"));
                 item.put("currentStock", rs.getString("currentStock"));
+                item.put("category", rs.getString("category").split(","));
                 try{
                     item.put("ItemPrice", Double.parseDouble(rs.getString("price_per_kg")));
                 }

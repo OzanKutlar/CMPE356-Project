@@ -14,6 +14,7 @@ const ItemPicker = () => {
     const [purchasing, setPurchasing] = useState(false);
     const [purchaseMessage, setPurchaseMessage] = useState(null);
     const [isClosing, setIsClosing] = useState(false);
+    const [filters, setFilters] = useState({});
 
     const [cart, setCart] = useState(() => {
         const storedCart = localStorage.getItem('cart');
@@ -150,30 +151,41 @@ const ItemPicker = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-2xl font-bold mb-6 text-center">Item Gallery</h1>
-            
-            <FilterBar />
+
+            <FilterBar selectedFilters={filters} setSelectedFilters={setFilters} />
             
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {items.map((item, index) => (
-                    <div
-                        key={index}
-                        className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:scale-105 cursor-pointer"
-                        onClick={() => handleItemClick(item)}
-                    >
-                        <div className="h-48 overflow-hidden">
-                            <img
-                                src={item.ItemPhotoLink || "/api/placeholder/400/300"}
-                                alt={item.ItemName}
-                                className="w-full h-full object-cover"
-                            />
+                {items
+                    .filter(item => {
+                        // If no filters, show all items
+                        if (!filters || Object.keys(filters).length === 0) return true;
+
+                        return Object.entries(filters).every(([key, value]) => {
+                            return item.category.includes(value);
+                        });
+                    })
+                    .map((item, index) => (
+                        <div
+                            key={index}
+                            className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:scale-105 cursor-pointer"
+                            onClick={() => handleItemClick(item)}
+                        >
+                            <div className="h-48 overflow-hidden">
+                                <img
+                                    src={item.ItemPhotoLink || "/api/placeholder/400/300"}
+                                    alt={item.ItemName}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            <div className="p-4">
+                                <h3 className="font-semibold text-lg mb-1 truncate text-center">{item.ItemName}</h3>
+                                <p className="text-green-600 font-medium text-center">
+                                    ${item.ItemPrice.toFixed(2)} per kg
+                                </p>
+                            </div>
                         </div>
-                        <div className="p-4">
-                            <h3 className="font-semibold text-lg mb-1 truncate text-center">{item.ItemName}</h3>
-                            <p className="text-green-600 font-medium text-center">${item.ItemPrice.toFixed(2)} per
-                                kg</p>
-                        </div>
-                    </div>
-                ))}
+                    ))}
+
             </div>
 
             {/* Modal for selected item */}
