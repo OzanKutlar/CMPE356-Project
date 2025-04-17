@@ -27,6 +27,9 @@ const DeliveryPage = () => {
         }
     }, [isDesktop]);
 
+
+
+
     useEffect(() => {
         const fetchOrders = async () => {
             try {
@@ -39,9 +42,6 @@ const DeliveryPage = () => {
             }
         };
 
-
-
-    useEffect(() => {
         fetchOrders();
         
         async function setupWebSocket() {

@@ -189,7 +189,10 @@ public class UserEndpoints {
             DatabaseHandler.INSTANCE.executeQuery(userQuery, userParams);
         } catch (SQLException e) {
             logError("Error executing user SQL request: " + userQuery + ". Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to update user information"));
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to update user information"
+            ));
         }
 
         if (cardName != null) {
@@ -199,7 +202,10 @@ public class UserEndpoints {
                 DatabaseHandler.INSTANCE.executeQuery(cardQuery, cardParams);
             } catch (SQLException e) {
                 logError("Error executing card SQL request: " + cardQuery + ". Error: " + e.getMessage());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to update credit card information"));
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "error",
+                        "message", "Your card already exists."
+                ));
             }
         }
 

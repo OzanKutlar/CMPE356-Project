@@ -67,7 +67,7 @@ const AddProductPopup = ({ setShowPopUp, onProductAdded }) => {
                     })
                 }).then(response => response.json()).then(data => {
                     if (data.msg === "success") {
-                        // setImageFile(Util.getImageFromBackend(data.url.substring(8)));
+                        setImageFile(Util.getImageFromBackend(data.url));
                         console.log("Image uploaded successfully:", data.url);
                     } else {
                         console.error(data.message);

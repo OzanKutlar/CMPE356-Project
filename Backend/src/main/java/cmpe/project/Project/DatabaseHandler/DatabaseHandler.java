@@ -43,7 +43,7 @@ public class DatabaseHandler {
                         stmt.setObject(i + 1, params[i]);
                     }
                 }
-                System.out.println(stmt + "\n \n");
+                debugLog("DB", "Sending statement : %s", stmt);
                 boolean hasResults = stmt.execute();
                 if (hasResults) {
                     ResultSet rs = stmt.getResultSet();
@@ -92,6 +92,7 @@ public class DatabaseHandler {
                 for (int i = 0; i < params.length; i++) {
                     stmt.setObject(i + 1, params[i]);
                 }
+                debugLog("DB", "Executing statement : %s", stmt);
                 rowsUpdated = stmt.executeUpdate();
             }
         } catch (SQLException e) {

@@ -137,7 +137,7 @@ export default function EditProfile() {
                     })
                 }).then(response => response.json()).then(data => {
                     if (data.msg === "success") {
-                        setProfileImage(Util.getImageFromBackend(data.url.substring(8)));
+                        setProfileImage(Util.getImageFromBackend(data.url));
 
                         console.log("Image uploaded successfully:", data.url);
                     } else {

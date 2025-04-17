@@ -148,7 +148,7 @@ public class ButcherEndpoints {
 
         return ResponseEntity.ok().body(Map.of(
                 "msg", "ok",
-                "message", "Failed to update user information"
+                "message", "Item Added succesfully."
         ));
     }
 

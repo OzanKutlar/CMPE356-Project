@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -50,7 +51,7 @@ public class ImageEndpoints {
                 fos.write(imageBytes);
             }
 
-            String imageUrl = "/images/" + filename;
+            String imageUrl = filename;
 
             return ResponseEntity.ok().body(Map.of("msg", "success", "url", imageUrl));
 
@@ -73,12 +74,18 @@ public class ImageEndpoints {
 
             Resource resource = new UrlResource(imageFile.toURI());
 
+            String contentType = Files.probeContentType(imagePath);
+            if (contentType == null) {
+                contentType = "application/octet-stream"; // fallback
+            }
+
             return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG)
+                    .contentType(MediaType.parseMediaType(contentType))
                     .body(resource);
 
-        } catch (MalformedURLException e) {
+        } catch (IOException e) {
             return ResponseEntity.badRequest().build();
         }
     }
+
 }
