@@ -3,6 +3,7 @@ import {ChevronDownIcon, EyeIcon, EyeOffIcon} from '../Global/Icons';
 import Util from "../../Util.js";
 import Info from "../Global/PopUps/Info.jsx";
 import Utils from "../../Util.js";
+import GenericPopup from "../Global/PopUps/GenericPopup.jsx";
 
 const RegistrationPage = () => {
     const [formData, setFormData] = useState({
@@ -127,9 +128,6 @@ const RegistrationPage = () => {
         return re.test(String(email).toLowerCase());
     };
 
-    const [showPopup, setShowPopup] = useState(false);
-    const [popUpText, setPopUpText] = useState('');
-    const [popUpType, setPopUpType] = useState('');
 
     const handleDeleteAccountClick = async (e) => {
         if(disableText) return;
@@ -140,19 +138,13 @@ const RegistrationPage = () => {
             });
             if(response.msg === "success"){
                 Util.delUser();
-                setPopUpText("Your registration has been cancelled.")
-                setPopUpType("Info")
-                setShowPopup(true);
+                Util.CallGeneric("Your registration has been cancelled successfully!")
             }
             else{
-                setPopUpText("Error : " + response.msg)
-                setPopUpType("Error")
-                setShowPopup(true);
+                Util.CallGeneric(response.msg, "Error")
             }
         } catch (err) {
-            setPopUpText("Error : " + err.error)
-            setPopUpType("Error")
-            setShowPopup(true);
+            Util.CallGeneric(err.error, "Error")
             console.error(err);
         }
         setDisableText(false)
@@ -190,22 +182,16 @@ const RegistrationPage = () => {
                 });
                 if(response.msg === "success" && response.user){
                     Util.savedUser = response.user;
-                    setPopUpText("Your account has been successfully registered.")
-                    setPopUpType("Info")
-                    setShowPopup(true);
+                    Util.CallGeneric("Your account has been successfully registered.")
                     setTimeout(() => {
                         Util.navigateTo("home");
                     }, 2000);
                 }
                 else{
-                    setPopUpText("Error : " + response.msg)
-                    setPopUpType("Error")
-                    setShowPopup(true);
+                    Util.CallGeneric(response.msg, "Error")
                 }
             } catch (err) {
-                setPopUpText("Error : " + err.error)
-                setPopUpType("Error")
-                setShowPopup(true);
+                Util.CallGeneric(err.error, "Error")
                 console.error(err);
             }
 
@@ -216,9 +202,7 @@ const RegistrationPage = () => {
 
     return (
         <div className="flex h-screen bg-gray-100">
-            {showPopup && (
-                <Info popUpText={popUpText} popUpType={popUpType} setShowPopup={setShowPopup} />
-            )}
+            <GenericPopup/>
             <div className="w-2/3 relative overflow-hidden bg-gray-900 hidden md:block">
                 <div className="h-full w-full flex items-center justify-center">
                     {images.map((img, index) => (

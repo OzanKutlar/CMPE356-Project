@@ -42,7 +42,7 @@ const ServerMonitor = () => {
                 console.log('Backend Response:', response);
 
                 if (response.msg === "error") {
-                    alert(response.message);
+                    Util.CallGeneric(response.message, "Error");
                     Util.navigateTo("home");
                     throw new Error(response.message || 'Failed to send verification code');
                 }

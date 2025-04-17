@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChickenDown } from '../../Global/Icons';
-import Util from "../../../Util.js";
 
 const FilterBar = ({ selectedFilters, setSelectedFilters }) => {
     const [openFilter, setOpenFilter] = useState(null);
@@ -42,7 +41,6 @@ const FilterBar = ({ selectedFilters, setSelectedFilters }) => {
     const handleOptionClick = (filterName, option) => {
         setSelectedFilters((prev) => {
 
-            Util.CallGeneric("Test");
             const newFilters = { ...prev };
 
             if (newFilters[filterName]) {

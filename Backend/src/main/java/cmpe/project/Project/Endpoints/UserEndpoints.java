@@ -94,7 +94,7 @@ public class UserEndpoints {
         String userIdFromSession = sessionMap.get(Util.getUuidOrNull(userID));
         log("User ID %s has requested a deletion themselves", userIdFromSession);
         if (userIdFromSession == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid user ID"));
+            return ResponseEntity.ok().body(Map.of("msg", "Invalid user ID"));
         }
 
 
@@ -102,10 +102,10 @@ public class UserEndpoints {
         Object[] deleteUserParams = { userIdFromSession };
         try {
             DatabaseHandler.INSTANCE.executeQuery(deleteUserQuery, deleteUserParams);
-            return ResponseEntity.ok().body(Map.of("msg", "User deleted successfully"));
+            return ResponseEntity.ok().body(Map.of("msg", "success"));
         } catch (SQLException e) {
             logError("Error executing SQL request: " + deleteUserQuery + ". Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to delete user"));
+            return ResponseEntity.ok().body(Map.of("msg", "Failed to delete user"));
         }
     }
 

@@ -88,18 +88,14 @@ const OrderForm = ({formData, onFormDataChange}) => {
                 address: formData.adress});
             if(response.msg === "success"){
                 Util.delUser();
-                setPopUpText("Your order has been submitted successfully.")
-                setPopUpType("Info")
-                setShowPopup(true);
+                Util.CallGeneric("Your order has been submitted successfully.");
             }
             else{
-                setPopUpText("Error : " + response.message)
-                setPopUpType("Error")
-                setShowPopup(true);
+                Util.CallGeneric(response.message, "Error");
             }
         } catch (error) {
             console.error('Error submitting order:', error);
-            alert('Failed to submit order. Please try again.');
+            Util.CallGeneric("Failed to submit your order, please try again later.", "Error");
         }
     };
 

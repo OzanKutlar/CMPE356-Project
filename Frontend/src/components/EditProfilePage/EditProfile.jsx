@@ -192,11 +192,11 @@ export default function EditProfile() {
             Util.savedUser.email = email;
             console.log("Submitting data:", formData);
             setIsSubmitting(false);
-            alert("Profile updated successfully!");
+            Util.CallGeneric("Your profile has been updated successfully!");
         } catch (error) {
             console.error("Error submitting data:", error);
             setIsSubmitting(false);
-            alert("Failed to update profile. Please try again.");
+            Util.CallGeneric("Failed to update profile. Please try again.", "Error");
         }
     };
 
