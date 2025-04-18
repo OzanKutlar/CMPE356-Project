@@ -38,25 +38,29 @@ public class OrderRepository {
     }
 
     public List<DeliveryOrderDTO> GetListByFilter(String filter, Object... filterParams) throws SQLException {
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-        "SELECT o.order_id, os.split_id, o.address AS customer_address, " +
-        "pa.payment_method, s.name AS store_name, s.address AS store_address, " +
-        "GROUP_CONCAT(p.name) AS product_names, " +
-        "GROUP_CONCAT(oi.amount) AS product_amounts, " +
-        "SUM(oi.price) AS total_price " +
-        "FROM orders o " +
-        "JOIN order_splits os ON o.order_id = os.order_id " +
-        "JOIN stores s ON os.store_id = s.store_id " +
-        "JOIN order_items oi ON os.split_id = oi.split_id " +
-        "JOIN products p ON oi.product_id = p.product_id " +
-        "JOIN payments pa ON os.payment_id = pa.payment_id " +
-        "WHERE " + filter +
-        "GROUP BY o.order_id, os.split_id, s.store_id " +
-        "ORDER BY o.order_id, os.split_id, s.store_id"
-        );
-
-        String query = sb.toString();
+        String query = """
+            SELECT 
+                o.order_id,
+                os.split_id,
+                o.address AS customer_address,
+                pa.payment_method,
+                s.name AS store_name,
+                s.address AS store_address,
+                GROUP_CONCAT(p.name) AS product_names,
+                GROUP_CONCAT(oi.amount) AS product_amounts,
+                COALESCE(u.phone, o.temp_phone_num) AS phone_number,
+                SUM(oi.price) AS total_price
+            FROM orders o
+            JOIN order_splits os ON o.order_id = os.order_id
+            JOIN stores s ON os.store_id = s.store_id
+            JOIN order_items oi ON os.split_id = oi.split_id
+            JOIN products p ON oi.product_id = p.product_id
+            JOIN payments pa ON os.payment_id = pa.payment_id
+            LEFT JOIN users u ON o.customer_id = u.id
+            WHERE """ + filter + """
+            GROUP BY o.order_id, os.split_id, s.store_id
+            ORDER BY o.order_id, os.split_id, s.store_id;
+            """;
 
         ResultSet rs;
         if(filterParams != null && filterParams.length > 0) {
@@ -74,6 +78,7 @@ public class OrderRepository {
             DeliveryOrderDTO dto = new DeliveryOrderDTO();
             dto.setOrderId(rs.getLong("order_id"));
             dto.setSplitId(rs.getLong("split_id"));
+            dto.setPhoneNum(rs.getString("phone_number"));
             dto.setStoreName(rs.getString("store_name"));
             dto.setStoreAddress(rs.getString("store_address"));
             dto.setCustomerAddress(rs.getString("customer_address"));
@@ -87,8 +92,8 @@ public class OrderRepository {
     }
 
     public long insertOrder(CustomerOrderDTO order) throws SQLException {
-        String query = "INSERT INTO orders (customer_id, address) VALUES (?, ?)";
-        Object[] params = {order.getCustomerId(), order.getAddress()};
+        String query = "INSERT INTO orders (customer_id, address, temp_phone_num) VALUES (?, ?, ?)";
+        Object[] params = { order.getCustomerId(), order.getAddress(), order.getPhoneNum() };
         
         // Execute the query and get the generated keys
         DatabaseHandler.INSTANCE.executeQuery(query, params);
@@ -114,16 +119,16 @@ public class OrderRepository {
         throw new SQLException("Failed to retrieve payment ID");
     }
 
-    public long insertOrderSplit(long orderId, String storeName, long paymentId) throws SQLException {
-        String query = "INSERT INTO order_splits (order_id, store_name, payment_id) VALUES (?, ?, ?)";
-        Object[] params = {orderId, storeName, paymentId};
+    public long insertOrderSplit(long orderId, long storeId, long paymentId) throws SQLException {
+        String query = "INSERT INTO order_splits (order_id, store_id, payment_id) VALUES (?, ?, ?)";
+        Object[] params = {orderId, storeId, paymentId};
         
         DatabaseHandler.INSTANCE.executeQuery(query, params);
         
         // Get the last inserted ID (split_id)
-        ResultSet rs = DatabaseHandler.INSTANCE.sendRequest("SELECT LAST_INSERT_ID()", null);
-        if (rs != null && rs.next()) {
-            return rs.getLong(1);
+        long lastId = DatabaseHandler.INSTANCE.executeQueryAndGetId(query, params);
+        if (lastId > -1) {
+            return lastId;
         }
         throw new SQLException("Failed to retrieve split ID");
     }
@@ -173,9 +178,10 @@ public class OrderRepository {
 
             ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(sb.toString(), params.toArray());
             BigDecimal splitCost = BigDecimal.ZERO;
+            BigDecimal div = new BigDecimal(1000);
             int i = 0;
             while (rs.next()) {
-                splitCost = splitCost.add(amounts.get(i).multiply(rs.getBigDecimal("price_per_kg")));
+                splitCost = splitCost.add(amounts.get(i).divide(div).multiply(rs.getBigDecimal("price_per_kg")));
                 if(splitCost.scale() > 2)
                     splitCost.setScale(2, RoundingMode.HALF_UP);
                 i++;

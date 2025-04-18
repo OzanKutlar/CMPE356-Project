@@ -40,8 +40,8 @@ public class OrderService {
         BigDecimal totalCost = orderRepository.CalculateTotalCost(splits, splitCosts);
 
         if(paymentMethod.equals("Credit Card")) {
-            if(creditCardService.HandleTransaction(order.getCardCredentials(), totalCost))
-                throw new RuntimeException("Transaction failed, retry later");
+            // if(creditCardService.HandleTransaction(order.getCardCredentials(), totalCost))
+            //     throw new RuntimeException("Transaction failed, retry later");
             paymentId = orderRepository.insertPayment(paymentMethod, totalCost, "completed");
             isPending = false;
         }
@@ -50,7 +50,7 @@ public class OrderService {
             SplitOrderDTO split = splits.get(i);
             if(isPending)
                 paymentId = orderRepository.insertPayment(paymentMethod, splitCosts.get(i), "pending");
-            long splitId = orderRepository.insertOrderSplit(orderId, split.getStoreName(), paymentId);
+            long splitId = orderRepository.insertOrderSplit(orderId, split.getStoreId(), paymentId);
             orderRepository.insertOrderItems(splitId, split);
         }
         Object[] arr = orderRepository.GetListByFilter("o.order_id = (SELECT MAX(order_id) FROM orders) ", (Object[]) null).toArray();

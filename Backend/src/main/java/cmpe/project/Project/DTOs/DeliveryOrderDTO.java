@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 public class DeliveryOrderDTO {
     private long orderId;
     private long splitId;
+    private String phoneNum;
     private String storeName;
     private String storeAddress;
     private String customerAddress;
@@ -92,5 +93,13 @@ public class DeliveryOrderDTO {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public String getPhoneNum() {
+        return phoneNum;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
     }
 }

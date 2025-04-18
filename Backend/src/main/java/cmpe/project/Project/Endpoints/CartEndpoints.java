@@ -28,12 +28,29 @@ public class CartEndpoints {
     private OrderService orderService;
 
 
-    @GetMapping("/items")
-    public ResponseEntity<?> getItems(@RequestHeader Map<String, String> headers) {
+    @GetMapping("/items/{storeId}")
+    public ResponseEntity<?> getItems(@RequestHeader Map<String, String> headers, @PathVariable long storeId) {
         List<Map<String, Object>> items = new ArrayList<>();
 
-        String getOrdersQuery = "SELECT * FROM products WHERE currentStock > 0";
-        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getOrdersQuery, null)) {
+        String getOrdersQuery = """
+            SELECT
+                p.product_id
+                p.name
+                p.photo
+                p.currentStock
+                p.category
+                p.price_per_kg
+                GROUP_CONCAT(DISTINCT CONCAT(ot.name, ':', ov.value) SEPARATOR '|') AS options
+            FROM products p
+            LEFT JOIN product_options po ON p.product_id = po.product_id
+            LEFT JOIN option_values ov ON po.opt_val_id = ov.opt_val_id
+            LEFT JOIN option_types ot ON ov.option_id = ot.option_id
+            WHERE store_id = ?
+              AND currentStock > 0
+            GROUP BY p.product_id;
+            """;
+        Object[] params = { storeId };
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getOrdersQuery, params)) {
             while (rs != null && rs.next()) {
                 Map<String, Object> item = new HashMap<>();
                 item.put("ItemName", rs.getString("name"));
@@ -41,8 +58,10 @@ public class CartEndpoints {
                 item.put("ItemPhotoLink", rs.getString("photo"));
                 item.put("currentStock", rs.getString("currentStock"));
                 item.put("category", rs.getString("category").split(","));
+                item.put("options", rs.getString("options")); //TODO options format ex: "Animal Type:Lamb|Cut Type:Fillet" parse in frontend fetch function.
+                // item.put("store_id", rs.getLong("store_id"));
                 try{
-                    item.put("ItemPrice", Double.parseDouble(rs.getString("price_per_kg")));
+                    item.put("ItemPrice", rs.getDouble("price_per_kg"));
                 }
                 catch(Exception e){
                     item.put("totalPrice", 0.00d);
@@ -62,6 +81,30 @@ public class CartEndpoints {
         return ResponseEntity.ok().body(items);
     }
 
+    @GetMapping("/stores")
+    public ResponseEntity<?> getStores() {
+        List<Map<String, Object>> stores = new ArrayList<>();
+
+        String query = "SELECT * FROM stores";
+        try {
+            ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(query, null);
+            while(rs.next()){
+                Map<String, Object> store = new HashMap<>();
+                store.put("storeId", rs.getLong("store_id"));
+                store.put("storeName", rs.getString("name"));
+                store.put("address", rs.getString("address"));
+                store.put("logo", rs.getString("logo"));
+                stores.add(store);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            logError("Error executing SQL request: " + query + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Util.JsonResponder("Status", "Failed to get stores: Query failed"));
+        }
+
+        return ResponseEntity.ok(stores);
+    }
 
     @PostMapping("/submitOrder")
     public ResponseEntity<?> submitOrder(

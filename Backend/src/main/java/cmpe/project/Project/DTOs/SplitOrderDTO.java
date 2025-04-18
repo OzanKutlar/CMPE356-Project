@@ -4,17 +4,17 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class SplitOrderDTO {
-    private String storeName;
+    private long storeId;
     private ArrayList<Long> products;
     private ArrayList<BigDecimal> amounts;
 
     // Getter and Setter for storeName
-    public String getStoreName() {
-        return storeName;
+    public long getStoreId() {
+        return storeId;
     }
 
-    public void setStoreName(String storeName) {
-        this.storeName = storeName;
+    public void setStoreId(long storeId) {
+        this.storeId = storeId;
     }
 
     // Getter and Setter for products

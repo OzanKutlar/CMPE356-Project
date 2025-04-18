@@ -4,10 +4,11 @@ import java.util.ArrayList;
 
 public class CustomerOrderDTO {
     private long customerId;
+    private String phoneNum;
     private String address;
     private ArrayList<SplitOrderDTO> splits;
     private String paymentMethod;
-    private CreditCardDTO cardCredentials;
+    //private CreditCardDTO cardCredentials;
     
     // Getter and Setter for customerId
     public long getCustomerId() {
@@ -46,12 +47,19 @@ public class CustomerOrderDTO {
     }
 
     // Getter and Setter for cardCredentials
-    public CreditCardDTO getCardCredentials() {
-        return cardCredentials;
+    // public CreditCardDTO getCardCredentials() {
+    //     return cardCredentials;
+    // }
+
+    // public void setCardCredentials(CreditCardDTO cardCredentials) {
+    //     this.cardCredentials = cardCredentials;
+    // }
+
+    public String getPhoneNum() {
+        return phoneNum;
     }
 
-    public void setCardCredentials(CreditCardDTO cardCredentials) {
-        this.cardCredentials = cardCredentials;
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
     }
-
 }
