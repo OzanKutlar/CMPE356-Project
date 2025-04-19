@@ -134,13 +134,27 @@ public class AdminEndpoints {
 
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(checkManagerQuery, checkParams)) {
             if (rs != null && rs.next()) {
-                // Update existing manager's store
+                if(storeID == -1){
+                    String deleteQuery = "DELETE FROM managers WHERE userID = ?";
+                    Object[] deleteParams = { targetUser };
+                    DatabaseHandler.INSTANCE.executeQuery(deleteQuery, deleteParams);
+                    log("Removed manager %s from managers table", targetUser);
+                    return ResponseEntity.ok().body(Map.of(
+                            "msg", "success",
+                            "message", "User removed from store assignments."
+                    ));
+                }
                 String updateQuery = "UPDATE managers SET storeID = ? WHERE userID = ?";
                 Object[] updateParams = { storeID, targetUser };
                 DatabaseHandler.INSTANCE.executeQuery(updateQuery, updateParams);
                 log("Updated store assignment for user %s to store %d", targetUser, storeID);
             } else {
-                // Insert new manager
+                if(storeID == -1){
+                    return ResponseEntity.ok().body(Map.of(
+                            "msg", "success",
+                            "message", "The user already didnt have a manager."
+                    ));
+                }
                 String insertQuery = "INSERT INTO managers (userID, storeID) VALUES (?, ?)";
                 Object[] insertParams = { targetUser, storeID };
                 DatabaseHandler.INSTANCE.executeQuery(insertQuery, insertParams);
@@ -155,7 +169,7 @@ public class AdminEndpoints {
         }
 
         return ResponseEntity.ok().body(Map.of(
-                "msg", "ok",
+                "msg", "success",
                 "message", "Store assigned successfully."
         ));
     }

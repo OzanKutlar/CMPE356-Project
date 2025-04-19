@@ -14,6 +14,7 @@ const StoreAssignment = () => {
     const [selectedStoreForUser, setSelectedStoreForUser] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
+    const [isClosing, setIsClosing] = useState(false);
 
     useEffect(() => {
         fetchUsers();
@@ -61,7 +62,7 @@ const StoreAssignment = () => {
             const response = await Util.callBackend('admin/getStoreManagers', {storeID: storeId, userID: Util.savedUser.id});
 
             if(response.msg === "success"){
-                return response.managers || []; 
+                return response.managers || [];
             }
             else{
                 throw new Error(response.message || 'An unexpected error occurred while fetching store managers.');
@@ -92,42 +93,55 @@ const StoreAssignment = () => {
 
     const handleSaveUserStore = async () => {
         try {
-            await Util.callBackend('admin/assignUserStore', {
+            const response = await Util.callBackend('admin/assignUserStore', {
                 adminID: Util.savedUser.id,
                 userID: selectedUser.id,
-                storeId: selectedStoreForUser
+                storeID: selectedStoreForUser || -1
             });
-            setShowUserPopup(false);
-            // Refresh data
-            await fetchUsers();
-            await fetchStores();
+            if (response.msg === "success") {
+                handleClosePopup();
+                // Refresh data
+                await fetchUsers();
+                await fetchStores();
+            } else {
+                throw new Error(response.message || 'Failed to save user store assignment');
+            }
         } catch (err) {
-            Util.CallGeneric("Error saving user store assignment", "Error");
+            Util.CallGeneric(err.message, "Error");
         }
     };
 
     const handleAssignManager = async (managerId) => {
         try {
-            await Util.callBackend('admin/assignUserStore', {
+            const response = await Util.callBackend('admin/assignUserStore', {
+                adminID: Util.savedUser.id,
                 userId: managerId,
-                storeId: selectedStore.storeId
+                storeID: selectedStore.storeId
             });
-            setShowDropdown(false);
-            // Refresh store managers
-            const managers = await fetchStoreManagers(selectedStore.storeId);
-            setSelectedStore({...selectedStore, managers});
+            if (response.msg === "success") {
+                setShowDropdown(false);
+                // Refresh store managers
+                const managers = await fetchStoreManagers(selectedStore.storeId);
+                setSelectedStore({...selectedStore, managers});
+            } else {
+                throw new Error(response.message || 'Failed to assign manager to store');
+            }
         } catch (err) {
             Util.CallGeneric("Error assigning manager to store", "Error");
         }
     };
 
     const handleClosePopup = () => {
-        setShowUserPopup(false);
-        setShowStorePopup(false);
-        setSelectedUser(null);
-        setSelectedStore(null);
-        setSelectedStoreForUser(null);
-        setShowDropdown(false);
+        setIsClosing(true);
+        setTimeout(() => {
+            setShowUserPopup(false);
+            setShowStorePopup(false);
+            setSelectedUser(null);
+            setSelectedStore(null);
+            setSelectedStoreForUser(null);
+            setShowDropdown(false);
+            setIsClosing(false);
+        }, 500); // Match this with the animation/transition duration
     };
 
     const filteredUsers = users.filter(user =>
@@ -218,8 +232,8 @@ const StoreAssignment = () => {
 
             {/* User Popup */}
             {showUserPopup && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-end z-50 animate-fadeIn">
-                    <div className="bg-white rounded-t-xl w-full max-w-2xl p-6 animate-slideUp">
+                <div className={`storeAss-backdrop ${isClosing ? 'storeAss-fadeOut' : ''}`}>
+                    <div className={`bg-white rounded-xl w-full max-w-2xl p-6 ${isClosing ? 'storeAss-slideDown' : 'storeAss-slideUp'}`}>
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-2xl font-semibold text-gray-800">Manager Details</h2>
                             <button
@@ -291,8 +305,8 @@ const StoreAssignment = () => {
 
             {/* Store Popup */}
             {showStorePopup && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-end z-50 animate-fadeIn">
-                    <div className="bg-white rounded-t-xl w-full max-w-2xl p-6 animate-slideUp">
+                <div className={`storeAss-backdrop ${isClosing ? 'storeAss-fadeOut' : ''}`}>
+                    <div className={`bg-white rounded-xl w-full max-w-2xl p-6 ${isClosing ? 'storeAss-slideDown' : 'storeAss-slideUp'}`}>
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-2xl font-semibold text-gray-800">Store Details</h2>
                             <button
@@ -409,24 +423,50 @@ const StoreAssignment = () => {
             )}
 
             <style jsx>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-in-out;
-        }
-        
-        .animate-slideUp {
-          animation: slideUp 0.3s ease-in-out;
-        }
-        
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        @keyframes slideUp {
-          from { transform: translateY(100%); }
-          to { transform: translateY(0); }
-        }
-      `}</style>
+                .storeAss-backdrop {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: rgba(0, 0, 0, 0.3);
+                    backdrop-filter: blur(4px);
+                    z-index: 1000;
+                    animation: storeAss-fadeIn 0.3s ease-in-out;
+                    transition: opacity 0.5s ease-in-out;
+                }
+
+                .storeAss-fadeOut {
+                    opacity: 0;
+                    backdrop-filter: blur(0);
+                }
+
+                .storeAss-slideUp {
+                    animation: storeAss-slideUp 0.3s ease-in-out;
+                }
+
+                .storeAss-slideDown {
+                    animation: storeAss-slideDown 0.5s ease-in-out;
+                }
+
+                @keyframes storeAss-fadeIn {
+                    from { opacity: 0; backdrop-filter: blur(0); }
+                    to { opacity: 1; backdrop-filter: blur(4px); }
+                }
+
+                @keyframes storeAss-slideUp {
+                    from { transform: translateY(100%); }
+                    to { transform: translateY(0); }
+                }
+
+                @keyframes storeAss-slideDown {
+                    from { transform: translateY(0); }
+                    to { transform: translateY(100%); }
+                }
+            `}</style>
         </div>
     );
 };
