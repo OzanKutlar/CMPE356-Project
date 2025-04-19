@@ -25,6 +25,7 @@ import AboutUs from "./components/Info/AboutUs.jsx";
 import FAQ from "./components/Info/FAQ.jsx";
 import Chatbot from "./components/Chatbot/Chatbot.jsx";
 import EditProfile from "./components/EditProfilePage/EditProfile.jsx";
+import StoreList from "./components/AdminPage/StoreList.jsx";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(Util.currentPage);
@@ -70,6 +71,7 @@ export default function App() {
                         <Header/>
                         <Slider/>
                         <ItemPicker/>
+                        <Chatbot />
                     </div>
                 );
             case "edit":
@@ -90,6 +92,13 @@ export default function App() {
                 return (
                     <div>
                         <RegistrationPage />
+                    </div>
+                );
+            case "admin/stores":
+                return (
+                    <div>
+                        <AdminHeader/>
+                        <StoreList/>
                     </div>
                 );
             case "admin/users":
@@ -188,7 +197,6 @@ export default function App() {
                 {/*<Email />*/}
                 {renderPage()}
                 {currentPage != "delivery" && currentPage != "register" ? <Footer/> : null}
-                {/*<Chatbot />*/}
             </GlobalContext.Provider>
         </div>
     );

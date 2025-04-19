@@ -90,10 +90,145 @@ public class AdminEndpoints {
         }
     }
 
-    // Optional: if you use Jackson or similar for parsing JSON strings into maps
     private Map<String, Object> parseJson(String json) throws Exception {
         return new com.fasterxml.jackson.databind.ObjectMapper().readValue(json, Map.class);
     }
+
+    @GetMapping("/getStoreManagers")
+    public ResponseEntity<?> getStoreManagers(@RequestHeader("userID") String userID) {
+
+        System.out.println("Getting store managers list");
+
+        String userIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID));
+        log("All Store Managers Info Requested by user %s", userIdFromSession);
+
+        if (userIdFromSession == null) {
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Invalid User ID"
+            ));
+        }
+
+        // Check if the user is an admin
+        String isAdminQuery = "SELECT role FROM users WHERE id = ?";
+        Object[] isAdminParams = { userIdFromSession };
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isAdminQuery, isAdminParams)) {
+            if (rs == null || !rs.next() || !rs.getString("role").equalsIgnoreCase("admin")) {
+                System.out.println("User with ID " + userID + " is not authorized to get store managers list");
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "error",
+                        "message", "You are not authorized."
+                ));
+            }
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + isAdminQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to check user role."
+            ));
+        }
+        
+        String getManagersQuery = """
+            SELECT 
+                m.id AS managerId,
+                u.id AS userId,
+                u.name AS userName,
+                u.surname AS userSurname,
+                u.email AS userEmail,
+                u.profilePhotoUrl,
+                s.store_id AS storeId,
+                s.name AS storeName,
+                s.address AS storeAddress
+            FROM managers m
+            JOIN users u ON m.userID = u.id
+            JOIN stores s ON m.storeID = s.store_id
+        """;
+
+        List<Map<String, Object>> managersList = new ArrayList<>();
+
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getManagersQuery, null)) {
+            while (rs != null && rs.next()) {
+                Map<String, Object> manager = new HashMap<>();
+                manager.put("managerId", rs.getLong("managerId"));
+                manager.put("userId", rs.getLong("userId"));
+                manager.put("name", rs.getString("userName"));
+                manager.put("surname", rs.getString("userSurname"));
+                manager.put("email", rs.getString("userEmail"));
+                manager.put("profilePhotoUrl", rs.getString("profilePhotoUrl"));
+                manager.put("storeId", rs.getLong("storeId"));
+                manager.put("storeName", rs.getString("storeName"));
+                manager.put("storeAddress", rs.getString("storeAddress"));
+                managersList.add(manager);
+            }
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + getManagersQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to retrieve store managers."
+            ));
+        }
+
+        return ResponseEntity.ok().body(managersList);
+    }
+
+
+    @GetMapping("/getStores")
+    public ResponseEntity<?> getStores(
+            @RequestHeader("userID") String userID) {
+
+        System.out.println("Getting stores list");
+
+
+        String userIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID));
+        log("All Store Info Requested by user %s", userIdFromSession);
+        if (userIdFromSession == null) {
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Invalid User ID"
+            ));
+        }
+
+        String isAdminQuery = "SELECT role FROM users WHERE id = ?";
+        Object[] isAdminParams = { userIdFromSession };
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isAdminQuery, isAdminParams)) {
+            if (rs == null || !rs.next() || !rs.getString("role").equalsIgnoreCase("admin")) {
+                System.out.println("User with ID " + userID + " is not authorized to get stores list");
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "error",
+                        "message", "You are not authorized."
+                ));
+            }
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + isAdminQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to check user role."
+            ));
+        }
+
+        String getStoresQuery = "SELECT * FROM stores";
+        List<Map<String, Object>> storesList = new ArrayList<>();
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getStoresQuery, null)) {
+            while (rs != null && rs.next()) {
+                Map<String, Object> store = new HashMap<>();
+                store.put("storeId", rs.getLong("store_id"));
+                store.put("name", rs.getString("name"));
+                store.put("address", rs.getString("address"));
+                store.put("logo", rs.getString("logo"));
+                storesList.add(store);
+            }
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + getStoresQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to retrieve stores."
+            ));
+        }
+
+        return ResponseEntity.ok().body(storesList);
+    }
+
+
 
 
     @GetMapping("/getUsers")
@@ -107,7 +242,10 @@ public class AdminEndpoints {
 
         String userIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID));
         if (userIdFromSession == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid user ID"));
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Invalid User ID"
+            ));
         }
 
 
@@ -116,11 +254,17 @@ public class AdminEndpoints {
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isAdminQuery, isAdminParams)) {
             if (rs == null || !rs.next() || !rs.getString("role").equalsIgnoreCase("admin")) {
                 System.out.println("User with ID " + userID + " is not authorized to get users list");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User is not authorized"));
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "error",
+                        "message", "You are not authorized."
+                ));
             }
         } catch (SQLException e) {
             logError("Error executing SQL request: " + isAdminQuery + ". Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to check user role"));
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to check user role."
+            ));
         }
 
 
@@ -146,7 +290,10 @@ public class AdminEndpoints {
             }
         } catch (SQLException e) {
             logError("Error executing SQL request: " + getUsersQuery + ". Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to retrieve users list"));
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to retrieve users list"
+            ));
         }
 
         return ResponseEntity.ok().body(usersList);
@@ -161,7 +308,10 @@ public class AdminEndpoints {
 
         String adminIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(adminId));
         if (adminIdFromSession == null) {
-             return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Invalid user ID"));
+             return ResponseEntity.ok().body(Map.of(
+                     "msg", "error",
+                     "message", "Invalid user ID"
+             ));
         }
 
         if(Objects.equals(userId, adminIdFromSession)){
@@ -225,7 +375,10 @@ public class AdminEndpoints {
             return ResponseEntity.ok().body(Map.of("msg", "User deleted successfully"));
         } catch (SQLException e) {
             logError("Error executing SQL request: " + deleteUserQuery + ". Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to delete user"));
+            if(e.getMessage().contains("foreign key constraint")){
+                return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Please remove the user's store permissions before deleting them."));
+            }
+            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Failed to delete user"));
         }
     }
 

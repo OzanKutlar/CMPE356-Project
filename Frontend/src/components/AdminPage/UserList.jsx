@@ -40,16 +40,22 @@ const UserList = () => {
             if (selectedUser && selectedUser.id === userId) {
                 setSelectedUser(null);
             }
-            showNotification('User deleted successfully');
+            Util.CallGeneric("User deleted successfully");
+            setNotification({message: '', isLoading: false, isError: false});
         } catch (err) {
-            showNotification(err.message, true);
+            Util.CallGeneric(err.message, "Error");
+            setNotification({message: '', isLoading: false, isError: false});
         }
     };
 
     const changeUserRole = async (userId, newRole) => {
         setNotification({message: '', isLoading: true, isError: false});
         try {
-            const response = await Util.callBackend(`admin/changeUserRole`, {userID: userId, newRole: newRole, adminID: Util.savedUser.id});
+            const response = await Util.callBackend(`admin/changeUserRole`, {
+                userID: userId,
+                newRole: newRole,
+                adminID: Util.savedUser.id
+            });
 
             if (response.msg === "error") {
                 throw new Error(response.message || 'Failed to send verification code');
@@ -64,9 +70,11 @@ const UserList = () => {
                 setSelectedUser((prev) => ({...prev, role: newRole}));
             }
             setRoleEdit({isEditing: false, userId: null, newRole: ''});
-            showNotification('User role changed successfully');
+            Util.CallGeneric("User role changed successfully");
+            setNotification({message: '', isLoading: false, isError: false});
         } catch (err) {
-            showNotification(err.message, true);
+            Util.CallGeneric(err.message, "Error");
+            setNotification({message: '', isLoading: false, isError: false});
         }
     };
 

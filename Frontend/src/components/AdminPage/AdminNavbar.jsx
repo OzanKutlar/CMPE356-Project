@@ -4,6 +4,7 @@ import Util from "../../Util.js";
 const AdminNavBar = ({showNavbar, setShowNavbar}) => {
     const navigatePages = [
         {name: "Manage Users", page: "admin/users"},
+        {name: "Manage Stores", page: "admin/stores"},
         {name: "Manage Backend", page: "admin/backend"},
         {name: "Back To Shop", page: "home"}
     ];

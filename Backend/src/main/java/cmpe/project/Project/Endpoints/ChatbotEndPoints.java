@@ -11,8 +11,8 @@ import java.util.Map;
 public class ChatbotEndPoints {
 
     @PostMapping("/ask")
-    public ResponseEntity<?> handleChat(@RequestBody Map<String, String> body) {
-        String userMessage = body.getOrDefault("message", "").toLowerCase();
+    public ResponseEntity<?> handleChat(@RequestBody Map<String, Object> body) {
+        String userMessage = ((String) body.getOrDefault("message", "")).toLowerCase();
         String reply;
 
         if (userMessage.contains("types of meat") || userMessage.contains("what meats do you have")) {
@@ -29,8 +29,9 @@ public class ChatbotEndPoints {
             reply = "I'm sorry, I didn't quite understand that. Could you please rephrase or check out our FAQ section for more help?";
         }
 
-        Map<String, String> response = new HashMap<>();
-        response.put("reply", reply);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().body(Map.of(
+                "msg", "success",
+                "message", reply
+        ));
     }
 }
