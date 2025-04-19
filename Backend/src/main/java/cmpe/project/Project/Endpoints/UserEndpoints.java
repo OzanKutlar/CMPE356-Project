@@ -169,22 +169,23 @@ public class UserEndpoints {
     @GetMapping("/editUser")
     public ResponseEntity<?> editUser(@RequestHeader Map<String, Object> headers) {
         String name = (String) headers.get("name");
+        String surname = (String) headers.get("surname");
         String email = (String) headers.get("email");
         String dob = (String) headers.get("dob");
         String address = (String) headers.get("address");
         String phone = (String) headers.get("phone");
         String photoURL = (String) headers.get("photourl");
-        String cardNumber = (String) headers.get("ccnumber");
-        String cardExpiry = (String) headers.get("ccexpiry");
-        String cardCvv = (String) headers.get("cccvv");
-        String cardName = (String) headers.get("ccname");
+//        String cardNumber = (String) headers.get("ccnumber");
+//        String cardExpiry = (String) headers.get("ccexpiry");
+//        String cardCvv = (String) headers.get("cccvv");
+//        String cardName = (String) headers.get("ccname");
         String userID = (String) headers.get("userid");
         String id = sessionMap.get(Util.getUuidOrNull(userID));
 
         System.out.println("User Modification: " + id + ", " + email + ", " + phone);
 
-        String userQuery = "UPDATE users SET name = ?, email = ?, date_of_birth = ?, address = ?, phone = ?, profilePhotoUrl = ? WHERE id = ?";
-        Object[] userParams = {name, email, dob, address, phone, photoURL, id};
+        String userQuery = "UPDATE users SET name = ?, surname = ?, email = ?, date_of_birth = ?, address = ?, phone = ?, profilePhotoUrl = ? WHERE id = ?";
+        Object[] userParams = {name, surname, email, dob, address, phone, photoURL, id};
         try {
             DatabaseHandler.INSTANCE.executeQuery(userQuery, userParams);
         } catch (SQLException e) {
@@ -195,19 +196,19 @@ public class UserEndpoints {
             ));
         }
 
-        if (cardName != null) {
-            String cardQuery = "INSERT INTO credit_cards ( cardNumber, expirationDate, CVV, CardName, userID) VALUES (?, ?, ?, ?, ?)";
-            Object[] cardParams = {cardNumber, cardExpiry, cardCvv, cardName, id};
-            try {
-                DatabaseHandler.INSTANCE.executeQuery(cardQuery, cardParams);
-            } catch (SQLException e) {
-                logError("Error executing card SQL request: " + cardQuery + ". Error: " + e.getMessage());
-                return ResponseEntity.ok().body(Map.of(
-                        "msg", "error",
-                        "message", "Your card already exists."
-                ));
-            }
-        }
+//        if (cardName != null) {
+//            String cardQuery = "INSERT INTO credit_cards ( cardNumber, expirationDate, CVV, CardName, userID) VALUES (?, ?, ?, ?, ?)";
+//            Object[] cardParams = {cardNumber, cardExpiry, cardCvv, cardName, id};
+//            try {
+//                DatabaseHandler.INSTANCE.executeQuery(cardQuery, cardParams);
+//            } catch (SQLException e) {
+//                logError("Error executing card SQL request: " + cardQuery + ". Error: " + e.getMessage());
+//                return ResponseEntity.ok().body(Map.of(
+//                        "msg", "error",
+//                        "message", "Your card already exists."
+//                ));
+//            }
+//        }
 
         return ResponseEntity.ok().body(Map.of(
                 "msg", "success"

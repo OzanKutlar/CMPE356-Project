@@ -173,9 +173,12 @@ export default function EditProfile() {
         };
 
         try {
+            let surname = name.split(" ")[name.split(" ").length - 1];
+            let firstname = name.split(" ").slice(0, name.split(" ").length - 1).join(" ");
             const response = await Util.callBackend("user/editUser", {
                 userID: Util.savedUser.id,
-                name: name,
+                name: firstname,
+                surname: surname,
                 email: email,
                 photourl: profileImage,
                 dob: birthdate,
@@ -186,17 +189,20 @@ export default function EditProfile() {
                 cccvv: cardCvv,
                 ccname: cardName
             });
+
+            if(response.msg === "error"){
+                throw new Error(response.message || 'Failed to assign manager to store');
+            }
+
             Util.savedUser.phone = phone;
             Util.savedUser.profilePictureLink = profileImage;
             Util.savedUser.address = address;
             Util.savedUser.email = email;
-            console.log("Submitting data:", formData);
             setIsSubmitting(false);
             Util.CallGeneric("Your profile has been updated successfully!");
         } catch (error) {
-            console.error("Error submitting data:", error);
             setIsSubmitting(false);
-            Util.CallGeneric("Failed to update profile. Please try again.", "Error");
+            Util.CallGeneric(error.message, "Error");
         }
     };
 
@@ -257,7 +263,7 @@ export default function EditProfile() {
                                     {/* Basic Info Section */}
                                     <div className="col-span-2">
                                         <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
-                                            Basic Information
+                                            Account Information
                                         </h2>
                                     </div>
 
@@ -343,89 +349,89 @@ export default function EditProfile() {
                                     </div>
 
                                     {/* Payment Info Section */}
-                                    <div className="col-span-2 mt-6">
-                                        <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
-                                            Payment Information
-                                        </h2>
-                                    </div>
+                                    {/*<div className="col-span-2 mt-6">*/}
+                                    {/*    <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">*/}
+                                    {/*        Payment Information*/}
+                                    {/*    </h2>*/}
+                                    {/*</div>*/}
 
-                                    <div className="col-span-2">
-                                        <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                                            <div className="grid grid-cols-2 gap-6">
-                                                <div>
-                                                    <label htmlFor="cardName"
-                                                           className="block text-sm font-medium text-gray-700 mb-1">
-                                                        Name on Card
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder='John Doe'
-                                                        id="cardName"
-                                                        value={cardName}
-                                                        onChange={handleCardNameChange}
-                                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
-                                                    />
-                                                </div>
+                                    {/*<div className="col-span-2">*/}
+                                    {/*    <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">*/}
+                                    {/*        <div className="grid grid-cols-2 gap-6">*/}
+                                    {/*            <div>*/}
+                                    {/*                <label htmlFor="cardName"*/}
+                                    {/*                       className="block text-sm font-medium text-gray-700 mb-1">*/}
+                                    {/*                    Name on Card*/}
+                                    {/*                </label>*/}
+                                    {/*                <input*/}
+                                    {/*                    type="text"*/}
+                                    {/*                    placeholder='John Doe'*/}
+                                    {/*                    id="cardName"*/}
+                                    {/*                    value={cardName}*/}
+                                    {/*                    onChange={handleCardNameChange}*/}
+                                    {/*                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"*/}
+                                    {/*                />*/}
+                                    {/*            </div>*/}
 
-                                                <div className="col-span-2 sm:col-span-1">
-                                                    <label htmlFor="cardNumber"
-                                                           className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                                        <CreditCard size={16} className="mr-2"/>
-                                                        Card Number
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder='4242 4242 4242 4242'
-                                                        id="cardNumber"
-                                                        value={cardNumber}
-                                                        onChange={handleCardNumberChange}
-                                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
-                                                    />
-                                                </div>
+                                    {/*            <div className="col-span-2 sm:col-span-1">*/}
+                                    {/*                <label htmlFor="cardNumber"*/}
+                                    {/*                       className="flex items-center text-sm font-medium text-gray-700 mb-1">*/}
+                                    {/*                    <CreditCard size={16} className="mr-2"/>*/}
+                                    {/*                    Card Number*/}
+                                    {/*                </label>*/}
+                                    {/*                <input*/}
+                                    {/*                    type="text"*/}
+                                    {/*                    placeholder='4242 4242 4242 4242'*/}
+                                    {/*                    id="cardNumber"*/}
+                                    {/*                    value={cardNumber}*/}
+                                    {/*                    onChange={handleCardNumberChange}*/}
+                                    {/*                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"*/}
+                                    {/*                />*/}
+                                    {/*            </div>*/}
 
-                                                <div>
-                                                    <label htmlFor="cardExpiry"
-                                                           className="block text-sm font-medium text-gray-700 mb-1">
-                                                        Expiry Date
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        id="cardExpiry"
-                                                        placeholder="MM/YY"
-                                                        value={cardExpiry}
-                                                        onChange={handleCardExpiryChange}
-                                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
-                                                    />
-                                                </div>
+                                    {/*            <div>*/}
+                                    {/*                <label htmlFor="cardExpiry"*/}
+                                    {/*                       className="block text-sm font-medium text-gray-700 mb-1">*/}
+                                    {/*                    Expiry Date*/}
+                                    {/*                </label>*/}
+                                    {/*                <input*/}
+                                    {/*                    type="text"*/}
+                                    {/*                    id="cardExpiry"*/}
+                                    {/*                    placeholder="MM/YY"*/}
+                                    {/*                    value={cardExpiry}*/}
+                                    {/*                    onChange={handleCardExpiryChange}*/}
+                                    {/*                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"*/}
+                                    {/*                />*/}
+                                    {/*            </div>*/}
 
-                                                <div>
-                                                    <label htmlFor="cardCvv"
-                                                           className="block text-sm font-medium text-gray-700 mb-1">
-                                                        Security Code (CVV)
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        id="cardCvv"
-                                                        placeholder="CVV"
-                                                        value={cardCvv}
-                                                        onChange={handleCardCvvChange}
-                                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
-                                                    />
-                                                </div>
-                                            </div>
+                                    {/*            <div>*/}
+                                    {/*                <label htmlFor="cardCvv"*/}
+                                    {/*                       className="block text-sm font-medium text-gray-700 mb-1">*/}
+                                    {/*                    Security Code (CVV)*/}
+                                    {/*                </label>*/}
+                                    {/*                <input*/}
+                                    {/*                    type="text"*/}
+                                    {/*                    id="cardCvv"*/}
+                                    {/*                    placeholder="CVV"*/}
+                                    {/*                    value={cardCvv}*/}
+                                    {/*                    onChange={handleCardCvvChange}*/}
+                                    {/*                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"*/}
+                                    {/*                />*/}
+                                    {/*            </div>*/}
+                                    {/*        </div>*/}
 
-                                            <div className="mt-4 flex items-center text-sm text-gray-500">
-                                                <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-green-400"
-                                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                                     fill="currentColor">
-                                                    <path fillRule="evenodd"
-                                                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                          clipRule="evenodd"/>
-                                                </svg>
-                                                Your payment information is securely stored
-                                            </div>
-                                        </div>
-                                    </div>
+                                    {/*        <div className="mt-4 flex items-center text-sm text-gray-500">*/}
+                                    {/*            <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-green-400"*/}
+                                    {/*                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"*/}
+                                    {/*                 fill="currentColor">*/}
+                                    {/*                <path fillRule="evenodd"*/}
+                                    {/*                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"*/}
+                                    {/*                      clipRule="evenodd"/>*/}
+                                    {/*            </svg>*/}
+                                    {/*            Your payment information is securely stored*/}
+                                    {/*        </div>*/}
+                                    {/*    </div>*/}
+                                    {/*</div>*/}
                                 </div>
 
                                 {/* Form Actions */}
