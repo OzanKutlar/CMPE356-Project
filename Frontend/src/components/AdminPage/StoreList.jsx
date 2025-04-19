@@ -46,8 +46,10 @@ const StoreAssignment = () => {
 
     const fetchUserStore = async (userId) => {
         try {
-            const response = await Util.callBackend('admin/getUserStore', {userId});
-            return response.storeId || null;
+            const response = await Util.callBackend('admin/getUserStore', {
+                adminID: Util.savedUser.id,
+                userID: userId});
+            return response.storeID || null;
         } catch (err) {
             console.error('Error fetching user store:', err);
             return null;
@@ -91,7 +93,8 @@ const StoreAssignment = () => {
     const handleSaveUserStore = async () => {
         try {
             await Util.callBackend('admin/assignUserStore', {
-                userId: selectedUser.id,
+                adminID: Util.savedUser.id,
+                userID: selectedUser.id,
                 storeId: selectedStoreForUser
             });
             setShowUserPopup(false);

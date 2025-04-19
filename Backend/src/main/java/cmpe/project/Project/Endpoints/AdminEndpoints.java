@@ -94,7 +94,136 @@ public class AdminEndpoints {
         return new com.fasterxml.jackson.databind.ObjectMapper().readValue(json, Map.class);
     }
 
-    
+    @GetMapping("/assignUserStore")
+    public ResponseEntity<?> assignUserStore(@RequestHeader("adminID") String adminID,
+                                             @RequestHeader("userID") String targetUser,
+                                             @RequestHeader("storeID") int storeID) {
+
+        String userIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(adminID));
+        log("Assigning store to user %s requested by admin %s", targetUser, userIdFromSession);
+
+        if (userIdFromSession == null) {
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Invalid Admin ID"
+            ));
+        }
+
+        // Check if the user is an admin
+        String isAdminQuery = "SELECT role FROM users WHERE id = ?";
+        Object[] isAdminParams = { userIdFromSession };
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isAdminQuery, isAdminParams)) {
+            if (rs == null || !rs.next() || !rs.getString("role").equalsIgnoreCase("admin")) {
+                System.out.println("User with ID " + adminID + " is not authorized to assign stores");
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "error",
+                        "message", "You are not authorized."
+                ));
+            }
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + isAdminQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to check user role."
+            ));
+        }
+
+        // Check if the target user already exists in managers
+        String checkManagerQuery = "SELECT * FROM managers WHERE userID = ?";
+        Object[] checkParams = { targetUser };
+
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(checkManagerQuery, checkParams)) {
+            if (rs != null && rs.next()) {
+                // Update existing manager's store
+                String updateQuery = "UPDATE managers SET storeID = ? WHERE userID = ?";
+                Object[] updateParams = { storeID, targetUser };
+                DatabaseHandler.INSTANCE.executeQuery(updateQuery, updateParams);
+                log("Updated store assignment for user %s to store %d", targetUser, storeID);
+            } else {
+                // Insert new manager
+                String insertQuery = "INSERT INTO managers (userID, storeID) VALUES (?, ?)";
+                Object[] insertParams = { targetUser, storeID };
+                DatabaseHandler.INSTANCE.executeQuery(insertQuery, insertParams);
+                log("Assigned new manager %s to store %d", targetUser, storeID);
+            }
+        } catch (SQLException e) {
+            logError("Error assigning store to user: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to assign store to user."
+            ));
+        }
+
+        return ResponseEntity.ok().body(Map.of(
+                "msg", "ok",
+                "message", "Store assigned successfully."
+        ));
+    }
+
+
+
+    @GetMapping("/getUserStore")
+    public ResponseEntity<?> getUserStore(@RequestHeader("userID") String targetUser,
+                                          @RequestHeader("adminID") String userID){
+
+        String userIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID));
+        log("All Store Managers Info Requested by user %s", userIdFromSession);
+
+        if (userIdFromSession == null) {
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Invalid User ID"
+            ));
+        }
+
+        // Check if the user is an admin
+        String isAdminQuery = "SELECT role FROM users WHERE id = ?";
+        Object[] isAdminParams = { userIdFromSession };
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isAdminQuery, isAdminParams)) {
+            if (rs == null || !rs.next() || !rs.getString("role").equalsIgnoreCase("admin")) {
+                System.out.println("User with ID " + userID + " is not authorized to get store managers list");
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "error",
+                        "message", "You are not authorized."
+                ));
+            }
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + isAdminQuery + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to check user role."
+            ));
+        }
+
+        String isManager = "SELECT storeID FROM managers WHERE userID = ?";
+        Object[] params = { targetUser };
+        int storeID = -1;
+
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isManager, params)) {
+            if (rs == null || !rs.next()) {
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "ok",
+                        "storeID", -1
+                ));
+            }
+
+            storeID = rs.getInt("storeID");
+            System.out.println("Authorized manager for store ID: " + storeID);
+
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + isManager + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to get user store."
+            ));
+        }
+
+
+        return ResponseEntity.ok().body(Map.of(
+                "msg", "ok",
+                "storeID", storeID
+        ));
+    }
 
     @GetMapping("/getStoreManagers")
     public ResponseEntity<?> getStoreManagers(@RequestHeader("userID") String userID,
