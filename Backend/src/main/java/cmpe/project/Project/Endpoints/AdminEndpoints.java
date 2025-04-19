@@ -94,8 +94,11 @@ public class AdminEndpoints {
         return new com.fasterxml.jackson.databind.ObjectMapper().readValue(json, Map.class);
     }
 
+    
+
     @GetMapping("/getStoreManagers")
-    public ResponseEntity<?> getStoreManagers(@RequestHeader("userID") String userID) {
+    public ResponseEntity<?> getStoreManagers(@RequestHeader("userID") String userID,
+                                              @RequestHeader("storeID") String storeID) {
 
         System.out.println("Getting store managers list");
 
@@ -127,7 +130,7 @@ public class AdminEndpoints {
                     "message", "Failed to check user role."
             ));
         }
-        
+
         String getManagersQuery = """
             SELECT 
                 m.id AS managerId,
@@ -142,11 +145,14 @@ public class AdminEndpoints {
             FROM managers m
             JOIN users u ON m.userID = u.id
             JOIN stores s ON m.storeID = s.store_id
+            WHERE s.store_id = ?
         """;
 
-        List<Map<String, Object>> managersList = new ArrayList<>();
 
-        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getManagersQuery, null)) {
+        List<Map<String, Object>> managersList = new ArrayList<>();
+        Object[] params = {storeID};
+
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getManagersQuery, params)) {
             while (rs != null && rs.next()) {
                 Map<String, Object> manager = new HashMap<>();
                 manager.put("managerId", rs.getLong("managerId"));
@@ -167,8 +173,10 @@ public class AdminEndpoints {
                     "message", "Failed to retrieve store managers."
             ));
         }
-
-        return ResponseEntity.ok().body(managersList);
+        return ResponseEntity.ok().body(Map.of(
+                "msg", "success",
+                "managers", managersList
+        ));
     }
 
 

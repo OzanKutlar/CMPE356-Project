@@ -56,9 +56,17 @@ const StoreAssignment = () => {
 
     const fetchStoreManagers = async (storeId) => {
         try {
-            const response = await Util.callBackend('admin/getStoreManagers', {storeId});
-            return response.managers || [];
+            const response = await Util.callBackend('admin/getStoreManagers', {storeID: storeId, userID: Util.savedUser.id});
+
+            if(response.msg === "success"){
+                return response.managers || []; 
+            }
+            else{
+                throw new Error(response.message || 'An unexpected error occurred while fetching store managers.');
+            }
+
         } catch (err) {
+            Util.CallGeneric(err.message, "Error");
             console.error('Error fetching store managers:', err);
             return [];
         }
@@ -72,10 +80,12 @@ const StoreAssignment = () => {
     };
 
     const handleStoreClick = async (store) => {
-        setSelectedStore(store);
         const managers = await fetchStoreManagers(store.storeId);
-        store.managers = managers;
-        setShowStorePopup(true);
+        if(managers !== []){
+            setSelectedStore(store);
+            store.managers = managers;
+            setShowStorePopup(true);
+        }
     };
 
     const handleSaveUserStore = async () => {
@@ -86,10 +96,10 @@ const StoreAssignment = () => {
             });
             setShowUserPopup(false);
             // Refresh data
-            fetchUsers();
-            fetchStores();
+            await fetchUsers();
+            await fetchStores();
         } catch (err) {
-            setError('Error saving user store assignment');
+            Util.CallGeneric("Error saving user store assignment", "Error");
         }
     };
 
@@ -104,7 +114,7 @@ const StoreAssignment = () => {
             const managers = await fetchStoreManagers(selectedStore.storeId);
             setSelectedStore({...selectedStore, managers});
         } catch (err) {
-            setError('Error assigning manager to store');
+            Util.CallGeneric("Error assigning manager to store", "Error");
         }
     };
 
@@ -325,10 +335,10 @@ const StoreAssignment = () => {
                             {selectedStore.managers && selectedStore.managers.length > 0 ? (
                                 <div className="space-y-2">
                                     {selectedStore.managers.map(manager => (
-                                        <div key={manager.id} className="flex items-center p-2 bg-gray-50 rounded-md">
+                                        <div key={manager.userId} className="flex items-center p-2 bg-gray-50 rounded-md">
                                             <img
-                                                src={manager.profilePictureLink}
-                                                alt={manager.username}
+                                                src={manager.profilePhotoUrl}
+                                                alt={manager.name}
                                                 className="w-8 h-8 rounded-full object-cover"
                                                 onError={(e) => {
                                                     e.target.onerror = null;
@@ -336,8 +346,8 @@ const StoreAssignment = () => {
                                                 }}
                                             />
                                             <div className="ml-2">
-                                                <p className="font-medium">{manager.username}</p>
-                                                <p className="text-xs text-gray-500 capitalize">{manager.role}</p>
+                                                <p className="font-medium">{manager.name}</p>
+                                                <p className="text-xs text-gray-500 capitalize">{manager.email}</p>
                                             </div>
                                         </div>
                                     ))}

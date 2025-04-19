@@ -33,7 +33,7 @@ const UserList = () => {
             const response = await Util.callBackend(`admin/delUserAdmin`, {userID: userId, adminID: Util.savedUser.id});
 
             if (response.msg === "error") {
-                throw new Error(response.message || 'Failed to send verification code');
+                throw new Error(response.message || 'Failed to delete admin user');
             }
 
             setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
