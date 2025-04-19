@@ -85,7 +85,7 @@ const ItemPicker = () => {
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const data = await Util.callBackend(`cart/items/${selectedStore}`);
+                const data = await Util.callBackend(`cart/items/${selectedStore.storeId}`);
                 setItems(data);
                 setLoading(false);
             } catch (err) {

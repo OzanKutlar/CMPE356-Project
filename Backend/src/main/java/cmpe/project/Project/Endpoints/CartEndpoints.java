@@ -34,12 +34,12 @@ public class CartEndpoints {
 
         String getOrdersQuery = """
             SELECT
-                p.product_id
-                p.name
-                p.photo
-                p.currentStock
-                p.category
-                p.price_per_kg
+                p.product_id,
+                p.name,
+                p.photo,
+                p.currentStock,
+                p.category,
+                p.price_per_kg,
                 GROUP_CONCAT(DISTINCT CONCAT(ot.name, ':', ov.value) SEPARATOR '|') AS options
             FROM products p
             LEFT JOIN product_options po ON p.product_id = po.product_id
@@ -271,15 +271,15 @@ public class CartEndpoints {
                         content.substring(0, content.indexOf("-") - 1) :
                         content.substring(0, content.indexOf("-") - 1);
 
-
+                // TODO payment stuff here
                 // Default payment information
                 String paymentMethod = "Paid at door";
-                String paymentID = "#" + generateRandomPaymentId();
+                String transactionId = "#" + generateRandomPaymentId();
 
                 // Create user order
                 String createOrderQuery = "INSERT INTO userOrders (userID, address, itemName, itemPhoto, paymentMethod, paymentID, status, totalPrice, delivery_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-                Object[] orderParams = {userId, address, firstItemName, orderPhoto, paymentMethod, paymentID, status, totalPrice, deliveryId};
+                Object[] orderParams = {userId, address, firstItemName, orderPhoto, paymentMethod, transactionId, status, totalPrice, deliveryId};
 
                 DatabaseHandler.INSTANCE.executeQuery(createOrderQuery, orderParams);
                 log("Created user order with delivery_id: " + deliveryId);
