@@ -24,7 +24,8 @@ const CartItemsLarge = () => {
         cardNumber: '',
         expiryDate: '',
         cvv: '',
-        address: ''
+        address: '',
+        paymentMethod: 'Credit Card'
     });
 
     const handleFormDataChange = (newFormData) => {
@@ -92,7 +93,7 @@ const CartItemsLarge = () => {
             return;
         }
 
-        if (!formData.cardNumber || !formData.expiryDate || !formData.cvv || !formData.address) {
+        if (!formData.address || (formData.paymentMethod === "Credit Card" && (!formData.cardNumber || !formData.expiryDate || !formData.cvv))) {
             setMessage({
                 type: "error",
                 text: "Please fill in all payment details"
@@ -102,15 +103,53 @@ const CartItemsLarge = () => {
 
         setSubmitting(true);
         try {
-            const response = await Util.callBackend("cart/submitOrder", {
-                istemp: Util.savedUser.id === '',
-                phoneNo: Util.savedUser.id === '' ? Util.tempPhoneNumber : '',
-                userID:  Util.savedUser.id === '' ? '' : Util.savedUser.id
-                },
-                {
-                items: JSON.stringify(Object.values(cart())),
-                address: formData.address
+            const cartItems = Object.values(cart());
+
+            // First, log your cart items to see what we're working with
+            console.log("Cart items:", cartItems);
+
+            const storeMap = new Map();
+            cartItems.forEach(item => {
+                console.log("Processing item:", item);
+                if (!storeMap.has(item.storeId)) {
+                    storeMap.set(item.storeId, []);
+                }
+                storeMap.get(item.storeId).push(item);
             });
+
+            // Log the store map to see if it contains the expected data
+            console.log("Store map keys:", Array.from(storeMap.keys()));
+            console.log("Store map entries:", Array.from(storeMap.entries()));
+
+            // Create the splits array with explicit property names
+            const splits = [];
+            storeMap.forEach((items, storeId) => {
+                splits.push({
+                    storeId: Number(storeId),
+                    products: items.map(item => Number(item.id)),
+                    amounts: items.map(item => item.buyAmount)
+                });
+            });
+
+            // Log the splits to verify they're correctly formed
+            console.log("Splits array:", splits);
+
+            const payload = {
+                phoneNum: Util.savedUser.id === '' ? Util.tempPhoneNumber : '',
+                address: formData.address,
+                splits: splits,
+                paymentMethod: formData.paymentMethod
+            };
+
+            // Log the final payload
+            console.log("Final payload:", payload);
+            
+            const headers = {
+                userID: Util.savedUser.id === '' ? '' : Util.savedUser.id,
+            };
+
+
+            const response = await Util.callBackend("cart/submitOrder", headers, payload);
 
             if(response.msg === "success"){
                 setMessage({

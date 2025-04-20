@@ -44,6 +44,11 @@ const OrderForm = ({formData, onFormDataChange}) => {
             let formattedValue = value.replace(/\D/g, '')
             onFormDataChange({...formData, [name]: formattedValue});
         }
+        else if(name === "payAtDoor") {
+            // Toggle payment method between "Credit Card" and "Pay at Door"
+            const paymentMethod = e.target.checked ? "Pay at Door" : "Credit Card";
+            onFormDataChange({...formData, paymentMethod});
+        }
         else {
             onFormDataChange({...formData, [name]: value});
         }
@@ -74,83 +79,72 @@ const OrderForm = ({formData, onFormDataChange}) => {
         return storedCart ? JSON.parse(storedCart) : {};
     }
 
-
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            const response = await Util.callBackend("cart/submitOrder", {
-                istemp: Util.savedUser.id === '',
-                phoneNo: Util.savedUser.id === '' ? Util.tempPhoneNumber : '',
-                userID:  Util.savedUser.id === '' ? '' : Util.savedUser.id,
-                items: JSON.stringify(Object.values(cart())),
-                address: formData.adress});
-            if(response.msg === "success"){
-                Util.delUser();
-                Util.CallGeneric("Your order has been submitted successfully.");
-            }
-            else{
-                Util.CallGeneric(response.message, "Error");
-            }
-        } catch (error) {
-            console.error('Error submitting order:', error);
-            Util.CallGeneric("Failed to submit your order, please try again later.", "Error");
-        }
     };
+
+    // Check if payment method is "Pay at Door"
+    const isPayAtDoor = formData.paymentMethod === "Pay at Door";
 
     return (
         <form className="p-0" onSubmit={handleSubmit}>
             {showPopup && (
                 <Info popUpText={popUpText} popUpType={popUpType} setShowPopup={setShowPopup} />
             )}
-            <div className="mb-4">
-                <label htmlFor="cardNumber"
-                       className={`block ${isCardValid ? "text-gray-700" : "text-red-700"} text-xl font-bold mb-2`}>
-                    {isCardValid ? "Card Number" : "Card Number ( Please enter a valid Card ) "}
-                </label>
-                <input
-                    type="text"
-                    id="cardNumber"
-                    name="cardNumber"
-                    maxLength="19"
-                    value={formData.cardNumber}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
-                />
-            </div>
-            <div className="mb-4">
-                <label htmlFor="expiryDate" className="block text-gray-700 text-xl font-bold mb-2">
-                    Expiry Date:
-                </label>
-                <input
-                    type="text"
-                    id="expiryDate"
-                    name="expiryDate"
-                    value={formData.expiryDate}
-                    onChange={handleChange}
-                    required
-                    maxLength="5"
-                    className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
-                />
-            </div>
-            <div className="mb-4">
-                <label htmlFor="cvv" className="block text-gray-700 text-xl font-bold mb-2">
-                    CVV:
-                </label>
-                <input
-                    type="text"
-                    id="cvv"
-                    name="cvv"
-                    value={formData.cvv}
-                    onChange={handleChange}
-                    required
-                    maxLength="3"
-                    pattern="\d{3}"
-                    className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
-                />
-            </div>
+            
+            {/* Only show card fields if payment method is Credit Card */}
+            {!isPayAtDoor && (
+                <>
+                    <div className="mb-4">
+                        <label htmlFor="cardNumber"
+                            className={`block ${isCardValid ? "text-gray-700" : "text-red-700"} text-xl font-bold mb-2`}>
+                            {isCardValid ? "Card Number" : "Card Number ( Please enter a valid Card ) "}
+                        </label>
+                        <input
+                            type="text"
+                            id="cardNumber"
+                            name="cardNumber"
+                            maxLength="19"
+                            value={formData.cardNumber}
+                            onChange={handleChange}
+                            required={!isPayAtDoor}
+                            className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label htmlFor="expiryDate" className="block text-gray-700 text-xl font-bold mb-2">
+                            Expiry Date:
+                        </label>
+                        <input
+                            type="text"
+                            id="expiryDate"
+                            name="expiryDate"
+                            value={formData.expiryDate}
+                            onChange={handleChange}
+                            required={!isPayAtDoor}
+                            maxLength="5"
+                            className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label htmlFor="cvv" className="block text-gray-700 text-xl font-bold mb-2">
+                            CVV:
+                        </label>
+                        <input
+                            type="text"
+                            id="cvv"
+                            name="cvv"
+                            value={formData.cvv}
+                            onChange={handleChange}
+                            required={!isPayAtDoor}
+                            maxLength="3"
+                            pattern="\d{3}"
+                            className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
+                        />
+                    </div>
+                </>
+            )}
+            
             <div className="mb-4">
                 <label htmlFor="address" className="block text-gray-700 text-xl font-bold mb-2">
                     Address:
@@ -163,6 +157,20 @@ const OrderForm = ({formData, onFormDataChange}) => {
                     required
                     className="w-full px-0 py-0 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300"
                 ></textarea>
+            </div>
+
+            <div className="mb-4">
+                <label className="flex items-center">
+                    <input
+                        type="checkbox"
+                        id="payAtDoor"
+                        name="payAtDoor"
+                        checked={isPayAtDoor}
+                        onChange={handleChange}
+                        className="h-4 w-4 text-red-600 shadow-md shadow-red-500/50 rounded focus:ring focus:ring-red-300 mr-2"
+                    />
+                    <span className="text-gray-700 text-lg">Pay at Door</span>
+                </label>
             </div>
         </form>
     );
