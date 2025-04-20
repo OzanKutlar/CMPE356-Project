@@ -433,6 +433,8 @@ public class AdminEndpoints {
                 Map<String, Object> user = new HashMap<>();
                 user.put("profilePictureLink", rs.getString("profilePhotoUrl"));
                 user.put("username", rs.getString("username"));
+                user.put("name", rs.getString("name"));
+                user.put("surname", rs.getString("surname"));
                 user.put("email", rs.getString("email"));
                 user.put("phone", rs.getString("phone"));
                 user.put("role", rs.getString("role"));

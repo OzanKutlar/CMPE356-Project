@@ -51,18 +51,23 @@ public class UserEndpoints {
 
         log("Recieved login request for user %s with password %s", username, password);
 
-        String query = "SELECT id, profilePhotoUrl, username, email, phone, role FROM users WHERE username = ? AND password = ?";
+        String query = "SELECT * FROM users WHERE username = ? AND password = ?";
         Object[] params = { username, password };
         Map<String, Object> user = null;
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(query, params)) {
             if (rs != null && rs.next()) {
                 user = new HashMap<>();
+                user.put("id", rs.getString("id"));
+                user.put("name", rs.getString("name"));
+                user.put("surname", rs.getString("surname"));
+                user.put("phone", rs.getString("phone"));
+                user.put("country", rs.getString("country"));
+                user.put("email", rs.getString("email"));
                 user.put("profilePictureLink", rs.getString("profilePhotoUrl"));
                 user.put("username", rs.getString("username"));
-                user.put("email", rs.getString("email"));
-                user.put("phone", rs.getString("phone"));
                 user.put("role", rs.getString("role"));
-                user.put("id", rs.getString("id"));
+                user.put("dateOfBirth", rs.getString("date_of_birth"));
+                user.put("address", rs.getString("address"));
             }
         } catch (SQLException e) {
             logError("Error executing SQL request: " + query + ". Error: " + e.getMessage());
@@ -131,6 +136,7 @@ public class UserEndpoints {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to register user partially"));
         }
     }
+
 
 
 

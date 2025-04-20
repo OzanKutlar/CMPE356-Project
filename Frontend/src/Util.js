@@ -303,11 +303,15 @@ class Util {
     static cartUpdateListeners = [];
     static savedUser = {
         id: '',
+        name: '',
+        surname: '',
         username: '',
         profilePictureLink: '',
         role: '',
         email: '',
         phone: '',
+        country: '',
+        dateOfBirth: '',
         address: ''
     };
 

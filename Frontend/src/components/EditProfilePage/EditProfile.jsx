@@ -3,12 +3,43 @@ import {User, CreditCard, MapPin, Phone, Camera, Save, Mail, Briefcase, Calendar
 import Util from "../../Util.js";
 
 export default function EditProfile() {
-    // Split state into separate variables
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [birthdate, setBirthdate] = useState("");
-    const [address, setAddress] = useState("");
-    const [phone, setPhone] = useState("");
+
+    const [name, setName] = useState(Util.savedUser.name + " " + Util.savedUser.surname);
+    const [email, setEmail] = useState(Util.savedUser.email);
+    const [birthdate, setBirthdate] = useState(Util.savedUser.dateOfBirth);
+    const [address, setAddress] = useState(Util.savedUser.address);
+
+    let lastVal = '';
+    let lastformat = '';
+
+    function formatPhoneNumber(phone) {
+        if (phone === lastformat) {
+            return phone;
+        }
+        let offset = Number(phone.length >= 13);
+
+
+        const pattern = [
+            {index: 0, prefix: "+"},
+            {index: 2 + offset, prefix: " ("},
+            {index: 5 + offset, prefix: ") "},
+            {index: 8 + offset, prefix: " "},
+            {index: 10 + offset, prefix: " "}
+        ];
+
+        let formatted = "";
+        for (let i = 0; i < phone.length; i++) {
+            let formatRule = pattern.find(p => p.index === i);
+            if (formatRule) formatted += formatRule.prefix;
+
+            formatted += phone[i];
+        }
+        let formatRule = pattern.find(p => p.index === phone.length);
+        if (formatRule) formatted += formatRule.prefix;
+        return formatted;
+    }
+
+    const [phone, setPhone] = useState(formatPhoneNumber(Util.savedUser.phone.replaceAll(/[^0-9]/g, "")));
 
     // Credit card details as separate states
     const [cardNumber, setCardNumber] = useState("");
@@ -44,35 +75,6 @@ export default function EditProfile() {
         lastVal = value;
     }
 
-    let lastVal = '';
-    let lastformat = '';
-
-    function formatPhoneNumber(phone) {
-        if (phone === lastformat) {
-            return phone;
-        }
-        let offset = Number(phone.length >= 13);
-
-
-        const pattern = [
-            {index: 0, prefix: "+"},
-            {index: 2 + offset, prefix: " ("},
-            {index: 5 + offset, prefix: ") "},
-            {index: 8 + offset, prefix: " "},
-            {index: 10 + offset, prefix: " "}
-        ];
-
-        let formatted = "";
-        for (let i = 0; i < phone.length; i++) {
-            let formatRule = pattern.find(p => p.index === i);
-            if (formatRule) formatted += formatRule.prefix;
-
-            formatted += phone[i];
-        }
-        let formatRule = pattern.find(p => p.index === phone.length);
-        if (formatRule) formatted += formatRule.prefix;
-        return formatted;
-    }
 
     const handleCardNumberChange = (e) => {
         const {name, value} = e.target;
@@ -182,7 +184,7 @@ export default function EditProfile() {
                 email: email,
                 photourl: profileImage,
                 dob: birthdate,
-                adress: address,
+                address: address,
                 phone: phone.replaceAll(/[^0-9+]/g, ""),
                 ccnumber: cardNumber,
                 ccexpiry: cardExpiry,

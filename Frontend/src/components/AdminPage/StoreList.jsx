@@ -255,7 +255,7 @@ const StoreAssignment = () => {
                                 }}
                             />
                             <div className="ml-4">
-                                <h3 className="text-xl font-semibold">{selectedUser.username}</h3>
+                                <h3 className="text-xl font-semibold">{selectedUser.name + " " + selectedUser.surname}</h3>
                                 <p className="text-gray-600 capitalize">{selectedUser.role}</p>
                             </div>
                         </div>
