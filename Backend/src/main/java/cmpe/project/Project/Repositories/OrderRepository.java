@@ -1,6 +1,5 @@
 package cmpe.project.Project.Repositories;
 
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.ResultSet;
@@ -15,6 +14,8 @@ import cmpe.project.Project.DTOs.CustomerOrderDTO;
 import cmpe.project.Project.DTOs.DeliveryOrderDTO;
 import cmpe.project.Project.DTOs.SplitOrderDTO;
 import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
+import cmpe.project.Project.Utility.CustomExceptions.SplitErrorException;
+import cmpe.project.Project.Utility.CustomExceptions.UnmatchingLengthException;
 
 @Repository
 public class OrderRepository {
@@ -38,25 +39,27 @@ public class OrderRepository {
     }
 
     public List<DeliveryOrderDTO> GetListByFilter(String filter, Object... filterParams) throws SQLException {
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-        "SELECT o.order_id, os.split_id, o.address AS customer_address, " +
-        "pa.payment_method, s.name AS store_name, s.address AS store_address, " +
-        "GROUP_CONCAT(p.name) AS product_names, " +
-        "GROUP_CONCAT(oi.amount) AS product_amounts, " +
-        "SUM(oi.price) AS total_price " +
-        "FROM orders o " +
-        "JOIN order_splits os ON o.order_id = os.order_id " +
-        "JOIN stores s ON os.store_id = s.store_id " +
-        "JOIN order_items oi ON os.split_id = oi.split_id " +
-        "JOIN products p ON oi.product_id = p.product_id " +
-        "JOIN payments pa ON os.payment_id = pa.payment_id " +
-        "WHERE " + filter +
-        "GROUP BY o.order_id, os.split_id, s.store_id " +
-        "ORDER BY o.order_id, os.split_id, s.store_id"
-        );
-
-        String query = sb.toString();
+        String query = """
+            SELECT 
+                o.order_id, 
+                os.split_id, 
+                o.address AS customer_address,
+                pa.payment_method, 
+                s.name AS store_name, 
+                s.address AS store_address,
+                GROUP_CONCAT(p.name) AS product_names,
+                GROUP_CONCAT(oi.amount) AS product_amounts,
+                SUM(oi.price) AS total_price
+            FROM orders o
+            JOIN order_splits os ON o.order_id = os.order_id
+            JOIN stores s ON os.store_id = s.store_id
+            JOIN order_items oi ON os.split_id = oi.split_id
+            JOIN products p ON oi.product_id = p.product_id
+            JOIN payments pa ON os.payment_id = pa.payment_id
+            WHERE """ + filter + """  
+            GROUP BY o.order_id, os.split_id, s.store_id
+            ORDER BY o.order_id, os.split_id, s.store_id        
+            """;
 
         ResultSet rs;
         if(filterParams != null && filterParams.length > 0) {
@@ -91,100 +94,117 @@ public class OrderRepository {
         Object[] params = {order.getCustomerId(), order.getAddress()};
         
         // Execute the query and get the generated keys
-        DatabaseHandler.INSTANCE.executeQuery(query, params);
+        long lastId = DatabaseHandler.INSTANCE.executeQueryAndGetId(query, params);
+        if(lastId > -1)
+            return lastId;
         
-        // Get the last inserted ID (order_id)
-        ResultSet rs = DatabaseHandler.INSTANCE.sendRequest("SELECT LAST_INSERT_ID()", null);
-        if (rs != null && rs.next()) {
-            return rs.getLong(1);
-        }
         throw new SQLException("Failed to retrieve order ID");
     }
     
-    public long insertPayment(String paymentMethod, BigDecimal cost, String status) throws SQLException {
-        String query = "INSERT INTO payments (payment_method, amount, status) VALUES (?, ?, ?)";
-        Object[] params = { paymentMethod, cost, status };
+    public long insertPayment(String paymentMethod, String transactionId, BigDecimal cost, String status) throws SQLException {
+        String query = "INSERT INTO payments (payment_method, amount, status, transaction_id) VALUES (?, ?, ?, ?)";
+        Object[] params = { paymentMethod, cost, status, transactionId };
 
-        DatabaseHandler.INSTANCE.executeQuery(query, params);
-
-        ResultSet rs = DatabaseHandler.INSTANCE.sendRequest("SELECT LAST_INSERT_ID()", null);
-        if(rs != null && rs.next()) {
-            return rs.getLong(1);
-        }
+        long lastId = DatabaseHandler.INSTANCE.executeQueryAndGetId(query, params);
+        if(lastId > -1)
+            return lastId;
+        
         throw new SQLException("Failed to retrieve payment ID");
     }
 
-    public long insertOrderSplit(long orderId, String storeName, long paymentId) throws SQLException {
-        String query = "INSERT INTO order_splits (order_id, store_name, payment_id) VALUES (?, ?, ?)";
-        Object[] params = {orderId, storeName, paymentId};
+    public long insertOrderSplit(long orderId, long storeId, long paymentId) throws SQLException {
+        String query = "INSERT INTO order_splits (order_id, store_id, payment_id) VALUES (?, ?, ?)";
+        Object[] params = {orderId, storeId, paymentId};
         
-        DatabaseHandler.INSTANCE.executeQuery(query, params);
+        long lastId = DatabaseHandler.INSTANCE.executeQueryAndGetId(query, params);
+        if(lastId > -1)
+            return lastId;
         
-        // Get the last inserted ID (split_id)
-        ResultSet rs = DatabaseHandler.INSTANCE.sendRequest("SELECT LAST_INSERT_ID()", null);
-        if (rs != null && rs.next()) {
-            return rs.getLong(1);
-        }
         throw new SQLException("Failed to retrieve split ID");
     }
     
     public void insertOrderItems(long splitId, SplitOrderDTO split) throws SQLException {
-        ArrayList<Long> products = split.getProducts();
-        ArrayList<BigDecimal> amounts = split.getAmounts();
-        
+        List<Long> products = split.getProducts();
+        List<Integer> amounts = split.getAmounts();
+        List<BigDecimal> costPerProduct = split.getCostPerProduct();
+
         // Ensure both lists have the same size
         if (products.size() != amounts.size()) {
-            throw new IllegalArgumentException("Products and amounts lists must have the same size");
+            throw new UnmatchingLengthException(products.size(), amounts.size());
         }
         
-        String query = "INSERT INTO order_items (split_id, product_id, amount) VALUES (?, ?, ?)";
-        
+        String insertQuery = "INSERT INTO order_items (split_id, product_id, amount, price) VALUES (?, ?, ?, ?)";
+        String updateQuery = """
+            UPDATE products 
+            SET currentStock = currentStock - ?, 
+                soldStock = soldStock + ? 
+            WHERE product_id = ?
+            """;
+
         for (int i = 0; i < products.size(); i++) {
-            Object[] params = {splitId, products.get(i), amounts.get(i)};
-            DatabaseHandler.INSTANCE.executeQuery(query, params);
+            long product = products.get(i);
+            int amount = amounts.get(i);
+
+            Object[] insertParams = { splitId, product, amount, costPerProduct.get(i) };
+            DatabaseHandler.INSTANCE.executeQuery(insertQuery, insertParams);
+            
+            Object[] updateParams = { amount, amount, product };
+            DatabaseHandler.INSTANCE.executeQuery(updateQuery, updateParams);
         }
     }
 
-    public BigDecimal CalculateTotalCost(List<SplitOrderDTO> splits, List<BigDecimal> splitCosts) throws SQLException {
-        BigDecimal sum = BigDecimal.ZERO;
+    public BigDecimal CalculateSplitCost(SplitOrderDTO split) throws SQLException, SplitErrorException {
+        List<Long> products = split.getProducts();
+        List<Integer> amounts = split.getAmounts();
 
-        for(SplitOrderDTO split : splits){
-            List<Long> products = split.getProducts();
-            List<BigDecimal> amounts = split.getAmounts();
-
-            if (products.size() != amounts.size())
-                throw new IllegalArgumentException("Products and amounts lists must have the same size");
-
-            List<Object> params = new ArrayList<>();
-            StringBuilder sb = new StringBuilder();
-            StringJoiner sj = new StringJoiner(",");
-            
-            for(Long p : products){
-                sj.add("?");
-                params.add(p);
-            }
-            
-            String str = sj.toString();
-            sb.append("SELECT price_per_kg FROM products WHERE product_id IN (");
-            sb.append(str);
-            sb.append(") ORDER BY FIELD(product_id,");
-            sb.append(str);
-            sb.append(")");
-
-            ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(sb.toString(), params.toArray());
-            BigDecimal splitCost = BigDecimal.ZERO;
-            int i = 0;
-            while (rs.next()) {
-                splitCost = splitCost.add(amounts.get(i).multiply(rs.getBigDecimal("price_per_kg")));
-                if(splitCost.scale() > 2)
-                    splitCost.setScale(2, RoundingMode.HALF_UP);
-                i++;
-            }
-            splitCost.setScale(2, RoundingMode.HALF_UP);
-            sum.add(splitCost);
-            splitCosts.add(splitCost);
+        List<Object> params = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        StringJoiner sj = new StringJoiner(",");
+        
+        for(Long p : products){
+            sj.add("?");
+            params.add(p);
         }
-        return sum;
+        
+        String str = sj.toString();
+        sb.append("SELECT product_id, currentStock, price_per_kg FROM products WHERE product_id IN (");
+        sb.append(str);
+        sb.append(") ORDER BY FIELD(product_id,");
+        sb.append(str);
+        sb.append(")");
+
+        ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(sb.toString(), params.toArray());
+        BigDecimal splitCost = BigDecimal.ZERO;
+        BigDecimal kgDivisor = new BigDecimal(1000);
+        List<BigDecimal> productCosts = new ArrayList<>();
+        int i = 0;
+        while (rs.next()) {
+            Long product = products.get(i);
+            Integer amount = amounts.get(i);
+            
+            if(product == null || amount == null)
+                throw new SplitErrorException("Null value for product: " + product + " OR amount: " + amount);
+
+            if(product != rs.getLong("product_id"))
+                throw new SplitErrorException("Unrecognized product ID: " + product);
+
+            int currentStock = rs.getInt("currentStock");
+            if(amount > currentStock)
+                throw new SplitErrorException("Stock unavailable!");
+            
+            BigDecimal amountBD = new BigDecimal(amount);
+            BigDecimal productCost = amountBD
+                .divide(kgDivisor, 2, RoundingMode.HALF_UP)
+                .multiply(rs.getBigDecimal("price_per_kg"));
+
+            productCost.setScale(2, RoundingMode.HALF_UP);
+            productCosts.add(productCost);
+            splitCost = splitCost.add(productCost);
+
+            i++;
+        }
+        split.setCostPerProduct(productCosts);
+        return splitCost;
     }
     
 }

@@ -15,6 +15,7 @@ import cmpe.project.Project.DTOs.CustomerOrderDTO;
 import cmpe.project.Project.DTOs.DeliveryOrderDTO;
 import cmpe.project.Project.DTOs.SplitOrderDTO;
 import cmpe.project.Project.Repositories.OrderRepository;
+import cmpe.project.Project.Utility.CustomExceptions.SplitErrorException;
 
 
 @Service
@@ -23,37 +24,33 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
-    @Autowired
-    private CreditCardService creditCardService;
+    // @Autowired
+    // private CreditCardService creditCardService;
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    public void SubmitOrder(CustomerOrderDTO order) throws SQLException, RuntimeException {
+    public void SubmitOrder(CustomerOrderDTO order, boolean isPaid) throws SQLException, SplitErrorException {
+        List<SplitOrderDTO> splits = order.getSplits();
+        List<BigDecimal> splitCosts = order.getSplitCosts();
+
         long orderId = orderRepository.insertOrder(order);
         String paymentMethod = order.getPaymentMethod();
-        boolean isPending = true;
         long paymentId = 0;
 
-        List<SplitOrderDTO> splits = order.getSplits();
-        List<BigDecimal> splitCosts = new ArrayList<>();
-        BigDecimal totalCost = orderRepository.CalculateTotalCost(splits, splitCosts);
-
-        if(paymentMethod.equals("Credit Card")) {
-            if(creditCardService.HandleTransaction(order.getCardCredentials(), totalCost))
-                throw new RuntimeException("Transaction failed, retry later");
-            paymentId = orderRepository.insertPayment(paymentMethod, totalCost, "completed");
-            isPending = false;
+        if(isPaid) {
+            paymentId = orderRepository.insertPayment(paymentMethod, order.getTransactionId(), order.getTotalCost(), "completed");
         }
-
+        
         for (int i = 0; i<splits.size(); i++) {
             SplitOrderDTO split = splits.get(i);
-            if(isPending)
-                paymentId = orderRepository.insertPayment(paymentMethod, splitCosts.get(i), "pending");
-            long splitId = orderRepository.insertOrderSplit(orderId, split.getStoreName(), paymentId);
+            if(!isPaid)
+                paymentId = orderRepository.insertPayment(paymentMethod, (String) null, splitCosts.get(i), "pending");
+            long splitId = orderRepository.insertOrderSplit(orderId, split.getStoreId(), paymentId);
             orderRepository.insertOrderItems(splitId, split);
         }
-        Object[] arr = orderRepository.GetListByFilter("o.order_id = (SELECT MAX(order_id) FROM orders) ", (Object[]) null).toArray();
+
+        Object[] arr = orderRepository.GetListByFilter("o.order_id = ? ", orderId).toArray();
         messagingTemplate.convertAndSend("/topic/unassigned-add", arr);
     }
 
@@ -105,6 +102,23 @@ public class OrderService {
         return list;
     }
 
+    public void calculateOrderCosts(CustomerOrderDTO order) throws SQLException, SplitErrorException {
+        List<SplitOrderDTO> splits = order.getSplits();
+        List<BigDecimal> splitCosts = new ArrayList<>();
+        BigDecimal totalCost = BigDecimal.ZERO;
+
+        for(SplitOrderDTO split : splits){
+            String str = split.selfValidate();
+            if(!str.equals(""))
+                throw new SplitErrorException("Error: " + str);
+            
+            BigDecimal splitCost = orderRepository.CalculateSplitCost(split);
+            splitCosts.add(splitCost);
+            totalCost = totalCost.add(splitCost);
+        }
+        order.setSplitCosts(splitCosts);
+        order.setTotalCost(totalCost);
+    }
     
 
     
