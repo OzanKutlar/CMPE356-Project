@@ -42,9 +42,9 @@ public class CustomerOrderDTO {
 
 
     public boolean selfValidation(){
-        if(address != null && splits != null && paymentMethod != null)
+        if(address == null || splits == null || splits.isEmpty() || paymentMethod == null)
+            return false;
         return true;
-        return false;            
     }
 
     public String getTransactionId() {
