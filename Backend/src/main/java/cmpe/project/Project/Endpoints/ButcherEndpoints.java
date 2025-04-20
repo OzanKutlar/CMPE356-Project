@@ -219,6 +219,7 @@ public class ButcherEndpoints {
 
                 WHERE os.store_id = ?
                 GROUP BY o.order_id
+                ORDER BY o.order_id DESC
                 LIMIT ?, ?
                 """;
         Object[] queryParams = { storeID, pos, limit };

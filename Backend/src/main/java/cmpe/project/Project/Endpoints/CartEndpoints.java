@@ -18,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+import static cmpe.project.Project.Endpoints.UserEndpoints.capitalizeFirstLetter;
 import static cmpe.project.Project.Utility.Logger.log;
 import static cmpe.project.Project.Utility.Logger.logError;
 
@@ -114,6 +115,13 @@ public class CartEndpoints {
 
         try {
             orderService.RefundOrder(Long.parseLong(transactionID));
+
+            try{
+                Util.sendSMS(getOrderPhoneNo(transactionID), "Dear Customer, Your order has been refunded.");
+            }
+            catch(Exception e){
+            }
+
             return ResponseEntity.ok().body(Map.of(
                     "msg", "success",
                     "message", "The order has been refunded successfully."
@@ -126,6 +134,31 @@ public class CartEndpoints {
                     "message", "Failed to refunded the order"
             ));
         }
+    }
+
+
+    public String getOrderPhoneNo(String orderID){
+        String query = """
+                SELECT
+                    o.order_id,
+                    CASE
+                        WHEN o.customer_id IS NULL THEN o.temp_phone_num
+                        ELSE u.phone
+                    END AS phone_number
+                FROM orders o
+                LEFT JOIN users u ON o.customer_id = u.id
+                WHERE o.order_id = ?;
+                """;
+        Object[] params = {orderID};
+
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(query, params)) {
+            while (rs != null && rs.next()) {
+                return rs.getString("phone_number");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
 
@@ -161,6 +194,8 @@ public class CartEndpoints {
 
             orderService.calculateOrderCosts(newOrder);
 
+            Util.sendSMS(newOrder.getPhoneNum(), "Dear Customer, Thank you for buying from MeatGo, your order has been accepted and a driver will be on their way to pick it up shortly.");
+
             //simulate payment. if payment method is credit card, assume payment process was successful.
             boolean isPaid;
             if (newOrder.getPaymentMethod().equals("Credit Card")) {
@@ -177,7 +212,7 @@ public class CartEndpoints {
             esql.printStackTrace();
             return ResponseEntity.ok().body(Map.of(
                     "msg", "error",
-                    "message", "Failed to submit orderrrrr"
+                    "message", "Failed to submit order"
             ));
 
         } catch (SplitErrorException esplt) {
@@ -189,6 +224,12 @@ public class CartEndpoints {
 
         } catch (MessagingException emsg) {
             log("Error: Failed to send websocket message!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Internal Server Error"
+            ));
         }
 
         return ResponseEntity.ok(Util.JsonResponder("msg", "success"));
@@ -211,6 +252,12 @@ public class CartEndpoints {
 
         try {
             orderService.CancelOrder(Long.parseLong(transactionID));
+
+            try{
+                Util.sendSMS(getOrderPhoneNo(transactionID), "Dear Customer, You have cancelled your order. If this was not done by you, please order another order.");
+            }
+            catch(Exception e){
+            }
             return ResponseEntity.ok().body(Map.of(
                     "msg", "success",
                     "message", "Your order has been cancelled successfully."

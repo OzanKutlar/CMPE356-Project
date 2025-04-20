@@ -135,7 +135,7 @@ const CartItemsLarge = () => {
             console.log("Splits array:", splits);
 
             const payload = {
-                phoneNum: Util.savedUser.id === '' ? Util.tempPhoneNumber : '',
+                phoneNum: Util.savedUser.id === '' ? Util.tempPhoneNumber : Util.savedUser.phone,
                 address: formData.address,
                 splits: splits,
                 paymentMethod: formData.paymentMethod

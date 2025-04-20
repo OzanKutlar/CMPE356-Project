@@ -165,12 +165,12 @@ const FullscreenSales = () => {
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <button
                                                         className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${
-                                                            (sale.status === "Refunded" || disabledButtons["cancelOrder" + sale.id])
+                                                            (sale.status === "Refunded" || sale.status === "Completed" || sale.status === "Cancelled" || disabledButtons["cart/cancelOrder" + sale.id])
                                                                 ? "bg-gray-400 cursor-not-allowed"
                                                                 : "bg-red-500 hover:bg-red-600"
                                                         }`}
                                                         onClick={() => handleAction("cart/cancelOrder", sale.id)}
-                                                        disabled={(sale.status === "Refunded" || disabledButtons["cancelOrder" + sale.id])}
+                                                        disabled={(sale.status === "Refunded" || sale.status === "Completed" || sale.status === "Cancelled" || disabledButtons["cart/cancelOrder" + sale.id])}
                                                     >
                                                         Cancel Order
                                                     </button>
