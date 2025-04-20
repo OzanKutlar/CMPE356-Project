@@ -422,7 +422,7 @@ const StoreAssignment = () => {
                 </div>
             )}
 
-            <style jsx>{`
+            <style jsx="true">{`
                 .storeAss-backdrop {
                     position: fixed;
                     top: 0;
