@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static cmpe.project.Project.Endpoints.UserEndpoints.capitalizeFirstLetter;
 import static cmpe.project.Project.Utility.Logger.*;
 import static cmpe.project.Project.Utility.Util.*;
 
@@ -37,20 +38,130 @@ public class ButcherEndpoints {
         return false;
     }
 
-    @GetMapping("/refundTransaction")
-    public ResponseEntity<?> refundOrder(
-            @RequestHeader("userID") String id,
-            @RequestHeader("transactionID") String transactionID) {
 
-        String userID = UserEndpoints.sessionMap.get(Util.getUuidOrNull(id));
+    @GetMapping("/banUser")
+    public ResponseEntity<?> banUser(@RequestHeader Map<String, String> headers) {
+        logHeaders("banUser", headers);
+        return ResponseEntity.ok().body(Map.of("msg", "success"));
+    }
+    @GetMapping("/banAddress")
+    public ResponseEntity<?> banAddress(@RequestHeader Map<String, String> headers) {
+        logHeaders("banAddress", headers);
+        return ResponseEntity.ok().body(Map.of("msg", "success"));
+    }
+
+    @GetMapping("/getOrders")
+    public ResponseEntity<?> getOrders(
+            @RequestHeader("userID") String userID,
+            @RequestHeader("limit") int limit,
+            @RequestHeader("pos") int pos) {
+
+
+        String userIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID));
+        if (userIdFromSession == null) {
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Invalid UserID"
+            ));
+        }
+
+        log("User %s requested their orders. From %s to %s", userIdFromSession, pos, pos + limit);
+
+        //String getOrdersQuery = "SELECT * FROM userOrders WHERE userID = ? LIMIT ?, ?";
+        String query = """
+                SELECT
+                    o.order_id,
+                    o.customer_id,
+                    o.address,
+                    pa.payment_method,
+                    pa.transaction_id,
+                    os.status,
+                    p_max.name AS most_expensive_product_name,
+                    p_max.photo AS most_expensive_product_photo,
+                    SUM(oi.price) AS total_price
+                FROM orders o
+                JOIN order_splits os ON o.order_id = os.order_id
+                JOIN order_items oi ON os.split_id = oi.split_id
+                JOIN products p ON oi.product_id = p.product_id
+                JOIN payments pa ON os.payment_id = pa.payment_id
+
+                -- subquery for most expensive item
+                JOIN (
+                    SELECT 
+                        o2.order_id,
+                        p2.name,
+                        p2.photo
+                    FROM order_splits os2
+                    JOIN orders o2 ON os2.order_id = o2.order_id
+                    JOIN order_items oi2 ON os2.split_id = oi2.split_id
+                    JOIN products p2 ON oi2.product_id = p2.product_id
+                    WHERE (o2.order_id, oi2.price) IN (
+                        SELECT o3.order_id, MAX(oi3.price)
+                        FROM order_splits os3
+                        JOIN orders o3 ON os3.order_id = o3.order_id
+                        JOIN order_items oi3 ON os3.split_id = oi3.split_id
+                        GROUP BY o3.order_id
+                    )
+                ) AS p_max ON p_max.order_id = o.order_id
+
+                WHERE o.customer_id = ?
+                GROUP BY o.order_id
+                LIMIT ?, ?
+                """;
+        Object[] queryParams = { userIdFromSession, pos, limit };
+        List<Map<String, Object>> ordersList = new ArrayList<>();
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(query, queryParams)) {
+            while (rs != null && rs.next()) {
+                Map<String, Object> order = new HashMap<>();
+                order.put("id", rs.getString("order_id"));
+                order.put("address", rs.getString("address"));
+                order.put("itemName", rs.getString("most_expensive_product_name"));
+                order.put("itemPhoto", rs.getString("most_expensive_product_photo"));
+                order.put("paymentMethod", rs.getString("payment_method"));
+                order.put("paymentID", rs.getString("transaction_id"));
+                order.put("status", capitalizeFirstLetter(rs.getString("status")));
+                try{
+                    order.put("totalPrice", Double.parseDouble(rs.getString("total_price")));
+                }
+                catch(Exception e){
+                    order.put("totalPrice", 0.00d);
+                }
+                ordersList.add(order);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            logError("Error executing SQL request: " + query + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Internal Server Error"
+            ));
+        }
+
+
+        return ResponseEntity.ok().body(ordersList);
+    }
+
+    @GetMapping("/getTransactions")
+    public ResponseEntity<?> getTransactions(
+            @RequestHeader("userID") String userID,
+            @RequestHeader("limit") int limit,
+            @RequestHeader("pos") int pos) {
+
+        String userIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID));
+        if (userIdFromSession == null) {
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Invalid UserID"
+            ));
+        }
 
         String isManager = "SELECT storeID FROM managers WHERE userID = ?";
-        Object[] params = { userID };
+        Object[] params = { userIdFromSession };
         String storeID = "";
 
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isManager, params)) {
             if (rs == null || !rs.next()) {
-                System.out.println("User with ID " + userID + " is not authorized to get stock of this store");
+                System.out.println("User with ID " + userIdFromSession + " is not authorized to get stock of this store");
                 return ResponseEntity.ok().body(Map.of(
                         "msg", "error",
                         "message", "User is not authorized"
@@ -68,72 +179,49 @@ public class ButcherEndpoints {
             ));
         }
 
-//
-//        log("User %s has requested a refund for transaction no %s", userID, transactionID);
-//
-//        if (!checkButcherAllowed(userID, transactionID)) {
-//            return ResponseEntity.ok().body(Map.of(
-//                    "msg", "error",
-//                    "message", "Invalid user or transaction ID"
-//            ));
-//        }
-
-        String refundQuery = "UPDATE userOrders SET status = 'Refunded' WHERE AND order_id = ?";
-        Object[] refundParams = {transactionID};
-
-        try {
-            int updated = DatabaseHandler.INSTANCE.executeQuery(refundQuery, refundParams);
-            if(updated > 0) {
-                return ResponseEntity.ok().body(Map.of(
-                        "msg", "success",
-                        "message", "Your order has been refunded successfully."
-                ));
-            }
-            else{
-                return ResponseEntity.ok().body(Map.of(
-                        "msg", "error",
-                        "message", "Incorrect order_id."
-                ));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            logError("Error executing refund order SQL request: " + refundQuery + ". Error: " + e.getMessage());
-            return ResponseEntity.ok().body(Map.of(
-                    "msg", "error",
-                    "message", "Failed to process the refund."
-            ));
-        }
-    }
-
-    @GetMapping("/banUser")
-    public ResponseEntity<?> banUser(@RequestHeader Map<String, String> headers) {
-        logHeaders("banUser", headers);
-        return ResponseEntity.ok().body(Map.of("msg", "success"));
-    }
-    @GetMapping("/banAddress")
-    public ResponseEntity<?> banAddress(@RequestHeader Map<String, String> headers) {
-        logHeaders("banAddress", headers);
-        return ResponseEntity.ok().body(Map.of("msg", "success"));
-    }
-
-    @GetMapping("/getTransactions")
-    public ResponseEntity<?> getTransactions(
-            @RequestHeader("userID") String userID,
-            @RequestHeader("limit") int limit,
-            @RequestHeader("pos") int pos) {
-
-        String userIdFromSession = UserEndpoints.sessionMap.get(Util.getUuidOrNull(userID));
-        if (userIdFromSession == null) {
-            return ResponseEntity.ok().body(Map.of(
-                    "msg", "error",
-                    "message", "Invalid UserID"
-            ));
-        }
-
         log("User %s requested their transactions. From %s to %s", userIdFromSession, pos, pos + limit);
 
-        String getTransactionsQuery = "SELECT * FROM userOrders WHERE userID = ? ORDER BY timestamps DESC LIMIT ?, ?";
-        Object[] queryParams = { userIdFromSession, pos, limit };
+        String getTransactionsQuery = """
+                SELECT
+                    o.order_id,
+                    o.customer_id,
+                    o.address,
+                    pa.payment_method,
+                    pa.transaction_id,
+                    os.status,
+                    p_max.name AS most_expensive_product_name,
+                    p_max.photo AS most_expensive_product_photo,
+                    SUM(oi.price) AS total_price
+                FROM orders o
+                JOIN order_splits os ON o.order_id = os.order_id
+                JOIN order_items oi ON os.split_id = oi.split_id
+                JOIN products p ON oi.product_id = p.product_id
+                JOIN payments pa ON os.payment_id = pa.payment_id
+
+                -- subquery for most expensive item
+                JOIN (
+                    SELECT 
+                        o2.order_id,
+                        p2.name,
+                        p2.photo
+                    FROM order_splits os2
+                    JOIN orders o2 ON os2.order_id = o2.order_id
+                    JOIN order_items oi2 ON os2.split_id = oi2.split_id
+                    JOIN products p2 ON oi2.product_id = p2.product_id
+                    WHERE (o2.order_id, oi2.price) IN (
+                        SELECT o3.order_id, MAX(oi3.price)
+                        FROM order_splits os3
+                        JOIN orders o3 ON os3.order_id = o3.order_id
+                        JOIN order_items oi3 ON os3.split_id = oi3.split_id
+                        GROUP BY o3.order_id
+                    )
+                ) AS p_max ON p_max.order_id = o.order_id
+
+                WHERE os.store_id = ?
+                GROUP BY o.order_id
+                LIMIT ?, ?
+                """;
+        Object[] queryParams = { storeID, pos, limit };
         List<Map<String, Object>> transactionsList = new ArrayList<>();
 
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getTransactionsQuery, queryParams)) {
@@ -141,13 +229,13 @@ public class ButcherEndpoints {
                 Map<String, Object> order = new HashMap<>();
                 order.put("id", rs.getString("order_id"));
                 order.put("address", rs.getString("address"));
-                order.put("itemName", rs.getString("itemName"));
-                order.put("itemPhoto", rs.getString("itemPhoto"));
-                order.put("paymentMethod", rs.getString("paymentMethod"));
-                order.put("paymentID", rs.getString("paymentID"));
-                order.put("status", rs.getString("status"));
+                order.put("itemName", rs.getString("most_expensive_product_name"));
+                order.put("itemPhoto", rs.getString("most_expensive_product_photo"));
+                order.put("paymentMethod", rs.getString("payment_method"));
+                order.put("paymentID", rs.getString("transaction_id"));
+                order.put("status", capitalizeFirstLetter(rs.getString("status")));
                 try{
-                    order.put("totalPrice", Double.parseDouble(rs.getString("totalPrice")));
+                    order.put("totalPrice", Double.parseDouble(rs.getString("total_price")));
                 }
                 catch(Exception e){
                     order.put("totalPrice", 0.00d);

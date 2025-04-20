@@ -28,6 +28,14 @@ public class OrderRepository {
             throw new RuntimeException("No such order found. Try again later");
     }
 
+    public void UpdateSplitStatusByOrderID(long orderID, String status) throws SQLException {
+        String query = "UPDATE order_splits SET status = ? WHERE order_id = ?";
+        Object[] params = { status, orderID };
+        int rowCount = DatabaseHandler.INSTANCE.executeQuery(query, params);
+        if(rowCount < 1)
+            throw new RuntimeException("No such order found. Try again later");
+    }
+
     public void UpdateAssignment(long splitId, Long driverId, String currentStatus, String newStatus) throws SQLException, RuntimeException {
         //assign = update driver id and status according to split id and currentstatus
         //drop   = update driver id and status according to split id and currentstatus

@@ -23,23 +23,24 @@ const FullscreenSales = () => {
         timeOutConst = setTimeout(() => setNotification({message: '', isLoading: false, isError: false}), 3000);
     };
 
+    const fetchLatestSales = async () => {
+        try {
+            setLoading(true);
+            const response = await Util.callBackend("butcher/getTransactions", {
+                userID: Util.savedUser.id,
+                limit: 50,
+                pos: 0
+            });
+            setLoading(false);
+            setSales(response);
+        } catch (err) {
+            setLoading(false);
+            setError("Failed to fetch latest sales data");
+            console.error(err);
+        }
+    };
+
     useEffect(() => {
-        const fetchLatestSales = async () => {
-            try {
-                setLoading(true);
-                const response = await Util.callBackend("butcher/getTransactions", {
-                    userID: Util.savedUser.id,
-                    limit: 50,
-                    pos: 0
-                });
-                setLoading(false);
-                setSales(response);
-            } catch (err) {
-                setLoading(false);
-                setError("Failed to fetch latest sales data");
-                console.error(err);
-            }
-        };
         fetchLatestSales();
     }, []);
 
@@ -49,16 +50,24 @@ const FullscreenSales = () => {
 
     const handleAction = async (action, transactionId) => {
         setDisabledButtons((prev) => ({...prev, [action + transactionId]: true}));
-        setNotification({message: '', isLoading: true, isError: false});
+        // setNotification({message: '', isLoading: true, isError: false});
         try {
-            await Util.callBackend(action, {
+            let returnEd = await Util.callBackend(action, {
                 userID: Util.savedUser.id,
                 transactionID: transactionId,
             });
-            showNotification('Action completed successfully');
+
+            if (returnEd.msg === "error") {
+                throw new Error(returnEd.message || 'Failed to delete admin user');
+            }
+
+            Util.CallGeneric(returnEd.message)
+            fetchLatestSales();
+            // showNotification('Action completed successfully');
         } catch (err) {
             console.error(err);
-            showNotification('Action failed', true);
+            Util.CallGeneric(err.message, "Error")
+            // showNotification('Action failed', true);
         } finally {
             setDisabledButtons((prev) => ({...prev, [action + transactionId]: false}));
         }
@@ -130,11 +139,16 @@ const FullscreenSales = () => {
                                     <td className="p-3">
                                         <span
                                             className={`px-2 py-1 text-xs font-medium rounded-md ${
-                                                sale.status === "Success"
+                                                sale.status === "Completed"
                                                     ? "bg-green-100 text-green-600"
-                                                    : sale.status === "Canceled"
+                                                    : sale.status === "Cancelled"
                                                         ? "bg-red-100 text-red-600"
-                                                        : "bg-yellow-100 text-yellow-600"
+                                                        : sale.status === "In Delivery"
+                                                            ? "bg-purple-100 text-purple-600"
+                                                            : sale.status === "Refunded"
+                                                                ? "bg-blue-100 text-blue-600"
+                                                                : "bg-yellow-100 text-yellow-600"
+
                                             }`}
                                         >
                                             {sale.status}
@@ -153,12 +167,12 @@ const FullscreenSales = () => {
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <button
                                                         className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${
-                                                            disabledButtons["refundTransaction" + sale.id]
+                                                            (sale.status === "Refunded" || disabledButtons["refundTransaction" + sale.id])
                                                                 ? "bg-gray-400 cursor-not-allowed"
                                                                 : "bg-red-500 hover:bg-red-600"
                                                         }`}
-                                                        onClick={() => handleAction("butcher/refundTransaction", sale.id)}
-                                                        disabled={disabledButtons["refundTransaction" + sale.id]}
+                                                        onClick={() => handleAction("cart/refundTransaction", sale.id)}
+                                                        disabled={(sale.status === "Refunded" || disabledButtons["refundTransaction" + sale.id])}
                                                     >
                                                         Refund Transaction
                                                     </button>

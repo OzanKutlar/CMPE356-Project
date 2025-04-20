@@ -48,17 +48,24 @@ const FullscreenSales = () => {
 
     const handleAction = async (action, orderID) => {
         setDisabledButtons((prev) => ({...prev, [action + orderID]: true}));
-        setNotification({message: '', isLoading: true, isError: false});
+        // setNotification({message: '', isLoading: true, isError: false});
         try {
             let returnEd = await Util.callBackend(action, {
                 userID: Util.savedUser.id,
                 transactionID: orderID,
             });
-            showNotification(returnEd.msg);
+
+            if (returnEd.msg === "error") {
+                throw new Error(returnEd.message || 'Failed to delete admin user');
+            }
+
+            Util.CallGeneric(returnEd.message)
+            // showNotification(returnEd.msg);
 			fetchLatestSales();
         } catch (err) {
             console.error(err);
-            showNotification('Action failed', true);
+            // showNotification('');
+            Util.CallGeneric(err.message, "Error")
         } finally {
             setDisabledButtons((prev) => ({...prev, [action + orderID]: false}));
         }
@@ -135,8 +142,11 @@ const FullscreenSales = () => {
                                                     : sale.status === "Cancelled"
                                                         ? "bg-red-100 text-red-600"
                                                         : sale.status === "In Delivery"
-                                                        ? "bg-purple-100 text-purple-600"
-                                                        : "bg-yellow-100 text-yellow-600"
+                                                            ? "bg-purple-100 text-purple-600"
+                                                            : sale.status === "Refunded"
+                                                                ? "bg-blue-100 text-blue-600"
+                                                                : "bg-yellow-100 text-yellow-600"
+
                                             }`}
                                         >
                                             {sale.status}
@@ -155,26 +165,26 @@ const FullscreenSales = () => {
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <button
                                                         className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${
-                                                            disabledButtons["cancelOrder" + sale.id]
+                                                            (sale.status === "Refunded" || disabledButtons["cancelOrder" + sale.id])
                                                                 ? "bg-gray-400 cursor-not-allowed"
                                                                 : "bg-red-500 hover:bg-red-600"
                                                         }`}
                                                         onClick={() => handleAction("cart/cancelOrder", sale.id)}
-                                                        disabled={disabledButtons["cancelOrder" + sale.id]}
+                                                        disabled={(sale.status === "Refunded" || disabledButtons["cancelOrder" + sale.id])}
                                                     >
                                                         Cancel Order
                                                     </button>
-                                                    <button
-                                                        className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${
-                                                            disabledButtons["changeAddr" + sale.id]
-                                                                ? "bg-gray-400 cursor-not-allowed"
-                                                                : "bg-yellow-500 hover:bg-yellow-600"
-                                                        }`}
-                                                        onClick={() => handleAction("changeAddr", sale.id)}
-                                                        disabled={disabledButtons["changeAddr" + sale.id]}
-                                                    >
-                                                        Change Address
-                                                    </button>
+                                                    {/*<button*/}
+                                                    {/*    className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${*/}
+                                                    {/*        disabledButtons["changeAddr" + sale.id]*/}
+                                                    {/*            ? "bg-gray-400 cursor-not-allowed"*/}
+                                                    {/*            : "bg-yellow-500 hover:bg-yellow-600"*/}
+                                                    {/*    }`}*/}
+                                                    {/*    onClick={() => handleAction("changeAddr", sale.id)}*/}
+                                                    {/*    disabled={disabledButtons["changeAddr" + sale.id]}*/}
+                                                    {/*>*/}
+                                                    {/*    Change Address*/}
+                                                    {/*</button>*/}
                                                     {/*<button*/}
                                                     {/*    className={`px-4 py-2 text-white text-sm rounded-lg transition-all duration-300 ${*/}
                                                     {/*        disabledButtons["contDriver" + sale.id]*/}

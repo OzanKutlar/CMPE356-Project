@@ -58,7 +58,15 @@ public class OrderService {
         orderRepository.UpdateSplitStatusBySplitId(splitId, "completed");
     }
 
-    public void CancelOrder (long splitId) throws SQLException {
+    public void CancelOrder (long orderID) throws SQLException {
+        orderRepository.UpdateSplitStatusByOrderID(orderID, "canceled");
+    }
+
+    public void RefundOrder (long orderID) throws SQLException {
+        orderRepository.UpdateSplitStatusByOrderID(orderID, "refunded");
+    }
+
+    public void CancelSplit(long splitId) throws SQLException {
         orderRepository.UpdateSplitStatusBySplitId(splitId, "canceled");
         
         String message = "Order #" + splitId + " canceled successfully";

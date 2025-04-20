@@ -436,25 +436,17 @@ public class UserEndpoints {
         return ResponseEntity.ok().body(ordersList);
     }
 
+
+    private static Map<String, String> properNames = Map.of(
+            "completed", "Completed",
+            "assigned", "In Delivery",
+            "unassigned", "Pending",
+            "canceled", "Cancelled",
+            "refunded", "Refunded"
+    );
+
     public static String capitalizeFirstLetter(String input) {
-        if (input == null || input.isEmpty()) {
-            return input;
-        }
-
-        String[] words = input.split("\\s+");
-        StringBuilder result = new StringBuilder();
-
-        for (String word : words) {
-            if (word.length() > 0) {
-                result.append(Character.toUpperCase(word.charAt(0)));
-                if (word.length() > 1) {
-                    result.append(word.substring(1).toLowerCase());
-                }
-                result.append(" ");
-            }
-        }
-
-        return result.toString().trim();
+        return properNames.get(input);
     }
 
 

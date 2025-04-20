@@ -1,9 +1,7 @@
 package cmpe.project.Project.Endpoints;
 
 import cmpe.project.Project.DTOs.CustomerOrderDTO;
-import cmpe.project.Project.DTOs.SplitOrderDTO;
 import cmpe.project.Project.DatabaseHandler.DatabaseHandler;
-import cmpe.project.Project.Repositories.OrderRepository;
 import cmpe.project.Project.Services.OrderService;
 import cmpe.project.Project.Utility.Util;
 import cmpe.project.Project.Utility.CustomExceptions.SplitErrorException;
@@ -12,16 +10,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.MessagingException;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static cmpe.project.Project.Utility.Logger.log;
 import static cmpe.project.Project.Utility.Logger.logError;
@@ -84,6 +79,53 @@ public class CartEndpoints {
 
 
         return ResponseEntity.ok().body(items);
+    }
+
+    @GetMapping("/refundTransaction")
+    public ResponseEntity<?> refundOrder(
+            @RequestHeader("userID") String id,
+            @RequestHeader("transactionID") String transactionID) {
+
+        String userID = UserEndpoints.sessionMap.get(Util.getUuidOrNull(id));
+
+        String isManager = "SELECT storeID FROM managers WHERE userID = ?";
+        Object[] params = { userID };
+        String storeID = "";
+
+        try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(isManager, params)) {
+            if (rs == null || !rs.next()) {
+                System.out.println("User with ID " + userID + " is not authorized to get stock of this store");
+                return ResponseEntity.ok().body(Map.of(
+                        "msg", "error",
+                        "message", "You are not authorized"
+                ));
+            }
+
+            storeID = rs.getString("storeID");
+            System.out.println("Authorized manager for store ID: " + storeID);
+
+        } catch (SQLException e) {
+            logError("Error executing SQL request: " + isManager + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to check user role"
+            ));
+        }
+
+        try {
+            orderService.RefundOrder(Long.parseLong(transactionID));
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "success",
+                    "message", "The order has been refunded successfully."
+            ));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            logError("Error executing cancel order SQL request: " + transactionID + ". Error: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "error",
+                    "message", "Failed to refunded the order"
+            ));
+        }
     }
 
 
@@ -164,25 +206,18 @@ public class CartEndpoints {
             @RequestHeader("transactionID") String transactionID) {
         String userID = UserEndpoints.sessionMap.get(Util.getUuidOrNull(id));
         log("User %s has requested their order no %s to be cancelled", userID, transactionID);
-        if (!checkUserTransaction(userID, transactionID)) {
-            return ResponseEntity.ok().body(Map.of(
-                    "msg", "error",
-                    "message", "Invalid user or transaction ID"
-            ));
-        }
 
-        String cancelOrderQuery = "UPDATE userOrders SET status = 'Cancelled' WHERE userID = ? AND order_id = ?";
-        Object[] cancelParams = {userID, transactionID};
+
 
         try {
-            ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(cancelOrderQuery, cancelParams);
+            orderService.CancelOrder(Long.parseLong(transactionID));
             return ResponseEntity.ok().body(Map.of(
                     "msg", "success",
                     "message", "Your order has been cancelled successfully."
             ));
         } catch (SQLException e) {
             e.printStackTrace();
-            logError("Error executing cancel order SQL request: " + cancelOrderQuery + ". Error: " + e.getMessage());
+            logError("Error executing cancel order SQL request: " + transactionID + ". Error: " + e.getMessage());
             return ResponseEntity.ok().body(Map.of(
                     "msg", "error",
                     "message", "Failed to cancel the order"

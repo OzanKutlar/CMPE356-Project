@@ -95,11 +95,16 @@ const LatestSales = () => {
                                         <td className="p-3">
                                             <span
                                                 className={`px-2 py-1 text-xs font-medium rounded-md ${
-                                                    sale.status === "Success"
+                                                    sale.status === "Completed"
                                                         ? "bg-green-100 text-green-600"
-                                                        : sale.status === "Canceled"
+                                                        : sale.status === "Cancelled"
                                                             ? "bg-red-100 text-red-600"
-                                                            : "bg-yellow-100 text-yellow-600"
+                                                            : sale.status === "In Delivery"
+                                                                ? "bg-purple-100 text-purple-600"
+                                                                : sale.status === "Refunded"
+                                                                    ? "bg-blue-100 text-blue-600"
+                                                                    : "bg-yellow-100 text-yellow-600"
+
                                                 }`}
                                             >
                                                 {sale.status}
