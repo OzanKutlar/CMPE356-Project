@@ -414,7 +414,7 @@ public class UserEndpoints {
                 order.put("itemPhoto", rs.getString("most_expensive_product_photo"));
                 order.put("paymentMethod", rs.getString("payment_method"));
                 order.put("paymentID", rs.getString("transaction_id"));
-                order.put("status", rs.getString("status"));
+                order.put("status", capitalizeFirstLetter(rs.getString("status")));
                 try{
                     order.put("totalPrice", Double.parseDouble(rs.getString("total_price")));
                 }
@@ -434,6 +434,27 @@ public class UserEndpoints {
 
 
         return ResponseEntity.ok().body(ordersList);
+    }
+
+    public static String capitalizeFirstLetter(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+
+        String[] words = input.split("\\s+");
+        StringBuilder result = new StringBuilder();
+
+        for (String word : words) {
+            if (word.length() > 0) {
+                result.append(Character.toUpperCase(word.charAt(0)));
+                if (word.length() > 1) {
+                    result.append(word.substring(1).toLowerCase());
+                }
+                result.append(" ");
+            }
+        }
+
+        return result.toString().trim();
     }
 
 

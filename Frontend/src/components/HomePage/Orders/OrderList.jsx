@@ -130,7 +130,7 @@ const FullscreenSales = () => {
                                     <td className="p-3">
                                         <span
                                             className={`px-2 py-1 text-xs font-medium rounded-md ${
-                                                sale.status === "Complete"
+                                                sale.status === "Completed"
                                                     ? "bg-green-100 text-green-600"
                                                     : sale.status === "Cancelled"
                                                         ? "bg-red-100 text-red-600"

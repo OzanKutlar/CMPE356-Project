@@ -11,12 +11,12 @@ const CartItemsLarge = () => {
     const [message, setMessage] = useState(null);
     const [showLogin, setShowLogin] = useState(false);
 
-    const cart = () =>{
+    const cart = () => {
         const storedCart = localStorage.getItem('cart');
         return storedCart ? JSON.parse(storedCart) : {};
     }
 
-    const setCart = (newCart) =>{
+    const setCart = (newCart) => {
         localStorage.setItem('cart', JSON.stringify(newCart));
     }
 
@@ -59,7 +59,7 @@ const CartItemsLarge = () => {
         const newCart = cart();
 
 
-        updatedItems.forEach((newItem) =>{
+        updatedItems.forEach((newItem) => {
             const newItemId = newItem.id;
             newCart[newItemId] = newItem;
         })
@@ -143,7 +143,7 @@ const CartItemsLarge = () => {
 
             // Log the final payload
             console.log("Final payload:", payload);
-            
+
             const headers = {
                 userID: Util.savedUser.id === '' ? '' : Util.savedUser.id,
             };
@@ -153,7 +153,7 @@ const CartItemsLarge = () => {
 
             // const response2 = await Util.callBackend("cart/submitOrder2", headers, payload);
 
-            if(response.msg === "success"){
+            if (response.msg === "success") {
                 setMessage({
                     type: "success",
                     text: "Order submitted successfully!"
