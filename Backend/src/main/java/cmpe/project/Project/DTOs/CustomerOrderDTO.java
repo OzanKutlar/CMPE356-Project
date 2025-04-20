@@ -74,6 +74,9 @@ public class CustomerOrderDTO {
 
     // Getter and Setter for customerId
     public long getCustomerId() {
+        if(customerId == null){
+            return -1;
+        }
         return customerId;
     }
 

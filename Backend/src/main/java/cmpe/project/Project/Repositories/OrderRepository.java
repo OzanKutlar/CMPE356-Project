@@ -39,27 +39,28 @@ public class OrderRepository {
     }
 
     public List<DeliveryOrderDTO> GetListByFilter(String filter, Object... filterParams) throws SQLException {
-        String query = """
-            SELECT 
-                o.order_id, 
-                os.split_id, 
-                o.address AS customer_address,
-                pa.payment_method, 
-                s.name AS store_name, 
-                s.address AS store_address,
-                GROUP_CONCAT(p.name) AS product_names,
-                GROUP_CONCAT(oi.amount) AS product_amounts,
-                SUM(oi.price) AS total_price
-            FROM orders o
-            JOIN order_splits os ON o.order_id = os.order_id
-            JOIN stores s ON os.store_id = s.store_id
-            JOIN order_items oi ON os.split_id = oi.split_id
-            JOIN products p ON oi.product_id = p.product_id
-            JOIN payments pa ON os.payment_id = pa.payment_id
-            WHERE """ + filter + """  
-            GROUP BY o.order_id, os.split_id, s.store_id
-            ORDER BY o.order_id, os.split_id, s.store_id        
-            """;
+        String query =
+                "SELECT " +
+                        "    o.order_id, " +
+                        "    os.split_id, " +
+                        "    o.address AS customer_address, " +
+                        "    pa.payment_method, " +
+                        "    s.name AS store_name, " +
+                        "    s.address AS store_address, " +
+                        "    GROUP_CONCAT(p.name) AS product_names, " +
+                        "    GROUP_CONCAT(oi.amount) AS product_amounts, " +
+                        "    SUM(oi.price) AS total_price " +
+                        "FROM orders o " +
+                        "JOIN order_splits os ON o.order_id = os.order_id " +
+                        "JOIN stores s ON os.store_id = s.store_id " +
+                        "JOIN order_items oi ON os.split_id = oi.split_id " +
+                        "JOIN products p ON oi.product_id = p.product_id " +
+                        "JOIN payments pa ON os.payment_id = pa.payment_id " +
+                        "WHERE " + filter + " " +
+                        "GROUP BY o.order_id, os.split_id, s.store_id " +
+                        "ORDER BY o.order_id, os.split_id, s.store_id";
+
+
 
         ResultSet rs;
         if(filterParams != null && filterParams.length > 0) {
@@ -91,7 +92,8 @@ public class OrderRepository {
 
     public long insertOrder(CustomerOrderDTO order) throws SQLException {
         String query = "INSERT INTO orders (customer_id, address) VALUES (?, ?)";
-        Object[] params = {order.getCustomerId(), order.getAddress()};
+        long orderID = order.getCustomerId();
+        Object[] params = {orderID == -1 ? null : orderID, order.getAddress()};
         
         // Execute the query and get the generated keys
         long lastId = DatabaseHandler.INSTANCE.executeQueryAndGetId(query, params);
@@ -163,6 +165,10 @@ public class OrderRepository {
         
         for(Long p : products){
             sj.add("?");
+            params.add(p);
+        }
+
+        for(Long p : products){
             params.add(p);
         }
         

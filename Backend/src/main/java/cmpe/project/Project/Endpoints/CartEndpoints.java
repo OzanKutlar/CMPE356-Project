@@ -98,7 +98,7 @@ public class CartEndpoints {
         
         if(userId == null)
             userId = "";
-            
+
         try {
             // Validate cart items first
             if(newOrder == null || !newOrder.selfValidation()){
