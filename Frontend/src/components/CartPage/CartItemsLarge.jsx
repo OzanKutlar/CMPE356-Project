@@ -151,6 +151,8 @@ const CartItemsLarge = () => {
 
             const response = await Util.callBackend("cart/submitOrder", headers, payload);
 
+            // const response2 = await Util.callBackend("cart/submitOrder2", headers, payload);
+
             if(response.msg === "success"){
                 setMessage({
                     type: "success",

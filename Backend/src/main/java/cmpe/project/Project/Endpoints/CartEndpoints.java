@@ -38,38 +38,37 @@ public class CartEndpoints {
         List<Map<String, Object>> items = new ArrayList<>();
 
         String getOrdersQuery = """
-            SELECT
-                p.product_id,
-                p.name,
-                p.photo,
-                p.currentStock,
-                p.category,
-                p.price_per_kg,
-                p.store_id,
-                GROUP_CONCAT(DISTINCT CONCAT(ot.name, ':', ov.value) SEPARATOR '|') AS options
-            FROM products p
-            LEFT JOIN product_options po ON p.product_id = po.product_id
-            LEFT JOIN option_values ov ON po.opt_val_id = ov.opt_val_id
-            LEFT JOIN option_types ot ON ov.option_id = ot.option_id
-            WHERE p.store_id = ?
-            AND p.currentStock > 0
-            GROUP BY p.product_id;
-            """;
-        Object[] params = { storeId };
+                SELECT
+                    p.product_id,
+                    p.name,
+                    p.photo,
+                    p.currentStock,
+                    p.category,
+                    p.price_per_kg,
+                    p.store_id,
+                    GROUP_CONCAT(DISTINCT CONCAT(ot.name, ':', ov.value) SEPARATOR '|') AS options
+                FROM products p
+                LEFT JOIN product_options po ON p.product_id = po.product_id
+                LEFT JOIN option_values ov ON po.opt_val_id = ov.opt_val_id
+                LEFT JOIN option_types ot ON ov.option_id = ot.option_id
+                WHERE p.store_id = ?
+                AND p.currentStock > 0
+                GROUP BY p.product_id;
+                """;
+        Object[] params = {storeId};
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getOrdersQuery, params)) {
             while (rs != null && rs.next()) {
                 Map<String, Object> item = new HashMap<>();
                 item.put("ItemName", rs.getString("name"));
                 item.put("id", rs.getString("product_id"));
-                item.put("storeId", rs.getString("store_id")); 
+                item.put("storeId", rs.getString("store_id"));
                 item.put("ItemPhotoLink", rs.getString("photo"));
                 item.put("currentStock", rs.getString("currentStock"));
                 item.put("category", rs.getString("category").split(","));
                 item.put("options", rs.getString("options"));
-                try{
+                try {
                     item.put("ItemPrice", rs.getDouble("price_per_kg"));
-                }
-                catch(Exception e){
+                } catch (Exception e) {
                     item.put("totalPrice", 0.00d);
                 }
                 items.add(item);
@@ -95,13 +94,22 @@ public class CartEndpoints {
 
         log("Processing order submission");
         String userId = UserEndpoints.sessionMap.get(Util.getUuidOrNull(user));
-        
-        if(userId == null)
+
+        if (userId == null)
             userId = "";
+        else{
+            try{
+                newOrder.setCustomerId(Long.parseLong(userId));
+            }
+            catch(Exception e){
+            }
+        }
 
         try {
+
+
             // Validate cart items first
-            if(newOrder == null || !newOrder.selfValidation()){
+            if (newOrder == null || !newOrder.selfValidation()) {
                 log("Error: Empty cart or missing order information!");
                 return ResponseEntity.ok().body(Map.of(
                         "msg", "error",
@@ -110,10 +118,10 @@ public class CartEndpoints {
             }
 
             orderService.calculateOrderCosts(newOrder);
-            
+
             //simulate payment. if payment method is credit card, assume payment process was successful.
             boolean isPaid;
-            if(newOrder.getPaymentMethod().equals("Credit Card")){
+            if (newOrder.getPaymentMethod().equals("Credit Card")) {
                 isPaid = true;
                 newOrder.setTransactionId("#" + generateRandomPaymentId());
             } else {
@@ -126,202 +134,22 @@ public class CartEndpoints {
             log("Error in the database operations: " + esql.getMessage());
             esql.printStackTrace();
             return ResponseEntity.ok().body(Map.of(
-                "msg", "error",
-                "message", "Failed to submit orderrrrr"
+                    "msg", "error",
+                    "message", "Failed to submit orderrrrr"
             ));
 
         } catch (SplitErrorException esplt) {
             log("Error in split information: " + esplt.getMessage());
             return ResponseEntity.ok().body(Map.of(
-                "msg", "error",
-                "message", "Invalid split information"
+                    "msg", "error",
+                    "message", "Invalid split information"
             ));
-        
+
         } catch (MessagingException emsg) {
             log("Error: Failed to send websocket message!");
         }
 
         return ResponseEntity.ok(Util.JsonResponder("msg", "success"));
-
-
-        //     // Track total price
-        //     double totalPrice = 0;
-        //     StringBuilder contentBuilder = new StringBuilder();
-
-        //     String orderPhoto = null;
-
-        //     // Validate each item and check stock availability
-        //     for (Map<String, Object> cartItem : cartItems) {
-        //         String productId = (String) cartItem.get("id");
-        //         if (productId == null) {
-        //             log("Invalid cart item: missing product id");
-        //             hasErrors = true;
-        //             errorMessage = "Invalid cart item: missing product id";
-        //             break;
-        //         }
-
-        //         if(orderPhoto == null){
-        //             orderPhoto = (String) cartItem.get("ItemPhotoLink");
-        //         }
-
-        //         Object[] productParams = {productId};
-        //         String getProductQuery = "SELECT currentStock, price_per_kg, name FROM products WHERE product_id = ?";
-
-        //         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getProductQuery, productParams)) {
-        //             if (rs == null || !rs.next()) {
-        //                 log("Product not found: " + productId);
-        //                 hasErrors = true;
-        //                 errorMessage = "Product not found: " + productId;
-        //                 break;
-        //             }
-
-        //             double currentStock = rs.getDouble("currentStock");
-        //             double price = rs.getDouble("price_per_kg");
-        //             String productName = rs.getString("name");
-
-        //             Object buyAmount = cartItem.get("buyAmount");
-        //             if (buyAmount == null) {
-        //                 log("Invalid cart item: missing buyAmount");
-        //                 hasErrors = true;
-        //                 errorMessage = "Invalid cart item: missing buyAmount for " + productName;
-        //                 break;
-        //             }
-
-        //             try {
-        //                 double amount = Double.parseDouble(String.valueOf(buyAmount));
-        //                 if (amount > currentStock) {
-        //                     log("Not enough stock for item: %s", cartItem.get("ItemName"));
-        //                     hasErrors = true;
-        //                     errorMessage = "Not enough stock for item: " + productName;
-        //                     break;
-        //                 }
-
-        //                 // Calculate item price and add to total
-        //                 double itemPrice = price * amount / 1000;
-        //                 totalPrice += itemPrice;
-
-        //                 String suffix;
-
-        //                 if(amount > 1000){
-        //                     suffix = "kg's";
-        //                 }
-        //                 else if(amount == 1000){
-        //                     suffix = "kg";
-        //                 }
-        //                 else{
-        //                     suffix = "g's";
-        //                 }
-        //                 if(suffix.charAt(0) == 'k'){
-        //                     amount = amount / 1000;
-        //                 }
-
-        //                 // Build content string
-        //                 if (contentBuilder.length() > 0) {
-        //                     contentBuilder.append(",");
-        //                 }
-        //                 contentBuilder.append(productName).append(" - ").append(amount).append(suffix);
-
-        //                 log("Item %s added to order.", productName);
-        //             } catch (NumberFormatException e) {
-        //                 log("Invalid buyAmount for item: %s", cartItem.get("ItemName"));
-        //                 hasErrors = true;
-        //                 errorMessage = "Invalid quantity format for " + productName;
-        //                 break;
-        //             }
-        //         } catch (SQLException e) {
-        //             log("Error getting product information: " + e.getMessage());
-        //             hasErrors = true;
-        //             errorMessage = "Database error: " + e.getMessage();
-        //             break;
-        //         }
-        //     }
-
-        //     if (hasErrors) {
-        //         return ResponseEntity.ok().body(Map.of(
-        //                 "msg", "error",
-        //                 "message", errorMessage
-        //         ));
-        //     }
-
-        //     String content = contentBuilder.toString();
-
-        //     String createDeliveryQuery = "INSERT INTO deliveries (address, istemp, totalPrice, content, status, assignedTo, phone_no, user_id, store_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        //     String status = "Pending";
-        //     String assignedTo = "-1";
-        //     String store_id = "1";
-
-
-        //     Object[] deliveryParams = {address, Boolean.parseBoolean(istemp) ? 1 : 0, totalPrice, content, status, assignedTo, phoneNo.replaceAll("[^0-9+]", ""), userId, store_id};
-
-        //     long deliveryId = -1;
-        //     try {
-        //         // Execute the query and get the generated delivery ID
-        //         deliveryId = DatabaseHandler.INSTANCE.executeQueryAndGetId(createDeliveryQuery, deliveryParams);
-        //         if (deliveryId == -1) {
-        //             log("Failed to retrieve delivery ID");
-        //             return ResponseEntity.ok().body(Map.of(
-        //                     "msg", "error",
-        //                     "message", "Failed to create delivery record"
-        //             ));
-        //         }
-        //     } catch (SQLException e) {
-        //         log("Failed to create delivery record: " + e.getMessage());
-        //         return ResponseEntity.ok().body(Map.of(
-        //                 "msg", "error",
-        //                 "message", "Failed to create delivery record"
-        //         ));
-        //     }
-
-        //     // Create entry in userOrders table
-        //     try {
-        //         // Get first item name from content for userOrders table
-        //         String firstItemName = content.contains(",") ?
-        //                 content.substring(0, content.indexOf("-") - 1) :
-        //                 content.substring(0, content.indexOf("-") - 1);
-
-
-        //         // Default payment information
-        //         String paymentMethod = "Paid at door";
-        //         String paymentID = "#" + generateRandomPaymentId();
-
-        //         // Create user order
-        //         String createOrderQuery = "INSERT INTO userOrders (userID, address, itemName, itemPhoto, paymentMethod, paymentID, status, totalPrice, delivery_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        //         Object[] orderParams = {userId, address, firstItemName, orderPhoto, paymentMethod, paymentID, status, totalPrice, deliveryId};
-
-        //         DatabaseHandler.INSTANCE.executeQuery(createOrderQuery, orderParams);
-        //         log("Created user order with delivery_id: " + deliveryId);
-
-        //     } catch (SQLException e) {
-        //         log("Warning: Failed to create user order record: " + e.getMessage());
-        //         // Continue with the process even if user order creation fails
-        //     }
-
-        //     // Update stock for each item
-        //     for (Map<String, Object> cartItem : cartItems) {
-        //         String productId = (String) cartItem.get("id");
-        //         double amount = Double.parseDouble(String.valueOf(cartItem.get("buyAmount")));
-
-        //         String updateStockQuery = "UPDATE products SET currentStock = currentStock - ?, soldStock = soldStock + ? WHERE product_id = ?";
-        //         try {
-        //             DatabaseHandler.INSTANCE.sendRequest(updateStockQuery, new Object[] {amount, amount, productId});
-        //         } catch (SQLException e) {
-        //             log("Warning: Failed to update stock for product " + productId + ": " + e.getMessage());
-        //         }
-        //     }
-
-        //     return ResponseEntity.ok().body(Map.of(
-        //             "msg", "success"
-        //     ));
-
-        // } catch (Exception e) {
-        //     e.printStackTrace();
-        //     log("Order submission failed: " + e.getMessage());
-        //     return ResponseEntity.ok().body(Map.of(
-        //             "msg", "error",
-        //             "message", "Failed to submit order"
-        //     ));}
     }
 
     // Helper method to generate a random payment ID
@@ -400,9 +228,10 @@ public class CartEndpoints {
     public ResponseEntity<?> saveCart(
             @RequestBody Map<String, String> cartItemsJson) {
         log("Cart saved");
-        try{
+        try {
             ObjectMapper objectMapper = new ObjectMapper();
-            ArrayList<Map<String, Object>> cartItems = objectMapper.readValue(cartItemsJson.get("items"), new TypeReference<>() {});
+            ArrayList<Map<String, Object>> cartItems = objectMapper.readValue(cartItemsJson.get("items"), new TypeReference<>() {
+            });
             boolean hasErrors = false;
             for (Map<String, Object> cartItem : cartItems) {
                 String productId = (String) cartItem.get("id");
@@ -454,7 +283,7 @@ public class CartEndpoints {
             }
 
             return ResponseEntity.ok().body(Map.of("msg", "success"));
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.ok().body(Map.of(
                     "msg", "error",
