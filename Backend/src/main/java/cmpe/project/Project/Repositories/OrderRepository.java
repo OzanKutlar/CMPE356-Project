@@ -90,9 +90,22 @@ public class OrderRepository {
     }
 
     public long insertOrder(CustomerOrderDTO order) throws SQLException {
-        String query = "INSERT INTO orders (customer_id, address) VALUES (?, ?)";
-        long orderID = order.getCustomerId();
-        Object[] params = {orderID == -1 ? null : orderID, order.getAddress()};
+        String query;
+        Object[] params;
+        Long customerId = order.getCustomerId();
+        String phoneNum = order.getPhoneNum();
+
+        if(customerId != null){
+            query = "INSERT INTO orders (customer_id, address) VALUES (?, ?)";
+            params = new Object[] {customerId, order.getAddress()};
+
+        } else if (phoneNum != null && !phoneNum.equals("")){
+            query = "INSERT INTO orders (temp_phone_num, address) VALUES (?, ?)";
+            params = new Object[] {phoneNum, order.getAddress()};
+
+        } else {
+            throw new SplitErrorException("Failed to create order, neither user/customer ID nor temporary phone number is present!");
+        }
         
         // Execute the query and get the generated keys
         long lastId = DatabaseHandler.INSTANCE.executeQueryAndGetId(query, params);

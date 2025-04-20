@@ -370,7 +370,7 @@ public class UserEndpoints {
                     o.address,
                     pa.payment_method,
                     pa.transaction_id,
-                    pa.status,
+                    os.status,
                     p_max.name AS most_expensive_product_name,
                     p_max.photo AS most_expensive_product_photo,
                     SUM(oi.price) AS total_price
