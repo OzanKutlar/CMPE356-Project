@@ -164,7 +164,7 @@ public class UserEndpoints {
                 "msg", "success",
                 "user", Map.of(
                         "id", userID,
-                        "profilePictureLink", "/src/assets/face1.jpg",
+                        "profilePictureLink", "/src/assets/face2.jpg",
                         "email", email,
                         "phone", phone,
                         "role", "user"
