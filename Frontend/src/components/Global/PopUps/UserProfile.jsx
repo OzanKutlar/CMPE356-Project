@@ -1,22 +1,56 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useRef, useEffect } from 'react';
 import Util from "../../../Util.js";
 import { GlobalContext } from '../GlobalContext.jsx';
-import EditProfile from './EditProfile.jsx'; // Import EditProfile component
+import EditProfile from './EditProfile.jsx';
 
 export default function UserProfile() {
     const [menuOpen, setMenuOpen] = useState(false);
-    const [isEditModalOpen, setEditModalOpen] = useState(false); // State to control the edit profile modal
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
+    const menuRef = useRef(null);
+    const timeoutRef = useRef(null);
 
     // Assuming Util.savedUser contains user data
     const savedUser = Util.savedUser;
-    const profilePictureURL = savedUser.profilePictureLink || '/default-profile.png'; // Fallback to a default image
+    const profilePictureURL = savedUser.profilePictureLink || '/default-profile.png';
     const isAdmin = savedUser.role === 'admin';
     const isDelivery = savedUser.role === 'delivery driver';
     const isButcher = savedUser.role === 'butcher';
     const currentPage = useContext(GlobalContext);
 
+    // Calculate and update dropdown max height when visibility changes
+    useEffect(() => {
+        if (menuRef.current) {
+            if (menuOpen) {
+                const dropdownHeight = menuRef.current.scrollHeight;
+                menuRef.current.style.maxHeight = `${dropdownHeight}px`;
+            } else {
+                menuRef.current.style.maxHeight = '0px';
+            }
+        }
+
+        return () => {
+            // Clear timeout when component unmounts
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
+    }, [menuOpen]);
+
     const toggleMenu = () => {
         setMenuOpen((prev) => !prev);
+    };
+
+    const handleMouseLeave = () => {
+        // Set timeout to close menu after 2 seconds
+        timeoutRef.current = setTimeout(() => {
+            setMenuOpen(false);
+        }, 100);
+    };
+
+    const handleMouseEnter = () => {
+        // Clear timeout if mouse re-enters the menu
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
     };
 
     const handleAction = (action) => {
@@ -57,29 +91,53 @@ export default function UserProfile() {
     }
 
     return (
-        <div className="relative inline-block ">
+        <div className="userprofile-container relative inline-block">
+            <style jsx="true">{`
+                .userprofile-dropdown {
+                    max-height: 0;
+                    overflow: hidden;
+                    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+                    opacity: 0;
+                    pointer-events: none; /* Disable pointer events when hidden */
+                }
+
+                .userprofile-dropdown-open {
+                    opacity: 1;
+                    visibility: visible; /* Make visible when open */
+                    pointer-events: auto; /* Enable pointer events when visible */
+                }
+            `}</style>
+
             <img
                 src={profilePictureURL}
                 alt="User Profile"
-                className="w-10 h-10 rounded-full cursor-pointer border-4 border-gray-300"
+                className="userprofile-avatar w-10 h-10 rounded-full cursor-pointer border-4 border-gray-300"
                 onClick={toggleMenu}
             />
-            {menuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
+
+            <div
+                ref={menuRef}
+                className={`userprofile-dropdown absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10 ${
+                    menuOpen ? 'userprofile-dropdown-open' : ''
+                }`}
+                onMouseLeave={handleMouseLeave}
+                onMouseEnter={handleMouseEnter}
+            >
+                <div className="userprofile-menu-content">
                     <button
-                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                        className="userprofile-button block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                         onClick={() => handleAction('editProfile')}
                     >
                         Edit Profile
                     </button>
                     <button
-                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                        className="userprofile-button block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                         onClick={() => handleAction('orders')}
                     >
                         My Orders
                     </button>
                     <button
-                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                        className="userprofile-button block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                         onClick={() => handleAction('changePassword')}
                     >
                         Change Password
@@ -88,7 +146,7 @@ export default function UserProfile() {
                             <>
                                 {isAdmin && (
                                     <button
-                                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                                        className="userprofile-button block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                                         onClick={() => handleAction('switchToAdminPanel')}
                                     >
                                         Switch to Admin Panel
@@ -96,7 +154,7 @@ export default function UserProfile() {
                                 )}
                                 {isDelivery && (
                                     <button
-                                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                                        className="userprofile-button block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                                         onClick={() => handleAction('switchToDeliveryPanel')}
                                     >
                                         Switch to Delivery Panel
@@ -104,7 +162,7 @@ export default function UserProfile() {
                                 )}
                                 {isButcher && (
                                     <button
-                                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                                        className="userprofile-button block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                                         onClick={() => handleAction('switchToButcher')}
                                     >
                                         Switch to Butcher Panel
@@ -114,7 +172,7 @@ export default function UserProfile() {
                         ) :
                         (
                             <button
-                                className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                                className="userprofile-button block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                                 onClick={() => handleAction('switchToHome')}
                             >
                                 Return to Home Page
@@ -123,20 +181,20 @@ export default function UserProfile() {
                     }
 
                     <button
-                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                        className="userprofile-button block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                         onClick={() => handleAction('logout')}
                     >
                         Log Out
                     </button>
                 </div>
-            )}
+            </div>
 
             {/* Edit Profile Modal */}
             {isEditModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-20">
-                    <EditProfile 
-                        user={savedUser} 
-                        onClose={() => setEditModalOpen(false)} // Close modal when done
+                <div className="userprofile-modal fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-20">
+                    <EditProfile
+                        user={savedUser}
+                        onClose={() => setEditModalOpen(false)}
                     />
                 </div>
             )}

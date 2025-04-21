@@ -25,7 +25,7 @@ const StoreAssignment = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await Util.callBackend('admin/getUsers', {userID: Util.savedUser.id});
+            const response = await Util.callBackend('admin/getUsers', {userID: Util.savedUser.id, roleFilter: "butcher"});
             setUsers(response);
         } catch (err) {
             setError('Error fetching users');

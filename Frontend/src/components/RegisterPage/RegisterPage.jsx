@@ -94,7 +94,7 @@ const RegistrationPage = () => {
 
         if (name === 'phoneNumber') {
             let phoneNum;
-            if(value.length > 16) return;
+            if (value.length > 16) return;
             if (lastVal.length > value.length) {
                 phoneNum = formatPhoneNumber(value.replaceAll(/[^0-9]/g, ""));
             } else {
@@ -130,17 +130,16 @@ const RegistrationPage = () => {
 
 
     const handleDeleteAccountClick = async (e) => {
-        if(disableText) return;
+        if (disableText) return;
         setDisableText(true)
         try {
             const response = await Util.callBackend("user/delUser", {
                 userID: Util.savedUser.id
             });
-            if(response.msg === "success"){
+            if (response.msg === "success") {
                 Util.delUser();
                 Util.CallGeneric("Your registration has been cancelled successfully!")
-            }
-            else{
+            } else {
                 Util.CallGeneric(response.msg, "Error")
             }
         } catch (err) {
@@ -180,15 +179,14 @@ const RegistrationPage = () => {
                     email: formData.email,
                     country: formData.countryCode.country
                 });
-                if(response.msg === "success" && response.user){
+                if (response.msg === "success" && response.user) {
                     Util.savedUser = response.user;
                     Util.CallGeneric("Your account has been successfully registered.")
                     setTimeout(() => {
                         Util.navigateTo("home");
                     }, 2000);
-                }
-                else{
-                    Util.CallGeneric(response.msg, "Error")
+                } else {
+                    Util.CallGeneric(response.message, "Error")
                 }
             } catch (err) {
                 Util.CallGeneric(err.error, "Error")
@@ -221,7 +219,8 @@ const RegistrationPage = () => {
                                     className="bg-[rgba(0,0,0,0.5)] h-[150px] w-full flex items-center justify-center text-white">
                                     <div className="text-center">
                                         <h1 className="text-4xl font-bold mb-2">You're almost there!</h1>
-                                        <p className="text-lg max-w-lg mx-auto">Fill in your details to complete your registration</p>
+                                        <p className="text-lg max-w-lg mx-auto">Fill in your details to complete your
+                                            registration</p>
                                     </div>
                                 </div>
                             </div>
@@ -370,7 +369,8 @@ const RegistrationPage = () => {
 
                         <p className="text-center text-xs text-gray-600 mt-1">
                             Not feeling ready? {' '}
-                            <a href="#" onClick={handleDeleteAccountClick} className={`${disableText ? "text-gray-600" : "text-amber-600"} hover:underline font-medium`}>
+                            <a href="#" onClick={handleDeleteAccountClick}
+                               className={`${disableText ? "text-gray-600" : "text-amber-600"} hover:underline font-medium`}>
                                 Go Back To Home
                             </a>
                         </p>
