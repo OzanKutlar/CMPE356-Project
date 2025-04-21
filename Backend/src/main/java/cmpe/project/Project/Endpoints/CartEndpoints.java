@@ -35,21 +35,17 @@ public class CartEndpoints {
 
         String getOrdersQuery = """
                 SELECT
-                    p.product_id,
-                    p.name,
-                    p.photo,
-                    p.currentStock,
-                    p.category,
-                    p.price_per_kg,
-                    p.store_id,
-                    GROUP_CONCAT(DISTINCT CONCAT(ot.name, ':', ov.value) SEPARATOR '|') AS options
-                FROM products p
-                LEFT JOIN product_options po ON p.product_id = po.product_id
-                LEFT JOIN option_values ov ON po.opt_val_id = ov.opt_val_id
-                LEFT JOIN option_types ot ON ov.option_id = ot.option_id
-                WHERE p.store_id = ?
-                AND p.currentStock > 0
-                GROUP BY p.product_id;
+                    product_id,
+                    name,
+                    photo,
+                    currentStock,
+                    category,
+                    price_per_kg,
+                    store_id
+                FROM products
+                WHERE store_id = ?
+                AND currentStock > 0
+                GROUP BY product_id;
                 """;
         Object[] params = {storeId};
         try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getOrdersQuery, params)) {
@@ -61,7 +57,6 @@ public class CartEndpoints {
                 item.put("ItemPhotoLink", rs.getString("photo"));
                 item.put("currentStock", rs.getString("currentStock"));
                 item.put("category", rs.getString("category").split(","));
-                item.put("options", rs.getString("options"));
                 try {
                     item.put("ItemPrice", rs.getDouble("price_per_kg"));
                 } catch (Exception e) {
