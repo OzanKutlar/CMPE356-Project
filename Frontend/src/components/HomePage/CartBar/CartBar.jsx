@@ -49,7 +49,7 @@ const CartBar = ({showNavbar, setShowNavbar}) => {
 
     const updateItemCount = (index, increment) => {
         const updatedItems = [...cartItems];
-        updatedItems[index].buyAmount = Math.max(0, updatedItems[index].buyAmount + increment);
+        updatedItems[index].buyAmount = Math.max(50, updatedItems[index].buyAmount + increment);
         updatedItems[index].buyAmount = Math.min(updatedItems[index].buyAmount, updatedItems[index].currentStock)
         setCartItems(updatedItems);
         const newCart = cart();

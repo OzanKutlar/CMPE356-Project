@@ -151,9 +151,9 @@ const StoreAssignment = () => {
 
     return (
         <div className="flex flex-col h-screen bg-gray-100">
-            <div className="bg-white shadow-md p-4">
-                <h1 className="text-2xl font-semibold text-gray-800">Store Assignment Management</h1>
-            </div>
+            {/*<div className="bg-white shadow-md p-4">*/}
+            {/*    <h1 className="text-2xl font-semibold text-gray-800">Store Assignment Management</h1>*/}
+            {/*</div>*/}
 
             {error && (
                 <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 m-4">
