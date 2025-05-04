@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, Send, X } from 'lucide-react';
 import Util from "../../Util.js";
+import LoginOrPhone from "../CartPage/LoginOrPhonePopup.jsx";
 
 export default function ChatBot() {
     const [isOpen, setIsOpen] = useState(false);
     const [isAnimatingOut, setIsAnimatingOut] = useState(false);
     const [message, setMessage] = useState('');
+    const [showLogin, setShowLogin] = useState(false);
     const [chatHistory, setChatHistory] = useState([
         { role: 'bot', content: 'Hello! How can I help you today?' }
     ]);
@@ -70,17 +72,25 @@ export default function ChatBot() {
         try {
             const data = await Util.callBackend("chatbot/ask", {}, {
                 history: updatedHistory,
-                message: message
+                message: message,
+                userID: Util.savedUser.id === "" ? Util.tempPhoneNumber : Util.savedUser.id
             });
 
-
-            if (data.msg === "success") {
+            if(data.msg === "usernotfound"){
+                setShowLogin(true);
+                setIsLoading(false);
+                setChatHistory([...updatedHistory, {
+                    role: 'bot',
+                    content: "Of course! But I dont know who you are!"
+                }]);
+            }
+            else if (data.msg === "success") {
                 setChatHistory([...updatedHistory, {
                     role: 'bot',
                     content: data.message
                 }]);
             } else {
-                Util.CallGeneric("ChatBot Disconnected", "Error");
+                Util.CallGeneric(data.message, "Error");
                 setIsAnimatingOut(true);
                 setTimeout(() => {
                     setIsOpen(false);
@@ -103,6 +113,7 @@ export default function ChatBot() {
 
     return (
         <div className="chatbot-container fixed bottom-6 right-6 z-50">
+            {showLogin && <LoginOrPhone setShowPopUp={setShowLogin}/>}
             {/* Chat Button */}
             {!isOpen && (
                 <button

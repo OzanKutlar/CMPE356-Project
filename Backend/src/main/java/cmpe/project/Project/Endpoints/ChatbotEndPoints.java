@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,8 +20,14 @@ public class ChatbotEndPoints {
 
 
     private static final ObjectMapper mapper = new ObjectMapper();
+//    private static final String modelURL = "http://localhost:5000/v1/chat/completions";
+    private static final String modelURL = "http://100.104.199.33:8080/v1/chat/completions";
 
     public static String callLocalLLM(Map<String, String> messages) throws Exception {
+        return callLocalLLM(messages, false);
+    }
+
+    public static String callLocalLLM(Map<String, String> messages, boolean giveThink) throws Exception {
         // Build the messages array
         ArrayNode messagesArray = mapper.createArrayNode();
         for (Map.Entry<String, String> entry : messages.entrySet()) {
@@ -39,7 +46,7 @@ public class ChatbotEndPoints {
         // Send the HTTP request
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5000/v1/chat/completions"))
+                .uri(URI.create(modelURL))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                 .build();
@@ -54,34 +61,70 @@ public class ChatbotEndPoints {
                 .get("message")
                 .get("content")
                 .asText();
-
-        return content.trim();
+        if(giveThink){
+            return content.trim();
+        }
+        return content.trim().replaceAll("(?s)<think>.*?</think>", "").trim();
     }
 
     @PostMapping("/ask")
     public ResponseEntity<?> handleChat(@RequestBody Map<String, Object> body) {
         String userMessage = ((String) body.getOrDefault("message", "")).toLowerCase();
+        String userID = ((String) body.getOrDefault("userID", "")).toLowerCase();
+        ArrayList<Map<String, String>> history = (ArrayList<Map<String, String>>) body.getOrDefault("history", "");
         String reply;
 
-        if (userMessage.contains("types of meat") || userMessage.contains("what meats do you have")) {
-            reply = "We offer a variety of meats including beef, pork, chicken, lamb, and specialty cuts like wagyu beef and organic chicken.";
-        } else if (userMessage.contains("order") || userMessage.contains("when will my order arrive")) {
-            reply = "You can track your order by going to the 'Order List' section on your account page. Delivery times depend on your location, but typically, we deliver within 1-2 days.";
-        } else if (userMessage.contains("customize cuts") || userMessage.contains("custom butcher services")) {
-            reply = "Yes, we offer custom cuts. You can request your preferred cuts while placing an order or contact us directly through the 'Contact Us' section for special requests.";
-        } else if (userMessage.contains("pricing") || userMessage.contains("how much is")) {
-            reply = "Our prices vary by product and weight. You can check the prices directly on our website, or if you're looking for something specific, feel free to ask!";
-        } else if (userMessage.contains("delivery") || userMessage.contains("shipping")) {
-            reply = "We offer delivery services to most regions. Check the 'Delivery Page' for more details, including fees and time estimates.";
-        } else {
-            reply = "I'm sorry, I didn't quite understand that. Could you please rephrase or check out our FAQ section for more help?";
+        StringBuilder userHistory = new StringBuilder();
+        for (Map<String, String> message : history) {
+            userHistory.append(message.get("role")).append(" : ").append(message.get("content")).append("\n");
         }
+
+        String additionalInfo = "";
+        try {
+            String action = callLocalLLM(Map.of(
+                    "system", "\"Act as a helpdesk agent with access to the user’s database. Your role is to interpret user queries and execute commands related to order management. Follow these rules:   \n" +
+                            "\n" +
+                            "     \n" +
+                            "\n" +
+                            "    Command Parsing:   \n" +
+                            "         If the user’s message contains 'cancel' followed by an order number (e.g., 'Cancel order 123'), output: (cancel 123).  \n" +
+                            "         If the user asks to 'see orders', output: (see orders) to retrieve all orders for the user.  \n" +
+                            "         If the user requests 'info latest', output: (info latest) to fetch details of the most recent order.  \n" +
+                            "         If the user wants information about a certain order, 'info x' (e.g., 'Show info for order 456'), output: (info 456).  \n" +
+                            "         For regular text responses (not commands), output: (text)\n" +
+                            "         Note that you should **only** give the outputted in paranthesis. No extra information. Just whether its an action like (cancel) or a (text) response. Another agent will respond with text if you do (text)",
+                    "history", userHistory.toString(),
+                    "user", userMessage));
+
+
+            if(!action.equals("(text)")){
+                if(userID.equals("")){
+                    return ResponseEntity.ok().body(Map.of(
+                            "msg", "usernotfound"
+                    ));
+                }
+
+                switch (action){
+                    case "(info latest)":
+
+                }
+            }
+
+            System.out.println("Predicted action : " + action);
+        } catch (Exception e) {
+            e.printStackTrace();
+//            throw new RuntimeException(e);
+        }
+
 
         try{
             return ResponseEntity.ok().body(Map.of(
                     "msg", "success",
-                    "message", callLocalLLM(Map.of("user", userMessage))
-                            .replaceAll("(?s)<think>.*?</think>", "")
+                    "message", callLocalLLM(Map.of(
+                            "system", "You are a helpdesk provider to a website called MeatGo. Which is an online butcher store. Provide help as such.",
+                            "additionalInfo", resultOfRAG,
+                            "history", userHistory.toString(),
+                            "user", userMessage))
 
             ));
         }
