@@ -112,7 +112,7 @@ public class CartEndpoints {
             orderService.RefundOrder(Long.parseLong(transactionID));
 
             try{
-                Util.sendSMS(getOrderPhoneNo(transactionID), "Dear Customer, Your order has been refunded.");
+                Util.sendSMS(getOrderPhoneNo(transactionID), "Dear Customer,\n Your order has been refunded.\nB004");
             }
             catch(Exception e){
             }

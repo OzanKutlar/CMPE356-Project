@@ -1,5 +1,9 @@
 package cmpe.project.Project.Utility;
 
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -19,35 +23,35 @@ public class Util {
         return input.replace("'", "");
     }
 
-    public static void sendSMS(String phoneNumber, String message) throws Exception {
-        phoneNumber = phoneNumber.replaceAll("[^0-9+]", "");
-        String remoteCmd = "bash -c 'termux-sms-send -n \"" + phoneNumber + "\" \"" + sanitizeShellArg(message) + "\"'";
-        String command = "ssh phonePush \"" + remoteCmd + "\"";
+    public static void sendSMS(String phoneNumber, String message) {
+        String cleanedNumber = phoneNumber.replaceAll("[^0-9+]", "");
+        message = message.replace("\n", "\\n");
 
-        System.out.println("Sending SMS: " + command);
+        String jsonPayload = String.format(
+                "{\"phoneNumber\": \"%s\", \"message\": \"%s\"}",
+                cleanedNumber,
+                message
+        );
 
+        try {
+            // Set up HTTP connection
+            URL url = new URL("http://phone:5000/sms");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
 
-        Process process = Runtime.getRuntime().exec(command);
+            // Write JSON payload
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(jsonPayload.getBytes(StandardCharsets.UTF_8));
+            }
 
-        // Read standard output
-        BufferedReader stdOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String line;
-        while ((line = stdOut.readLine()) != null) {
-            System.out.println("[STDOUT] " + line);
+            // Handle response (optional)
+            int responseCode = conn.getResponseCode();
+            System.out.println("Sent message. Response code: " + responseCode);
+        } catch (Exception e) {
+            System.err.println("Error sending message: " + e.getMessage());
         }
-
-        // Read error output
-        StringBuilder errorMessage = new StringBuilder();
-        BufferedReader stdErr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-        while ((line = stdErr.readLine()) != null) {
-            errorMessage.append("[STDERR] ").append(line).append("\n");
-        }
-
-        if(!errorMessage.isEmpty()){
-            throw new Exception(errorMessage.toString());
-        }
-
-        process.waitFor();
     }
 
     public static UUID getUuidOrNull(String s){
