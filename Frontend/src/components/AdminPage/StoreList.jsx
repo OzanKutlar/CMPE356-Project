@@ -84,7 +84,7 @@ const StoreAssignment = () => {
 
     const handleStoreClick = async (store) => {
         const managers = await fetchStoreManagers(store.storeId);
-        if(managers !== []){
+        if(managers.length > 0){
             setSelectedStore(store);
             store.managers = managers;
             setShowStorePopup(true);

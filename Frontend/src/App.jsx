@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Email from "./components/HomePage/EmailPopup/Email";
 import Header from "./components/Global/Header.jsx";
 import Slider from "./components/HomePage/SlideShow/Slider";
@@ -10,6 +10,7 @@ import "./App.css";
 import CartItemsLarge from "./components/CartPage/CartItemsLarge.jsx";
 import UserList from "./components/AdminPage/UserList.jsx";
 import AdminHeader from "./components/AdminPage/AdminHeader.jsx";
+import AdminNavbar from "./components/AdminPage/AdminNavbar.jsx";
 import ButcherHeader from "./components/ButcherPage/Global/ButcherHeader.jsx";
 import ButcherMostProfit from "./components/ButcherPage/Home/ButcherMostProfit.jsx";
 import ButcherLatestSale from "./components/ButcherPage/Home/ButcherLatestSale.jsx";
@@ -62,30 +63,32 @@ export default function App() {
         }, 300);
     });
 
+    // Check if current page is an admin page
+    const isAdminPage = currentPage.startsWith('admin');
 
     const renderPage = () => {
         switch (currentPage) {
             case "home":
                 return (
                     <div>
-                        <Header/>
-                        <Slider/>
-                        <ItemPicker/>
+                        <Header />
+                        <Slider />
+                        <ItemPicker />
                         <Chatbot />
                     </div>
                 );
             case "edit":
                 return (
-                  <div>
-                      <Header/>
-                      <EditProfile/>
-                  </div>
+                    <div>
+                        <Header />
+                        <EditProfile />
+                    </div>
                 );
             case "orders":
                 return (
                     <div>
-                        <Header/>
-                        <OrderList/>
+                        <Header />
+                        <OrderList />
                     </div>
                 );
             case "register":
@@ -96,90 +99,90 @@ export default function App() {
                 );
             case "admin/stores":
                 return (
-                    <div>
-                        <AdminHeader/>
-                        <StoreList/>
+                    <div className="ml-72"> {/* Added margin to make space for sidebar */}
+                        <AdminHeader />
+                        <StoreList />
                     </div>
                 );
             case "admin/users":
             case "admin":
                 return (
-                    <div>
-                        <AdminHeader/>
-                        <UserList/>
+                    <div className="ml-72"> {/* Added margin to make space for sidebar */}
+                        <AdminHeader />
+                        <UserList />
                     </div>
                 );
             case "admin/backend":
-                return(
-                    <div>
-                        <AdminHeader/>
-                        <ServerMonitor/>
+                return (
+                    <div className="ml-72"> {/* Added margin to make space for sidebar */}
+                        <AdminHeader />
+                        <ServerMonitor />
                     </div>
                 )
             case "butcher": // Butcher Main page
                 return (
                     <div>
-                        <ButcherHeader/>
-                        <div style={{display: "flex", gap: "20px"}}>
-                            <ButcherLatestSale/>
-                            <ButcherMostProfit/>
+                        <ButcherHeader />
+                        <div style={{ display: "flex", gap: "20px" }}>
+                            <ButcherLatestSale />
+                            <ButcherMostProfit />
                         </div>
                     </div>
                 );
             case "butcher/add": // Butcher Add Page
                 return (
                     <div>
-                        <ButcherHeader/>
+                        <ButcherHeader />
                     </div>
                 );
             case "butcher/transactions": // Butcher Add Page
                 return (
                     <div>
-                        <ButcherHeader/>
-                        <ButcherTransactions/>
+                        <ButcherHeader />
+                        <ButcherTransactions />
                     </div>
                 );
             case "butcher/sales": // Butcher Add Page
                 return (
                     <div>
-                        <ButcherHeader/>
-                        <ButcherItems/>
+                        <ButcherHeader />
+                        <ButcherItems />
                     </div>
                 );
             case "recipe":
                 return (
                     <div>
-                        <Header/>
-                        <Recipelist/>
+                        <Header />
+                        <Recipelist />
                     </div>
                 );
             case "cart":
                 return (
                     <div>
-                        <Header/>
-                        <CartItemsLarge/>
+                        <Header />
+                        <CartItemsLarge />
                     </div>
                 );
             case "delivery":
                 return (
                     <div>
-                        <DeliveryPage/>
+                        <DeliveryPage />
                     </div>
                 );
             case "about":
                 return (
                     <div>
-                        <AboutUs/>
+                        <AboutUs />
                     </div>
                 );
             case "faq":
                 return (
                     <div>
-                        <Header/>
+                        <Header />
                         <FAQ />
                     </div>
                 );
-                
+
             default:
                 return (
                     <div>
@@ -193,10 +196,11 @@ export default function App() {
 
     return (
         <div className={`app-container transition-opacity duration-300 ${animationClass}`}>
-            <GlobalContext.Provider value={ currentPage }>
+            <GlobalContext.Provider value={currentPage}>
                 {/*<Email />*/}
+                {isAdminPage && <AdminNavbar />} {/* Always show AdminNavbar for admin pages */}
                 {renderPage()}
-                {currentPage != "delivery" && currentPage != "register" ? <Footer/> : null}
+                {!["delivery", "admin", "butcher"].some(page => currentPage.includes(page)) ? <Footer /> : null}
             </GlobalContext.Provider>
         </div>
     );
