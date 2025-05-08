@@ -1,9 +1,51 @@
+/* Expanded row animations and styles */
 .expanded-row {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.5s ease-in-out;
+    transition: max-height 0.3s ease-out;
 }
 
 .expanded-row.open {
-    max-height: 500px; /* Adjust this value based on your content */
+    max-height: 500px;
+    /* Adjust based on your content needs */
+    transition: max-height 0.5s ease-in;
+}
+
+/* Table row hover effects */
+tbody tr:hover {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    z-index: 1;
+    position: relative;
+}
+
+/* Remove bottom space */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* Ensure table cells align properly */
+td,
+th {
+    vertical-align: middle;
+}
+
+/* Ensure the table fills the container completely */
+.overflow-auto {
+    display: flex;
+    flex-direction: column;
+}
+
+table {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+/* Status badge styling */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
 }
