@@ -8,21 +8,21 @@ const FilterBar = ({ selectedFilters, setSelectedFilters }) => {
     const filters = [
         {
             name: 'Category',
-            options: ['Meat', 'Processed Meat', 'Organ Meat']
+            options: ['Meat', 'Organ Meat', 'Processed Meat']
         },
         {
             name: 'Animal Type',
-            options: ['Cow', 'Goat', 'Lamb', 'Chicken', 'Duck']
+            options: ['Chicken', 'Cow/Beef', 'Duck', 'Goat', 'Lamb']
         },
         {
             name: 'Cut Type',
-            options: ['Whole', 'Cut', 'Fillet', 'Minced']
+            options: ['Cut', 'Fillet', 'Minced', 'Whole']
         },
         {
             name: 'Preservation Method',
-            options: ['Fresh', 'Frozen', 'Salted', 'Smoked', 'Dry Aged']
+            options: ['Dry Aged', 'Fresh', 'Frozen', 'Salted', 'Smoked']
         }
-    ];
+    ];    
 
     // Calculate and update dropdown max heights when visibility changes
     useEffect(() => {
