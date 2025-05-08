@@ -9,9 +9,9 @@ const AdminHeader = () => {
 
     return (
         <>
-            <header className={`${Util.footerColor} flex justify-between items-center p-2`}>
+            <header className={`${Util.footerColor} flex justify-between items-center p-2 h-14`}>
                 {/* Title - Now centered with more space since navbar button is gone */}
-                <h1 className="text-3xl font-bold text-rose-950 text-center flex-grow ml-[-170px]">
+                <h1 className="text-3xl font-bold text-rose-950 flex-grow text-center ml-[calc(2vh-100px)]">
                     Admin Panel
                 </h1>
                 {/* Login Button or User Profile */}

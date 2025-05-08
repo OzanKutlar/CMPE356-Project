@@ -152,11 +152,10 @@ const UserList = () => {
     };
 
     return (
-        <div className="flex p-10 bg-gray-100 min-h-screen flex-col">
-
-            <div className="w-full max-w-6xl mx-auto flex-grow flex flex-col">
+        <div className="flex p-4 bg-gray-100 min-h-screen flex-col">
+            <div className="w-full mx-auto flex-grow flex flex-col px-4 lg:px-30">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+                <div className="flex flex-col md:flex-row justify-between items-center mb-6 mt-5">
                     <div className="flex items-center mb-4 md:mb-0">
                         <Users className="h-8 w-8 text-blue-600 mr-2" />
                         <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
@@ -166,7 +165,7 @@ const UserList = () => {
                     <div className="relative w-full md:w-64">
                         <input
                             type="text"
-                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                             placeholder="Search users..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -177,14 +176,14 @@ const UserList = () => {
 
                 {/* Notification */}
                 {notification.isLoading && (
-                    <div className="mb-6 bg-blue-50 text-blue-700 p-4 rounded-lg flex items-center justify-center">
+                    <div className="mb-4 bg-blue-50 text-blue-700 p-4 rounded-lg flex items-center justify-center">
                         <div className="mr-2 animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700"></div>
                         Processing...
                     </div>
                 )}
 
                 {/* Table */}
-                <div className="bg-white rounded-xl shadow-md flex-grow flex flex-col mb-10">
+                <div className="bg-white rounded-xl shadow-lg flex-grow flex flex-col mb-10 overflow-hidden">
                     <div className="overflow-auto flex-grow" style={{ maxHeight: 'calc(100vh - 240px)' }}>
                         {loading ? (
                             <div className="text-blue-500 px-4 py-20 text-center text-xl">
@@ -192,51 +191,51 @@ const UserList = () => {
                             </div>
                         ) : (
                             <table className="w-full table-fixed border-collapse">
-                                <thead className="bg-gray-100 sticky top-0 z-10 rounded-t-xl">
+                                <thead className="bg-gray-200 sticky top-0 z-5 shadow-sm">
                                     <tr>
-                                        <th className="min-w-24 w-1/8 px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-200 border-r border-gray-200 first:rounded-tl-xl"
+                                        <th className="w-1/10 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200 rounded-tl-xl"
                                             onClick={() => handleSort('name')}>
                                             <span className="flex items-center justify-between">
                                                 Name
                                                 {renderSortIndicator('name')}
                                             </span>
                                         </th>
-                                        <th className="min-w-24 w-1/8 px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-200 border-r border-gray-200"
+                                        <th className="w-1/10 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200"
                                             onClick={() => handleSort('surname')}>
                                             <span className="flex items-center justify-between">
                                                 Surname
                                                 {renderSortIndicator('surname')}
                                             </span>
                                         </th>
-                                        <th className="min-w-28 w-1/8 px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-200 border-r border-gray-200"
+                                        <th className="w-1/7 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200"
                                             onClick={() => handleSort('username')}>
                                             <span className="flex items-center justify-between">
                                                 Username
                                                 {renderSortIndicator('username')}
                                             </span>
                                         </th>
-                                        <th className="min-w-24 w-1/8 px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-200 border-r border-gray-200"
+                                        <th className="w-1/7 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200"
                                             onClick={() => handleSort('role')}>
                                             <span className="flex items-center justify-between">
                                                 Role
                                                 {renderSortIndicator('role')}
                                             </span>
                                         </th>
-                                        <th className="min-w-40 w-1/4 px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-200 border-r border-gray-200"
+                                        <th className="w-3/15 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200"
                                             onClick={() => handleSort('email')}>
                                             <span className="flex items-center justify-between">
                                                 Email
                                                 {renderSortIndicator('email')}
                                             </span>
                                         </th>
-                                        <th className="min-w-28 w-1/8 px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-200 border-r border-gray-200"
+                                        <th className="w-1/7 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200"
                                             onClick={() => handleSort('phone')}>
                                             <span className="flex items-center justify-between">
                                                 Phone
                                                 {renderSortIndicator('phone')}
                                             </span>
                                         </th>
-                                        <th className="min-w-20 w-1/12 px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider last:rounded-tr-xl">
+                                        <th className="w-2/30 px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tr-xl">
                                             Action
                                         </th>
                                     </tr>
@@ -245,15 +244,15 @@ const UserList = () => {
                                     {filteredUsers.length > 0 ? (
                                         filteredUsers.map((user, index) => (
                                             <tr key={user.id}
-                                                className={`hover:bg-blue-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-blue-50 bg-opacity-30'}`}>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">{user.name}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">{user.surname}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">{user.username}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                                className={`hover:bg-blue-100 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-blue-50 bg-opacity-30'}`}>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm text-left text-gray-500 border-r border-gray-200 truncate">{user.name}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm text-left text-gray-500 border-r border-gray-200 truncate">{user.surname}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm text-left text-gray-500 border-r border-gray-200 truncate">{user.username}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
                                                     <select
                                                         value={user.role}
                                                         onChange={(e) => changeUserRole(user.id, e.target.value)}
-                                                        className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                        className="block w-full py-1 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                                         disabled={notification.isLoading}
                                                     >
                                                         {roleOptions.map((role) => (
@@ -263,23 +262,23 @@ const UserList = () => {
                                                         ))}
                                                     </select>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">{user.email}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">{user.phone}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm text-left text-gray-500 border-r border-gray-200 truncate">{user.email}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm text-left text-gray-500 border-r border-gray-200 truncate">{user.phone}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-500 text-center">
                                                     <button
                                                         onClick={() => openDeleteModal(user)}
-                                                        className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-colors focus:outline-none"
+                                                        className="text-red-500 hover:text-white hover:bg-red-500 p-1 rounded-full transition-colors focus:outline-none"
                                                         title="Delete user"
                                                         disabled={notification.isLoading}
                                                     >
-                                                        <Trash2 className="w-5 h-5" />
+                                                        <Trash2 className="w-4 h-4" />
                                                     </button>
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="7" className="px-6 py-16 text-center text-gray-500">
+                                            <td colSpan="7" className="px-3 py-16 text-center text-gray-500">
                                                 No users found
                                             </td>
                                         </tr>
@@ -344,13 +343,3 @@ const UserList = () => {
 };
 
 export default UserList;
-
-// when opening the drop down menu on the navbar, it clips under the table header so modify the table header to not cause such clipping.
-// action column name has a square right top corner, make it rounded.
-// make role column slightly wider so that the drop down select's value fits in as Delivery Driver value does not fit in.
-// make the name, surname and username columns slightly wider.
-// reduce padding to left and right to p-8.
-// the header column and search bar's interior is same color as my page background so make the header darker and make the search bar white background.
-// hovering over line has same color as the light blue of the alternating rows so make the hover darker.
-// hovering over the delete button is not visible make it more visible.
-// add a slight shadow to the top of the table.
