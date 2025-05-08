@@ -1,16 +1,14 @@
 import Util from "../../Util.js";
-import React, { useState, useEffect } from 'react';
-import { Users, Search, ChevronUp, ChevronDown, Trash2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Users, Search, ChevronUp, ChevronDown, Trash2, AlertCircle } from 'lucide-react';
 import '../Global/Styles/TableStyle.css';
 
 const UserList = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
     const [selectedUser, setSelectedUser] = useState(null);
-    const [roleEdit, setRoleEdit] = useState({ isEditing: false, userId: null, newRole: '' });
     const [notification, setNotification] = useState({ message: '', isLoading: false, isError: false });
-    const [roleOptions, setRoleOptions] = useState(['Customer', 'Admin', 'Butcher', 'Delivery Driver']);
+    const [roleOptions] = useState(['Customer', 'Admin', 'Butcher', 'Delivery Driver']);
     const [searchTerm, setSearchTerm] = useState('');
     const [sortField, setSortField] = useState('');
     const [sortDirection, setSortDirection] = useState('asc');
@@ -32,12 +30,11 @@ const UserList = () => {
 
     const fetchUsers = async () => {
         setLoading(true);
-        setError(null);
         try {
             const response = await Util.callBackend('admin/getUsers', { userID: Util.savedUser.id });
             setUsers(response);
         } catch (err) {
-            setError('Error fetching users');
+            console.error('Error fetching users:', err);
         } finally {
             setLoading(false);
         }
@@ -105,7 +102,6 @@ const UserList = () => {
                 if (selectedUser && selectedUser.id === userId) {
                     setSelectedUser((prev) => ({ ...prev, role: newRole }));
                 }
-                setRoleEdit({ isEditing: false, userId: null, newRole: '' });
                 showNotification("User role changed successfully");
             }
         } catch (err) {
@@ -306,11 +302,15 @@ const UserList = () => {
 
             {/* Delete Confirmation Modal */}
             {showDeleteModal && (
-                <div className={`fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 modal-overlay transition-opacity duration-300 ${isModalClosing ? 'opacity-0' : 'opacity-100'}`}>
-                    <div className={`relative bg-white rounded-lg shadow-xl max-w-md mx-auto p-8 w-full transform transition-all duration-300 ${isModalClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'}`}>
+                <div className="delete-modal-wrapper">
+                    {/* Background Overlay */}
+                    <div className="delete-modal-overlay" onClick={closeDeleteModal}></div>
+
+                    {/* Popup */}
+                    <div className={`delete-modal ${isModalClosing ? 'closing' : 'show'}`}>
                         <div className="flex items-center mb-6">
                             <div className="bg-red-100 p-3 rounded-full mr-4">
-                                <Trash2 className="h-6 w-6 text-red-600" />
+                                <AlertCircle className="h-6 w-6 text-red-600" />
                             </div>
                             <h3 className="text-xl font-semibold text-gray-900">Confirm Deletion</h3>
                         </div>
@@ -363,7 +363,7 @@ const UserList = () => {
 
             {/* Notification Toast */}
             {notification.message && (
-                <div className={`fixed right-4 bottom-4 p-4 rounded-lg shadow-2xl transition-all transform translate-y-0 opacity-100 flex items-center ${notification.isError ? 'bg-red-100 text-red-700 border-l-4 border-red-500' : 'bg-green-100 text-green-700 border-l-4 border-green-500'}`}>
+                <div className={`fixed right-4 bottom-4 p-4 rounded-lg shadow-2xl transition-all transform translate-y-0 opacity-100 flex items-center z-[2000] ${notification.isError ? 'bg-red-100 text-red-700 border-l-4 border-red-500' : 'bg-green-100 text-green-700 border-l-4 border-green-500'}`}>
                     <div className={`mr-3 p-1 rounded-full ${notification.isError ? 'bg-red-200' : 'bg-green-200'}`}>
                         {notification.isError ? (
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -378,6 +378,64 @@ const UserList = () => {
                     <span className="font-medium">{notification.message}</span>
                 </div>
             )}
+
+            {/* Add CSS for modal animation and blur effect */}
+            <style>{`
+                /* Delete Modal Styles */
+                .delete-modal-wrapper {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                    opacity: 0;
+                    animation: fadeIn 0.3s ease-out forwards;
+                }
+
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+
+                .delete-modal-overlay {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    backdrop-filter: blur(5px);
+                    z-index: 1;
+                }
+
+                .delete-modal {
+                    position: relative;
+                    background: white;
+                    padding: 2rem;
+                    border-radius: 0.75rem;
+                    width: 100%;
+                    max-width: 28rem;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                    z-index: 2;
+                    transform: scale(0.95) translateY(20px);
+                    opacity: 0;
+                    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+                }
+
+                .delete-modal.show {
+                    transform: scale(1) translateY(0);
+                    opacity: 1;
+                }
+
+                .delete-modal.closing {
+                    transform: scale(0.95) translateY(20px);
+                    opacity: 0;
+                }
+            `}</style>
         </div>
     );
 };
