@@ -1,6 +1,7 @@
 import Util from "../../Util.js";
 import React, { useState, useEffect } from 'react';
 import { Users, Search, ChevronUp, ChevronDown, Trash2 } from 'lucide-react';
+import '../Global/Styles/TableStyle.css';
 
 const UserList = () => {
     const [users, setUsers] = useState([]);
@@ -16,10 +17,17 @@ const UserList = () => {
     const [filteredUsers, setFilteredUsers] = useState(users);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
+    const [isModalClosing, setIsModalClosing] = useState(false);
+
+    let timeOutConst = null;
 
     const showNotification = (message, isError = false) => {
+        if (timeOutConst != null) {
+            clearTimeout(timeOutConst);
+            timeOutConst = null;
+        }
         setNotification({ message, isLoading: false, isError });
-        setTimeout(() => setNotification({ message: '', isLoading: false, isError: false }), 3000);
+        timeOutConst = setTimeout(() => setNotification({ message: '', isLoading: false, isError: false }), 5000);
     };
 
     const fetchUsers = async () => {
@@ -35,36 +43,45 @@ const UserList = () => {
         }
     };
 
+    const openDeleteModal = (user) => {
+        setUserToDelete(user);
+        setIsModalClosing(false);
+        setShowDeleteModal(true);
+    };
+
+    const closeDeleteModal = () => {
+        setIsModalClosing(true);
+        setTimeout(() => {
+            setShowDeleteModal(false);
+            setUserToDelete(null);
+            setIsModalClosing(false);
+        }, 300); // Match this with the CSS transition duration
+    };
+
     const deleteUser = async () => {
         if (!userToDelete) return;
-
         setNotification({ message: '', isLoading: true, isError: false });
         try {
             const response = await Util.callBackend(`admin/delUserAdmin`, {
                 userID: userToDelete.id,
                 adminID: Util.savedUser.id
             });
+            
             if (response.msg === "error") {
-                throw new Error(response.message || 'Failed to delete admin user');
+                showNotification(response.message || 'Failed to delete user', true);
+            } else {
+                setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userToDelete.id));
+                if (selectedUser && selectedUser.id === userToDelete.id) {
+                    setSelectedUser(null);
+                }
+                closeDeleteModal();
+                showNotification("User successfully deleted");
             }
-            setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userToDelete.id));
-            if (selectedUser && selectedUser.id === userToDelete.id) {
-                setSelectedUser(null);
-            }
-            Util.CallGeneric("User deleted successfully");
-            setNotification({ message: '', isLoading: false, isError: false });
-            setShowDeleteModal(false);
-            setUserToDelete(null);
         } catch (err) {
-            Util.CallGeneric(err.message, "Error");
-            setNotification({ message: '', isLoading: false, isError: false });
-            setShowDeleteModal(false);
+            showNotification(err.message || "An error occurred while deleting the user", true);
+        } finally {
+            setNotification(prev => ({...prev, isLoading: false}));
         }
-    };
-
-    const openDeleteModal = (user) => {
-        setUserToDelete(user);
-        setShowDeleteModal(true);
     };
 
     const changeUserRole = async (userId, newRole) => {
@@ -76,23 +93,25 @@ const UserList = () => {
                 newRole: newRole,
                 adminID: Util.savedUser.id
             });
+            
             if (response.msg === "error") {
-                throw new Error(response.message || 'Failed to send verification code');
+                showNotification(response.message || 'Failed to change user role', true);
+            } else {
+                setUsers((prevUsers) =>
+                    prevUsers.map((user) =>
+                        user.id === userId ? { ...user, role: newRole } : user
+                    )
+                );
+                if (selectedUser && selectedUser.id === userId) {
+                    setSelectedUser((prev) => ({ ...prev, role: newRole }));
+                }
+                setRoleEdit({ isEditing: false, userId: null, newRole: '' });
+                showNotification("User role changed successfully");
             }
-            setUsers((prevUsers) =>
-                prevUsers.map((user) =>
-                    user.id === userId ? { ...user, role: newRole } : user
-                )
-            );
-            if (selectedUser && selectedUser.id === userId) {
-                setSelectedUser((prev) => ({ ...prev, role: newRole }));
-            }
-            setRoleEdit({ isEditing: false, userId: null, newRole: '' });
-            Util.CallGeneric("User role changed successfully");
-            setNotification({ message: '', isLoading: false, isError: false });
         } catch (err) {
-            Util.CallGeneric(err.message, "Error");
-            setNotification({ message: '', isLoading: false, isError: false });
+            showNotification(err.message || "An error occurred while changing the role", true);
+        } finally {
+            setNotification(prev => ({...prev, isLoading: false}));
         }
     };
 
@@ -103,9 +122,7 @@ const UserList = () => {
     // Handle search and sorting
     useEffect(() => {
         setLoading(true);
-
         // Use timeout to allow UI to update before filtering/sorting
-        // This prevents the "dark line" flash during sorting
         const timeoutId = setTimeout(() => {
             // Filter users based on search term
             let filtered = users.filter(user =>
@@ -113,7 +130,6 @@ const UserList = () => {
                     value => value && value.toString().toLowerCase().includes(searchTerm.toLowerCase())
                 )
             );
-
             // Sort users if sortField is set
             if (sortField) {
                 filtered.sort((a, b) => {
@@ -122,11 +138,9 @@ const UserList = () => {
                     return 0;
                 });
             }
-
             setFilteredUsers(filtered);
             setLoading(false);
         }, 10);
-
         return () => clearTimeout(timeoutId);
     }, [users, searchTerm, sortField, sortDirection]);
 
@@ -160,7 +174,6 @@ const UserList = () => {
                         <Users className="h-8 w-8 text-blue-600 mr-2" />
                         <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
                     </div>
-
                     {/* Search */}
                     <div className="relative w-full md:w-64">
                         <input
@@ -183,64 +196,65 @@ const UserList = () => {
                 )}
 
                 {/* Table */}
-                <div className="bg-white rounded-xl shadow-lg flex-grow flex flex-col mb-10 overflow-hidden">
-                    <div className="overflow-auto flex-grow" style={{ maxHeight: 'calc(100vh - 240px)' }}>
+                <div className="bg-white rounded-xl shadow-lg flex-grow flex flex-col mb-8 overflow-hidden">
+                    <div className="overflow-auto flex-grow" style={{ maxHeight: 'calc(100vh - 200px)', minHeight: '400px' }}>
                         {loading ? (
-                            <div className="text-blue-500 px-4 py-20 text-center text-xl">
-                                Loading...
+                            <div className="flex items-center justify-center py-20 text-center">
+                                <div className="w-16 h-16 border-4 border-t-blue-500 border-blue-200 rounded-full animate-spin"></div>
+                                <p className="ml-4 text-xl font-semibold text-blue-500">Loading users...</p>
                             </div>
                         ) : (
                             <table className="w-full table-fixed border-collapse">
                                 <thead className="bg-gray-200 sticky top-0 z-5 shadow-sm">
                                     <tr>
-                                        <th className="w-1/10 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200 rounded-tl-xl"
+                                        <th className="w-1/12 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200 rounded-tl-xl"
                                             onClick={() => handleSort('name')}>
                                             <span className="flex items-center justify-between">
                                                 Name
                                                 {renderSortIndicator('name')}
                                             </span>
                                         </th>
-                                        <th className="w-1/10 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200"
+                                        <th className="w-1/12 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200"
                                             onClick={() => handleSort('surname')}>
                                             <span className="flex items-center justify-between">
                                                 Surname
                                                 {renderSortIndicator('surname')}
                                             </span>
                                         </th>
-                                        <th className="w-1/7 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200"
+                                        <th className="w-2/12 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200"
                                             onClick={() => handleSort('username')}>
                                             <span className="flex items-center justify-between">
                                                 Username
                                                 {renderSortIndicator('username')}
                                             </span>
                                         </th>
-                                        <th className="w-1/7 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200"
+                                        <th className="w-2/12 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200"
                                             onClick={() => handleSort('role')}>
                                             <span className="flex items-center justify-between">
                                                 Role
                                                 {renderSortIndicator('role')}
                                             </span>
                                         </th>
-                                        <th className="w-3/15 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200"
+                                        <th className="w-3/12 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200"
                                             onClick={() => handleSort('email')}>
                                             <span className="flex items-center justify-between">
                                                 Email
                                                 {renderSortIndicator('email')}
                                             </span>
                                         </th>
-                                        <th className="w-1/7 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200"
+                                        <th className="w-2/12 px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-300 border-r border-gray-200"
                                             onClick={() => handleSort('phone')}>
                                             <span className="flex items-center justify-between">
                                                 Phone
                                                 {renderSortIndicator('phone')}
                                             </span>
                                         </th>
-                                        <th className="w-2/30 px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tr-xl">
+                                        <th className="w-1/12 px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tr-xl">
                                             Action
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className="divide-y divide-gray-200">
                                     {filteredUsers.length > 0 ? (
                                         filteredUsers.map((user, index) => (
                                             <tr key={user.id}
@@ -288,56 +302,82 @@ const UserList = () => {
                         )}
                     </div>
                 </div>
-
-                {/* Delete Confirmation Modal */}
-                {showDeleteModal && (
-                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-                        <div className="relative bg-white rounded-lg shadow-xl max-w-md mx-auto p-6 w-full">
-                            <h3 className="text-xl font-medium text-gray-900 mb-4">Confirm Deletion</h3>
-                            <p className="text-gray-600 mb-6">
-                                Are you sure you want to delete user <span className="font-semibold">{userToDelete?.name} {userToDelete?.surname}</span>?
-                                This action cannot be undone.
-                            </p>
-                            <div className="flex justify-end space-x-4">
-                                <button
-                                    onClick={() => setShowDeleteModal(false)}
-                                    className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
-                                    disabled={notification.isLoading}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={deleteUser}
-                                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-                                    disabled={notification.isLoading}
-                                >
-                                    {notification.isLoading ? (
-                                        <>
-                                            <span className="inline-block mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                                            Processing...
-                                        </>
-                                    ) : (
-                                        'Delete'
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
 
-            {notification.message || notification.isLoading ? (
-                <div className={`fixed right-4 bottom-4 p-4 rounded shadow-2xl transition-all ${notification.isError ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                    {notification.isLoading ? (
-                        <div className="flex items-center">
-                            <div
-                                className="loader border-t-4 border-b-4 border-gray-800 w-6 h-6 rounded-full animate-spin mr-2"></div>
+            {/* Delete Confirmation Modal */}
+            {showDeleteModal && (
+                <div className={`fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 modal-overlay transition-opacity duration-300 ${isModalClosing ? 'opacity-0' : 'opacity-100'}`}>
+                    <div className={`relative bg-white rounded-lg shadow-xl max-w-md mx-auto p-8 w-full transform transition-all duration-300 ${isModalClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'}`}>
+                        <div className="flex items-center mb-6">
+                            <div className="bg-red-100 p-3 rounded-full mr-4">
+                                <Trash2 className="h-6 w-6 text-red-600" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-900">Confirm Deletion</h3>
                         </div>
-                    ) : (
-                        notification.message
-                    )}
+                        
+                        <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                            <div className="grid grid-cols-3 gap-2 mb-2">
+                                <span className="text-gray-600 font-medium text-left">Name:</span>
+                                <span className="col-span-2 text-gray-800">{userToDelete?.name} {userToDelete?.surname}</span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 mb-2">
+                                <span className="text-gray-600 font-medium text-left">Username:</span>
+                                <span className="col-span-2 text-gray-800">{userToDelete?.username}</span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2">
+                                <span className="text-gray-600 font-medium text-left">Role:</span>
+                                <span className="col-span-2 text-gray-800 capitalize">{userToDelete?.role}</span>
+                            </div>
+                        </div>
+                        
+                        <p className="text-gray-700 font-medium mb-8 text-center">
+                            Do you want to delete this user?
+                        </p>
+                        
+                        <div className="flex justify-between space-x-4">
+                            <button
+                                onClick={closeDeleteModal}
+                                className="px-5 py-2.5 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors font-medium"
+                                disabled={notification.isLoading}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={deleteUser}
+                                className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors font-medium shadow-sm"
+                                disabled={notification.isLoading}
+                            >
+                                {notification.isLoading ? (
+                                    <div className="flex items-center">
+                                        <span className="inline-block mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                        Processing...
+                                    </div>
+                                ) : (
+                                    'Delete'
+                                )}
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            ) : null}
+            )}
+
+            {/* Notification Toast */}
+            {notification.message && (
+                <div className={`fixed right-4 bottom-4 p-4 rounded-lg shadow-2xl transition-all transform translate-y-0 opacity-100 flex items-center ${notification.isError ? 'bg-red-100 text-red-700 border-l-4 border-red-500' : 'bg-green-100 text-green-700 border-l-4 border-green-500'}`}>
+                    <div className={`mr-3 p-1 rounded-full ${notification.isError ? 'bg-red-200' : 'bg-green-200'}`}>
+                        {notification.isError ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                        )}
+                    </div>
+                    <span className="font-medium">{notification.message}</span>
+                </div>
+            )}
         </div>
     );
 };

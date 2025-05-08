@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Util from "../../../Util.js";
-import "../../ButcherPage/Transactions/ButcherTransactions.css"
+import "../../Global/Styles/TableStyle.css";
 
 const FullscreenSales = () => {
     const [sales, setSales] = useState([]);
