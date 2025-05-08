@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Util from "../../../Util.js";
-import { Users, Search, ChevronUp, ChevronDown, RefreshCw } from 'lucide-react';
+import { FileText, Search, ChevronUp, ChevronDown, RefreshCw } from 'lucide-react';
 import '../../Global/Styles/TableStyle.css';
 
 const FullscreenSales = () => {
@@ -142,7 +142,7 @@ const FullscreenSales = () => {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-center mb-6 mt-5">
                     <div className="flex items-center mb-4 md:mb-0">
-                        <Users className="h-8 w-8 text-blue-600 mr-2" />
+                        <FileText className="h-8 w-8 text-blue-600 mr-2" />
                         <h1 className="text-2xl font-bold text-gray-800">Transaction Management</h1>
                     </div>
 
@@ -253,11 +253,11 @@ const FullscreenSales = () => {
                                                                     ? "bg-green-100 text-green-600"
                                                                     : sale.status === "Cancelled"
                                                                         ? "bg-red-100 text-red-600"
-                                                                        : sale.status === "In Delivery"
-                                                                            ? "bg-purple-100 text-purple-600"
-                                                                            : sale.status === "Refunded"
-                                                                                ? "bg-blue-100 text-blue-600"
-                                                                                : "bg-yellow-100 text-yellow-600"
+                                                                            : sale.status === "In Delivery"
+                                                                                ? "bg-purple-100 text-purple-600"
+                                                                                : sale.status === "Refunded"
+                                                                                    ? "bg-blue-100 text-blue-600"
+                                                                                    : "bg-yellow-100 text-yellow-600"
                                                                 }`}
                                                         >
                                                             {sale.status}
