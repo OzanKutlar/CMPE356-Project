@@ -11,7 +11,6 @@ const AddProductPopup = ({ setShowPopUp, onProductAdded }) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
-    const [fileName, setFileName] = useState(''); // To store the actual filename returned from server
     const [buttonHover, setButtonHover] = useState(false);
     
     // Category filter states
@@ -123,12 +122,12 @@ const AddProductPopup = ({ setShowPopUp, onProductAdded }) => {
     const handleImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
-            const reader = new FileReader();
-
+            
             // Create a local preview immediately
             const localPreviewUrl = URL.createObjectURL(file);
             setImagePreview(localPreviewUrl);
-
+            
+            const reader = new FileReader();
             reader.onloadend = async () => {
                 try {
                     const base64Data = reader.result.split(',')[1];
@@ -145,10 +144,16 @@ const AddProductPopup = ({ setShowPopUp, onProductAdded }) => {
                     
                     if (data.msg === "success") {
                         console.log("Image uploaded successfully. Filename:", data.url);
-                        // Save the filename returned from server
-                        setFileName(data.url);
-                        // Store backend URL for submission
+                        
+                        // Store backend filename for submission
                         setImageFile(data.url);
+                        
+                        // Create the full URL for preview using the utility function
+                        if (data.url) {
+                            const fullImageUrl = Util.getImageFromBackend(data.url);
+                            console.log("Setting image preview to:", fullImageUrl);
+                            setImagePreview(fullImageUrl);
+                        }
                     } else {
                         console.error("Upload failed:", data.message);
                         setErrorMessage("Failed to upload image: " + data.message);
@@ -264,10 +269,13 @@ const AddProductPopup = ({ setShowPopUp, onProductAdded }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop with blur effect */}
+            <div className="backdrop-blur" onClick={() => setShowPopUp(false)}></div>
+            
             {/* Modal Content */}
             <div 
-                className={`w-full max-w-4xl bg-white rounded-lg shadow-xl overflow-hidden transform transition-all duration-300 ${
+                className={`w-full max-w-4xl bg-white rounded-lg shadow-xl overflow-hidden transform transition-all duration-300 z-10 ${
                     fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
                 }`}
             >
@@ -294,6 +302,10 @@ const AddProductPopup = ({ setShowPopUp, onProductAdded }) => {
                                                 src={imagePreview}
                                                 alt="Product Preview"
                                                 className="w-full h-56 object-cover"
+                                                onError={(e) => {
+                                                    console.error("Image failed to load:", e.target.src);
+                                                    e.target.src = "/api/placeholder/400/300";
+                                                }}
                                             />
                                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 flex items-center justify-center transition-all">
                                                 <div className="px-4 py-2 bg-white bg-opacity-90 rounded-md shadow-sm cursor-pointer transform translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all">
@@ -469,6 +481,20 @@ const AddProductPopup = ({ setShowPopUp, onProductAdded }) => {
                     </div>
                 </div>
             </div>
+            
+            {/* Add CSS for the blur effect */}
+            <style>{`
+                .backdrop-blur {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    backdrop-filter: blur(5px);
+                    z-index: 1;
+                }
+            `}</style>
         </div>
     );
 };

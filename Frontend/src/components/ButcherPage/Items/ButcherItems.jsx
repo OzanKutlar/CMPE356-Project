@@ -109,9 +109,17 @@ const BestSellerListFullScreen = () => {
                             >
                                 <div className="h-48 overflow-hidden">
                                     <img
-                                        src={item.ItemPhotoLink}
+                                        src={item.ItemPhotoLink ? 
+                                            (item.ItemPhotoLink.startsWith('http') ? 
+                                                item.ItemPhotoLink : 
+                                                Util.getImageFromBackend(item.ItemPhotoLink)) 
+                                            : "/api/placeholder/400/300"}
                                         alt={item.ItemName}
                                         className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            console.error("Image failed to load:", e.target.src);
+                                            e.target.src = "/api/placeholder/400/300";
+                                        }}
                                     />
                                 </div>
                                 <div className="p-4 text-center">
@@ -159,15 +167,28 @@ const BestSellerListFullScreen = () => {
                     </div>
 
                     {selectedItem && (
-                        <div
-                            className={`fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50 modal-overlay ${isClosing ? 'fade-out' : ''}`}>
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                            {/* Backdrop with blur effect */}
+                            <div className="backdrop-blur" onClick={closeModal}></div>
+                            
                             <div
-                                className={`bg-white rounded-lg w-full overflow-hidden ${isMobile ? "max-w-xs" : "max-w-lg"} modal-content ${isClosing ? 'fade-out' : ''}`}>
+                                className={`bg-white rounded-lg w-full overflow-hidden ${isMobile ? "max-w-xs" : "max-w-lg"} shadow-xl transform transition-all duration-300 z-10 ${
+                                    isClosing ? 'translate-y-8 opacity-0' : 'translate-y-0 opacity-100'
+                                }`}
+                            >
                                 <div className={`overflow-hidden ${isMobile ? "h-40" : "h-64"}`}>
                                     <img
-                                        src={selectedItem.ItemPhotoLink || "/api/placeholder/400/300"}
+                                        src={selectedItem.ItemPhotoLink ? 
+                                            (selectedItem.ItemPhotoLink.startsWith('http') ? 
+                                                selectedItem.ItemPhotoLink : 
+                                                Util.getImageFromBackend(selectedItem.ItemPhotoLink)) 
+                                            : "/api/placeholder/400/300"}
                                         alt={selectedItem.ItemName}
                                         className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            console.error("Image failed to load:", e.target.src);
+                                            e.target.src = "/api/placeholder/400/300";
+                                        }}
                                     />
                                 </div>
                                 <div className="p-6">
@@ -257,6 +278,20 @@ const BestSellerListFullScreen = () => {
                                     </div>
                                 </div>
                             </div>
+                            
+                            {/* Add CSS for the blur effect */}
+                            <style>{`
+                                .backdrop-blur {
+                                    position: absolute;
+                                    top: 0;
+                                    left: 0;
+                                    width: 100%;
+                                    height: 100%;
+                                    background-color: rgba(0, 0, 0, 0.5);
+                                    backdrop-filter: blur(5px);
+                                    z-index: 1;
+                                }
+                            `}</style>
                         </div>
                     )}
 

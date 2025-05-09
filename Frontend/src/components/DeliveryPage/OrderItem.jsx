@@ -107,7 +107,9 @@ export function OrderItem({
               <strong className="text-gray-700 mb-2">Products</strong> {"\n"}
               {order.productNames.map((productName, index) => {
                 const productAmount = order.productAmounts[index]; // Get the corresponding productAmount
-                return `${productName} - ${productAmount}`;
+                // Convert grams to kg and format
+                const amountInKg = (parseInt(productAmount) / 1000).toFixed(2);
+                return `${productName} - ${amountInKg} kg`;
               }).join("\n")}
             </p>
           </div>
