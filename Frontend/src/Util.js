@@ -410,28 +410,48 @@ class Util {
                 });
             }
         }
+        
         const url = `${Util.backendIp}/${endpoint}`;
         try {
-
+            console.log('Request headers:', headers);
+            
+            // Special handling for Turkish characters and other non-ASCII characters
             if (body !== null) {
-                headers['Content-Type'] = 'application/json';
-            }
-
-            const response = body === null ? await fetch(url, {
-                method: 'GET',
-                headers: headers,
-            }) :
-                await fetch(url, {
+                // For POST requests with a body
+                headers['Content-Type'] = 'application/json; charset=UTF-8';
+                
+                // Log the body for debugging
+                console.log('Request body:', body);
+                
+                // Use direct fetch with explicit UTF-8 encoding for all POST requests
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify(body)
                 });
-            if (!response.ok) {
-                throw new Error(`Backend error: ${response.statusText}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Backend error: ${response.statusText}`);
+                }
+                
+                const responseData = await response.json();
+                console.log(`Response from backend: ${JSON.stringify(responseData)}`);
+                return responseData;
+            } else {
+                // For GET requests
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: headers,
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Backend error: ${response.statusText}`);
+                }
+                
+                const responseData = await response.json();
+                console.log(`Response from backend: ${JSON.stringify(responseData)}`);
+                return responseData;
             }
-            const responseData = await response.json();
-            console.log(`Response from backend: ${JSON.stringify(responseData)}`);
-            return responseData;
         } catch (error) {
             console.error(`Backend request failed: ${error.message}`);
             if (endpoint === "check-user") {

@@ -262,7 +262,7 @@ public class ButcherEndpoints {
 
     @PostMapping("/addItem")
     public ResponseEntity<?> addItem(@RequestHeader("userID") String frontEndID,
-                                     @RequestBody Map<String, Object> product){
+                                     @RequestBody Map<String, Object> product) {
 
         String realID = UserEndpoints.sessionMap.get(Util.getUuidOrNull(frontEndID));
 
@@ -290,25 +290,44 @@ public class ButcherEndpoints {
             ));
         }
 
+        String imageUrl = (String) product.get("ItemPhotoLink");
+        if (imageUrl != null && !imageUrl.startsWith("http")) {
+            imageUrl = "http://127.0.0.1:33000/api/image/get/" + imageUrl;
+            System.out.println("Converted image URL: " + imageUrl);
+        }
 
-        String query = "INSERT INTO products (store_id, name, price_per_kg, photo, currentStock, soldStock, category_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        params = new Object[]{storeID, product.get("ItemName"), product.get("ItemPrice"), product.get("ItemPhotoLink"), product.get("currentStock"), 0, 0};
+        String query = "INSERT INTO products (store_id, name, price_per_kg, photo, currentStock, soldStock, category) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        params = new Object[]{
+            storeID, 
+            product.get("ItemName"), 
+            product.get("ItemPrice"), 
+            imageUrl, 
+            product.get("currentStock"), 
+            0, 
+            product.get("category")
+        };
 
         try {
             DatabaseHandler.INSTANCE.executeQuery(query, params);
+            System.out.println("Product successfully added to database");
+            
+            // Return the updated product with correct image URL
+            Map<String, Object> updatedProduct = new HashMap<>(product);
+            updatedProduct.put("ItemPhotoLink", imageUrl);
+            
+            return ResponseEntity.ok().body(Map.of(
+                    "msg", "ok",
+                    "message", "Item Added successfully."
+                    //"product", updatedProduct
+            ));
         } catch (SQLException e) {
-            logError("Error executing card SQL request: " + query + ". Error: " + e.getMessage());
+            logError("Error executing SQL request: " + query + ". Error: " + e.getMessage());
+            System.out.println("SQL Error: " + e.getMessage());
             return ResponseEntity.ok().body(Map.of(
                     "msg", "error",
                     "message", "Failed to add your item"
             ));
-
         }
-
-        return ResponseEntity.ok().body(Map.of(
-                "msg", "ok",
-                "message", "Item Added succesfully."
-        ));
     }
 
     @GetMapping("/updateStock")

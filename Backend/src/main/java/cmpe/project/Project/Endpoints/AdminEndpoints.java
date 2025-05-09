@@ -5,7 +5,9 @@ import cmpe.project.Project.Utility.Util;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,6 +16,7 @@ import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.io.File;
 
 import static cmpe.project.Project.Utility.Logger.log;
 import static cmpe.project.Project.Utility.Logger.logError;
@@ -576,6 +579,56 @@ public class AdminEndpoints {
     public ResponseEntity<?> restartSystem(@RequestHeader("adminId") String adminId) {
         System.out.println("System restart initiated by admin: " + adminId);
         return ResponseEntity.ok().body(Map.of("msg", "success"));
+    }
+
+    @PostMapping("/addStore")
+    public ResponseEntity<?> addStore(@RequestHeader("adminId") String adminId, @RequestBody Map<String, Object> payload) {
+        try {
+            String realId = UserEndpoints.sessionMap.get(Util.getUuidOrNull(adminId));
+
+            if(realId == null){
+                return ResponseEntity.ok().body(Map.of("msg", "error", "message", "User not authorized!"));
+            }
+
+            String storeName = (String) payload.get("storeName");
+            String storeAddress = (String) payload.get("storeAddress");
+            String storeLogoFilename = (String) payload.get("storeLogo");
+            
+            if (storeName == null || storeAddress == null || storeLogoFilename == null) {
+                System.out.println("Error: Missing required data for store creation");
+                return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Missing data!"));
+            }
+            
+            String baseUrl = "http://127.0.0.1:33000/api/image/get/";
+            String storeLogoUrl = baseUrl + storeLogoFilename;
+            
+            System.out.println("Constructed image URL: " + storeLogoUrl);
+            
+            String insertStoreQuery = "INSERT INTO stores (name, address, logo) VALUES (?, ?, ?)";
+            Object[] params = { storeName, storeAddress, storeLogoUrl };
+            
+            try {
+                System.out.println("Executing SQL query with parameters:");
+                System.out.println("1. " + storeName);
+                System.out.println("2. " + storeAddress);
+                System.out.println("3. " + storeLogoUrl);
+                
+                DatabaseHandler.INSTANCE.executeQuery(insertStoreQuery, params);
+
+                log("New store added by admin " + realId + ": " + storeName);
+                System.out.println("Store successfully added to database");
+                return ResponseEntity.ok().body(Map.of("msg", "success", "message", "New store added successfully!"));
+                
+            } catch (SQLException e) {
+                logError("Error executing SQL request: " + insertStoreQuery + ". Error: " + e.getMessage());
+                System.out.println("SQL Error: " + e.getMessage());
+                return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Failed to add store!"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Unexpected error in addStore: " + e.getMessage());
+            return ResponseEntity.ok().body(Map.of("msg", "error", "message", "Error adding store: " + e.getMessage()));
+        }
     }
 
 }
