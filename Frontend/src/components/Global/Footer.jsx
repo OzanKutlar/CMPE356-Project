@@ -4,7 +4,7 @@ import GenericPopup from "./PopUps/GenericPopup.jsx";
 
 const Footer = () => {
     return (
-        <footer className={`${Util.footerColor} text-white py-6 mt-8`}>
+        <footer className={`${Util.footerColor} text-white py-6 mt-0`}>
             <div className="container mx-auto text-center">
                 <div className="flex justify-center space-x-6 mb-4">
                     {/* Social Media Links */}

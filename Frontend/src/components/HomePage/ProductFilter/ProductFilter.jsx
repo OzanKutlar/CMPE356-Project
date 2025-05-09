@@ -65,8 +65,8 @@ const FilterBar = ({ selectedFilters, setSelectedFilters }) => {
     };
 
     return (
-        <div className="w-full bg-white py-6 px-2 md:px-6 shadow-sm">
-            <style jsx="true">{`
+        <div className="w-full bg-transparent py-4 px-2 md:px-6">
+            <style>{`
                 .filterbar-dropdown {
                     max-height: 0;
                     overflow: hidden;

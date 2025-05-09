@@ -29,6 +29,29 @@ public class CartEndpoints {
     @Autowired
     private OrderService orderService;
 
+    @GetMapping("/stores")
+    public ResponseEntity<?> getStores(){
+        List<Map<String, Object>> stores = new ArrayList<>();
+
+        String query = "SELECT * FROM stores;";
+        try {
+            ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(query, null);
+            while(rs.next()){
+                Map<String, Object> store = new HashMap<>();
+                store.put("storeId", rs.getLong("store_id"));
+                store.put("storeName", rs.getString("name"));
+                store.put("storeLogo", rs.getString("logo"));
+                stores.add(store);
+            }
+
+            return ResponseEntity.ok().body(stores);
+            
+        } catch (Exception e) {
+            log("Failed to retrieve stores!");
+            return ResponseEntity.ok().body(Map.of("msg","error","message","Failed to retrieve stores!"));
+        }
+    }
+
     @GetMapping("/items/{storeId}")
     public ResponseEntity<?> getItems(@RequestHeader Map<String, String> headers, @PathVariable long storeId) {
         List<Map<String, Object>> items = new ArrayList<>();

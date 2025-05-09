@@ -2,7 +2,17 @@
   text-align: center;
 }
 
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: rgb(249, 250, 251); /* bg-gray-50 equivalent */
+}
 
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
 .logo {
   height: 6em;
