@@ -19,8 +19,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import static cmpe.project.Project.Endpoints.UserEndpoints.capitalizeFirstLetter;
-import static cmpe.project.Project.Utility.Logger.log;
-import static cmpe.project.Project.Utility.Logger.logError;
+import static cmpe.project.Project.Utility.Logger.*;
 
 @RestController
 @RequestMapping("/api/cart")
@@ -332,53 +331,47 @@ public class CartEndpoints {
             ObjectMapper objectMapper = new ObjectMapper();
             ArrayList<Map<String, Object>> cartItems = objectMapper.readValue(cartItemsJson.get("items"), new TypeReference<>() {
             });
-            boolean hasErrors = false;
+            String hasErrors = "";
             for (Map<String, Object> cartItem : cartItems) {
                 String productId = (String) cartItem.get("id");
                 if (productId == null) {
-                    log("Invalid cart item: missing product id");
-                    hasErrors = true;
+                    hasErrors = "Invalid cart item: missing product id";
                     break;
                 }
                 Object[] userParams = {productId};
                 String getStockQuery = "SELECT currentStock FROM products WHERE product_id = ?";
                 try (ResultSet rs = DatabaseHandler.INSTANCE.sendRequest(getStockQuery, userParams)) {
                     if (rs == null || !rs.next()) {
-                        log("Product not found");
-                        hasErrors = true;
+                        hasErrors = "Product not found";
                         break;
                     }
                     double currentStock = rs.getDouble("currentStock");
                     Object buyAmount = cartItem.get("buyAmount");
                     if (buyAmount == null) {
-                        log("Invalid cart item: missing buyAmount");
-                        hasErrors = true;
+                        hasErrors = "Invalid cart item: missing buyAmount";
                         break;
                     }
                     try {
                         double amount = Double.parseDouble(String.valueOf(buyAmount));
                         if (amount > currentStock) {
-                            log("Not enough stock for item: %s", cartItem.get("ItemName"));
-                            hasErrors = true;
+                            hasErrors = format("Sorry, We do not have enough stock for your item: %s", cartItem.get("ItemName"));
                             break;
                         }
                         log("Item %s is safely sent.", cartItem.get("ItemName"));
                     } catch (NumberFormatException e) {
-                        log("Invalid buyAmount for item: %s", cartItem.get("ItemName"));
-                        hasErrors = true;
+                        hasErrors = format("Invalid buyAmount for item: %s", cartItem.get("ItemName"));
                         break;
                     }
                 } catch (SQLException e) {
-                    log("Error getting stock information: " + e.getMessage());
-                    hasErrors = true;
+                    hasErrors = format("Error getting stock information: " + e.getMessage());
                     break;
                 }
             }
 
-            if (hasErrors) {
+            if (!Objects.equals(hasErrors, "")) {
                 return ResponseEntity.ok().body(Map.of(
                         "msg", "error",
-                        "message", "Invalid cart items"
+                        "message", hasErrors
                 ));
             }
 

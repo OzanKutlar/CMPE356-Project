@@ -225,7 +225,7 @@ const ItemPicker = () => {
                         <div className="container mx-auto mb-4 relative">
                             <button 
                                 onClick={handleBackToStores}
-                                className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors flex items-center justify-center absolute left-4 top-1/2 transform -translate-y-1/2"
+                                className="p-2 bg-rose-600 text-white rounded-full hover:bg-rose-700 transition-colors flex items-center justify-center absolute left-4 top-1/2 transform -translate-y-1/2"
                                 title="Back to Stores"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

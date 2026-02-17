@@ -309,8 +309,6 @@ const FullscreenSales = () => {
                                                                             <div className="text-gray-600">Transaction ID:</div>
                                                                             <div className="font-medium text-gray-900">{sale.id}</div>
 
-                                                                            <div className="text-gray-600">Order Date:</div>
-                                                                            <div className="font-medium text-gray-900">{sale.orderDate || "N/A"}</div>
 
                                                                             <div className="text-gray-600">Item:</div>
                                                                             <div className="font-medium text-gray-900">{sale.itemName}</div>
@@ -318,8 +316,6 @@ const FullscreenSales = () => {
                                                                             <div className="text-gray-600">Payment Method:</div>
                                                                             <div className="font-medium text-blue-600">{sale.paymentMethod}</div>
 
-                                                                            <div className="text-gray-600">Payment ID:</div>
-                                                                            <div className="font-medium text-blue-600 break-all">{sale.paymentID}</div>
 
                                                                             <div className="text-gray-600">Status:</div>
                                                                             <div>

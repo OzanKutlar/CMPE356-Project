@@ -72,9 +72,7 @@ public class ChatbotEndPoints {
         if (giveThink) {
             return content.trim();
         }
-        return content.trim()
-                .replaceAll("(?s)<think>.*?</think>", "").trim()
-                .replaceAll("[*_]", "");
+        return content.trim().replaceAll("(?s)<think>.*?</think>", "").trim();
     }
 
     @PostMapping("/ask")
@@ -98,10 +96,10 @@ public class ChatbotEndPoints {
                             "     \n" +
                             "\n" +
                             "    Command Parsing:   \n" +
-                            "         If the user wants to cancel their order respond with 'cancel' followed by an order number , output: (cancel 123).  \n" +
+                            "         If the user's message contains 'cancel' followed by an order number (e.g., 'Cancel order 123'), output: (cancel 123).  \n" +
                             "         If the user asks to 'see orders', output: (see orders) to retrieve all orders for the user.  \n" +
                             "         If the user requests 'info latest', output: (info latest) to fetch details of the most recent order.  \n" +
-                            "         If the user wants information about a certain order, respond with 'info x' (e.g., 'Show info for order 456'), output: (info 456).  \n" +
+                            "         If the user wants information about a certain order, 'info x' (e.g., 'Show info for order 456'), output: (info 456).  \n" +
                             "         For regular text responses (not commands), output: (text)\n" +
                             "         Note that you should **only** give the outputted in paranthesis. No extra information. Just whether its an action like (cancel) or a (text) response. Another agent will respond with text if you do (text)",
                     "history", userHistory.toString(),
@@ -112,7 +110,7 @@ public class ChatbotEndPoints {
             // Handle different actions based on LLM output
             if (!action.equals("(text)")) {
                 // Check if user is logged in
-                if (userID == null) {
+                if (userID.isEmpty()) {
                     return ResponseEntity.ok().body(Map.of(
                             "msg", "usernotfound"
                     ));
@@ -211,12 +209,10 @@ public class ChatbotEndPoints {
             if (rs != null && rs.next()) {
                 String status = rs.getString("status").toLowerCase();
 
-
-                if (!(status.equalsIgnoreCase("Refunded") ||
-                        status.equalsIgnoreCase("Completed") ||
-                        status.equalsIgnoreCase("Cancelled"))) {
+                // Only allow cancellation for certain statuses
+                if (status.equals("pending") || status.equals("processing") || status.equals("payment_received")) {
                     // Update the order status to cancelled
-                    String updateQuery = "UPDATE order_splits SET status = 'canceled' WHERE order_id = ?";
+                    String updateQuery = "UPDATE order_splits SET status = 'cancelled' WHERE order_id = ?";
                     DatabaseHandler.INSTANCE.executeQuery(updateQuery, new Object[]{orderID});
 
                     // Log the cancellation
@@ -356,7 +352,7 @@ public class ChatbotEndPoints {
                     )
                 ) AS p_max ON p_max.order_id = o.order_id
 
-                WHERE o.customer_id = ? AND os.status != 'cancelled'
+                WHERE o.customer_id = ?
                 GROUP BY o.order_id
                 ORDER BY o.order_id DESC
                 LIMIT 1
@@ -546,9 +542,9 @@ public class ChatbotEndPoints {
         jsonBuilder.append("\n  \"itemCount\": \"").append(order.getOrDefault("itemCount", "1")).append("\",");
 
         // Add cancellation information
-        boolean canCancel = !(order.get("status").equalsIgnoreCase("Refunded") ||
-                order.get("status").equalsIgnoreCase("Completed") ||
-                order.get("status").equalsIgnoreCase("Cancelled"));
+        boolean canCancel = order.get("status").equalsIgnoreCase("Unassigned") ||
+                order.get("status").equalsIgnoreCase("processing") ||
+                order.get("status").equalsIgnoreCase("payment_received");
         jsonBuilder.append("\n  \"canCancel\": ").append(canCancel);
 
         jsonBuilder.append("\n}");

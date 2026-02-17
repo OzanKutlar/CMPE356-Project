@@ -75,7 +75,9 @@ const CartBar = ({showNavbar, setShowNavbar}) => {
                 setShowNavbar(false);
                 Util.navigateTo("cart");
             } else {
-                Util.CallGeneric("There was an issue with your order. Please try again.", "Error");
+                setCart({});
+                setCartItems([]);
+                Util.CallGeneric(response.message, "Error");
             }
         } catch (error) {
             console.error("Error submitting order:", error);
